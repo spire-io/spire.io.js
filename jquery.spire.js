@@ -219,6 +219,32 @@
           });
 
         }
+      },
+
+      messages: {
+        create: function(channel, content, callback){
+
+          console.log('channel', channel);
+
+          $.ajax({ type: 'post'
+            , url: channel.url
+            , beforeSend: function(xhr){ xhr.withCredentials = true; }
+            , headers: { 'Content-Type': $.spire.schema.message.mediaType
+              , 'Accept': $.spire.schema.message.mediaType
+              , 'Authorization': [ 'Capability'
+                , channel.capability
+                ].join(' ')
+              }
+            , data: JSON.stringify({ content: content })
+            , error: function(xhr){
+              // ...
+              }
+            , success: function(message, status, xhr){
+                console.log('message', message);
+                callback(null, message);
+              }
+          });
+        }
       }
     }
   };

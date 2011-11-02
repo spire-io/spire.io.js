@@ -281,12 +281,54 @@ describe('jquery.spire.js', function(){
         });
       }); // describe('get', ...
     }); // describe('subscriptions', ...
+
+    describe('messages', function(){
+      it('spire.requests.messages should exist', function(){
+        expect($.spire.requests.messages).toBeDefined();
+      });
+
+      describe('create', function(){
+        it('spire.requests.messages.create should exist', function(){
+          expect($.spire.requests.messages.create).toBeDefined();
+        });
+
+        it('can get a success', function(){
+          callback = sinon.spy();
+          newMessage = { content: 'hi' };
+
+
+          $.spire
+            .requests
+            .channels
+            .create('random channel too', function(err, channel){
+              $.spire
+                .requests
+                .messages
+                .create(channel, newMessage.content, callback);
+            });
+
+          waitsFor(function(){ return callback.called; }, '', 10000);
+
+          runs(function(){
+            expect(callback).toHaveBeenCalled();
+
+            var err = callback.getCall(0).args[0]
+              , returnedMessage = callback.getCall(0).args[1]
+            ;
+
+            expect(err).toBeFalsy();
+
+            expect(returnedMessage).toBeDefined();
+            expect(returnedMessage.content).toBeDefined();
+            expect(returnedMessage.content).toBe(newMessage.content);
+          });
+        });
+      }); // describe('create', ...
+    }); // describe('messages', ...
   });
 /*****************************************************************************
 
 * Messages
-* subscriptions
-* subscribe
 
 *****************************************************************************/
 });

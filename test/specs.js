@@ -1,4 +1,7 @@
 
+$.spire.options
+  .key = 'lFIUcdH%2BH1N7AdiG2Lqh05wk%2Feybo1ACgTBvCrzA3q6ZtraW52MvuQ%3D%3D';
+
 describe('jquery.spire.js', function(){
   beforeEach(function(){
     this.addMatchers({
@@ -33,6 +36,11 @@ describe('jquery.spire.js', function(){
         }
 
         return hasResources && hasResource && hasResourceURL;
+      },
+      toHaveACapability: function(){
+        var capability = this.actual.capability;
+
+        return !!capability && typeof capability === 'string'
       }
     });
   });
@@ -99,24 +107,182 @@ describe('jquery.spire.js', function(){
       describe('err requests', function(){
 
       });
-    });
+    }); // describe('description', ...
+
+    describe('sessions', function(){
+      it('$.spire.requests.sessions should exist', function(){
+        expect($.spire.requests.sessions).toBeDefined();
+      });
+
+      describe('create', function(){
+        it('$.spire.requests.sessions.create should exist', function(){
+          expect($.spire.requests.sessions.create).toBeDefined();
+        });
+
+        it('can get a success', function(){
+          callback = sinon.spy();
+
+          $.spire.requests.sessions.create(callback);
+
+          waitsFor(function(){ return callback.called; }, '', 10000);
+
+          runs(function(){
+            expect(callback).toHaveBeenCalled();
+
+            var err = callback.getCall(0).args[0]
+              , session = callback.getCall(0).args[1]
+            ;
+
+            expect(err).toBeFalsy();
+
+            expect(session).toBeAResourceObject();
+            expect(session).toHaveACapability();
+
+            expect(session).toIncludeResource('channels');
+            expect(session).toIncludeResource('subscriptions');
+          });
+        });
+      }); // describe('create', ...
+    }); // describe('sessions', ...
+
+    describe('channels', function(){
+      it('$.spire.requests.channels should exist', function(){
+        expect($.spire.requests.channels).toBeDefined();
+      });
+
+      describe('create', function(){
+        it('$.spire.requests.channels should exist', function(){
+          expect($.spire.requests.channels.create).toBeDefined();
+        });
+
+        describe('without a session', function(){
+          it('can get a success ', function(){
+            callback = sinon.spy();
+
+            $.spire
+              .requests
+              .channels
+              .create('jquery.spire.js specs channel', callback);
+
+            waitsFor(function(){ return callback.called; }, '', 10000);
+
+            runs(function(){
+              expect(callback).toHaveBeenCalled();
+
+              var err = callback.getCall(0).args[0]
+                , channel = callback.getCall(0).args[1]
+              ;
+
+              expect(err).toBeFalsy();
+
+              expect(channel).toBeAResourceObject();
+              expect(channel).toHaveACapability();
+              expect(channel.name).toBeDefined();
+            });
+          });
+        }); // describe('without a session', ...
+
+        describe('with a session', function(){
+          it('can get a success', function(){
+            callback = sinon.spy();
+
+            $.spire.requests.sessions.create(function(err, session){
+              $.spire
+                .requests
+                .channels
+                .create('jquery.spire.js specs channel', session, callback);
+            });
+
+            waitsFor(function(){ return callback.called; }, '', 10000);
+
+            runs(function(){
+              expect(callback).toHaveBeenCalled();
+
+              var err = callback.getCall(0).args[0]
+                , channel = callback.getCall(0).args[1]
+              ;
+
+              expect(err).toBeFalsy();
+
+              expect(channel).toBeAResourceObject();
+              expect(channel).toHaveACapability();
+              expect(channel.name).toBeDefined();
+            });
+          });
+        }); // describe('with a session', ...
+      }); // describe('create', ...
+    }); // describe('channels', ...
+
+    describe('subscriptions', function(){
+      it('$.spire.requests.subscriptions should exist', function(){
+        expect($.spire.requests.subscriptions).toBeDefined();
+      });
+
+      describe('create', function(){
+        it('$.spire.requests.subscriptions.create should exist', function(){
+          expect($.spire.requests.subscriptions.create).toBeDefined();
+        });
+
+        it('can get a success', function(){
+          callback = sinon.spy();
+
+          $.spire.requests.subscriptions.create('random chanel', callback);
+
+          waitsFor(function(){ return callback.called; }, '', 10000);
+
+          runs(function(){
+            expect(callback).toHaveBeenCalled();
+
+            var err = callback.getCall(0).args[0]
+              , subscription = callback.getCall(0).args[1]
+            ;
+
+            expect(err).toBeFalsy();
+
+            expect(subscription).toBeAResourceObject();
+            expect(subscription).toHaveACapability();
+          });
+        });
+      }); // describe('create', ...
+
+      describe('get', function(){
+        it('spire.requests.subscriptions.get should exist', function(){
+          expect($.spire.requests.subscriptions.get).toBeDefined();
+        });
+
+        it('can get a success', function(){
+            callback = sinon.spy();
+
+            $.spire
+              .requests
+              .subscriptions
+              .create('random channel', function(err, subscription){
+                $.spire
+                  .requests
+                  .subscriptions
+                  .get(subscription, callback);
+              });
+
+            waitsFor(function(){ return callback.called; }, '', 10000);
+
+            runs(function(){
+              expect(callback).toHaveBeenCalled();
+
+              var err = callback.getCall(0).args[0]
+                , events = callback.getCall(0).args[1]
+              ;
+
+              expect(err).toBeFalsy();
+
+              expect(events).toBeDefined();
+              expect(events.messages).toBeDefined();
+              expect(events.messages instanceof Array).toBe(true);
+            });
+        });
+      }); // describe('get', ...
+    }); // describe('subscriptions', ...
   });
 /*****************************************************************************
-describe('requests', function(){
-  describe('discovery', function(){
-
-  });
-
-  describe('sessions', function(){
-    describe('create', function(){
-
-    });
-  });
-
-  describe('channels', function(){
-
-  });
-});
 
 * Messages
 * subscriptions

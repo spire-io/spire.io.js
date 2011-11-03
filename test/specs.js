@@ -1,6 +1,11 @@
 
-$.spire.options
-  .key = 'lFIUcdH%2BH1N7AdiG2Lqh05wk%2Feybo1ACgTBvCrzA3q6ZtraW52MvuQ%3D%3D';
+$.spire
+  .options
+  .key = 'RcoTEuYi823VJUjJdCKj9xAHKwr%2FMxOav%2BG2j%2BNhFtEXfRkNo2VYsQ%3D%3D';
+
+// $.spire
+//   .options
+//   .timeout = 0;
 
 describe('jquery.spire.js', function(){
   beforeEach(function(){
@@ -56,7 +61,93 @@ describe('jquery.spire.js', function(){
     });
   });
 
-  describe('requests', function(){
+  describe('messages', function(){
+    it('should exist', function(){
+      expect($.spire.messages).toBeDefined();
+    });
+
+    describe('subscribe', function(){
+      it('should exist', function(){
+        expect($.spire.messages.subscribe).toBeDefined();
+      });
+
+      it('should hook the callback to fire on every new message', function(){
+        var channelName = 'cowboys and indians ' + (new Date().getTime());
+
+        var callback = sinon.spy(function(err, messages){
+          console.log('new messages', messages);
+        });
+
+        $.spire.messages.subscribe(channelName, callback);
+
+        // $.each(['tonto', 'injun joe', 'hiawatha'], function(i, indian){
+        //   var content = indian + 'says how';
+        //
+        //   $.spire.messages.publish(channelName, content);
+        // });
+
+        // $.spire.messages.connect();
+        //
+        // $.spire.messages.publish(channelName, 'wtf');
+
+        waitsFor(function(){ return callback.calledThrice; }, '', 10000);
+
+        runs(function(){
+          expect(callback).toHaveBeenCalled();
+
+          // var err = callback.getCall(0).args[0]
+          //   , returnedMessage = callback.getCall(0).args[1]
+          // ;
+          //
+          // expect(err).toBeFalsy();
+          //
+          // expect(returnedMessage).toBeDefined();
+          // expect(returnedMessage.content).toBeDefined();
+          // expect(returnedMessage.content).toBe(newMessage.content);
+        });
+
+        //     newMessage = { content: 'hi' };
+        //
+        //
+        //     $.spire
+        //       .requests
+        //       .channels
+        //       .create('random channel too', function(err, channel){
+        //         $.spire
+        //           .requests
+        //           .messages
+        //           .create(channel, newMessage.content, callback);
+        //       });
+        //
+        //     waitsFor(function(){ return callback.called; }, '', 10000);
+        //
+        //   });
+        // });
+
+
+      });
+    }); // describe('subscribe', ...
+
+    describe('publish', function(){
+      it('should exist', function(){
+        expect($.spire.messages.publish).toBeDefined();
+      });
+
+    }); // describe('subscribe', ...
+
+    /***********************************************************************
+
+    $.spire.messages.subscribe('some channel', function(err, messages){
+      // whatever
+    });
+
+    $.spire.messages.publish('channel name', message, callback);
+
+
+    ***********************************************************************/
+  }); // describe('messages', ...
+
+  xdescribe('requests', function(){
     it('$.spire.requests should exist', function(){
       expect($.spire.requests).toBeDefined();
     });
@@ -326,9 +417,4 @@ describe('jquery.spire.js', function(){
       }); // describe('create', ...
     }); // describe('messages', ...
   });
-/*****************************************************************************
-
-* Messages
-
-*****************************************************************************/
 });

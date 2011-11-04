@@ -30,17 +30,46 @@
 
   // # $.spire.headers
 
-  // Helpers for
+  // Helpers for generating headers to send in the http requests to the spire.io API.
 
+  // ## $.spire.headers.authorization
+  //
+  // Generate the authorization header for a resource with a capability. Requires a resource object with a `capability` key.
+  //
+  //     authorization = $.spire.headers.authorization(subscription);
+  //     //=> 'Capability 5iyTrZrcGw/X4LxhXJRIEn4HwFKSFB+iulVKkUjqxFq30cFBqEm'
   //
   $.spire.headers.authorization = function(resource){
     return ['Capability', resource.capability].join(' ');
   };
 
+  // ## $.spire.headers.mediaType
+  //
+  // Generate either a 'content-type' or 'authorization' header, requires a string with the name of the resource so it can extract the media type from the API's schema.
+  //
+  //     $.spire.headers.mediaType('channel');
+  //     //=> 'application/vnd.spire-io.channel+json;version=1.0'
   $.spire.headers.mediaType = function(resourceName){
     return $.spire.schema[$.spire.options.version][resourceName].mediaType
   };
 
+  // # $.spire.messages
+  //
+  // Provides a high level interface for sending and receiving messages through the spire.io API
+
+  // ## $.spire.messages.subscribe
+  //
+  // Subscribe to a channel with the `name`, when new messages come in trigger the `callback` every time. This method uses long-polling to get the events from a subscription resource and wraps up all the complexities of interfacing with the REST API (discovery, session creation, channel creation, subscription creation, and event listening for the subscription).
+  //
+  // The callback takes two arguments, an `error` and a `messages` array
+  //
+  //     $.spire.messages.subscribe('chat example', function(err, messages){
+  //       $.each(messages, function(i, message){
+  //         var el = $('<div class="message">').text(message);
+  //
+  //         $('.messages').append(el);
+  //       });
+  //     });
   $.spire.messages.subscribe = function(name, callback){
     $.spire.connect(function(session){
       var options = { session: session
@@ -79,7 +108,25 @@
     });
   };
 
-  // { channel: '', content: '' }
+
+
+  // ## $.spire.messages.publish
+  //
+  // Publish a message to the API, the method takes the `options` `channel` which is the name of the channel to publish the message to and `content` which is the content of the message you want to publish. It can also take an optional callback which gets called with an `error` and a `message` object.
+  //
+  //       var options = { channel: 'chat example', content: 'herow' };
+  //
+  //       $.spire.messages.publish(options);
+  //
+  //   Or:
+  //
+  //       $.spire.messages.publish(options, function(err, message){
+  //          // you should probably do something useful though
+  //         if (err) throw err;
+  //
+  //         $('form').hide();
+  //       });
+  //
   $.spire.messages.publish = function(message, callback){
     // busy connecting, queuing the message
     if ($.spire.isConnecting){

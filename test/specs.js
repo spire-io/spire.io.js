@@ -78,13 +78,13 @@ describe('jquery.spire.js', function(){
           console.log('new messages', messages);
         });
 
-        $.spire.messages.subscribe(channelName, callback);
-
         // $.each(['tonto', 'injun joe', 'hiawatha'], function(i, indian){
         //   var content = indian + 'says how';
         //
         //   $.spire.messages.publish(channelName, content);
         // });
+
+        $.spire.messages.subscribe(channelName, callback);
 
         $.spire.messages.publish({ channel: channelName
         , content: 'wtf'

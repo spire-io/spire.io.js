@@ -25,9 +25,6 @@
 
   $.spire.messages.subscribe = function(name, callback){
     $.spire.connect(function(session){
-      // console.log('connected with session', session);
-      // console.log('after $.spire.messages.session', $.spire.messages.session);
-
       var options = { session: session
           , name: name
           }
@@ -35,8 +32,6 @@
 
       $.spire.requests.channels.create(options, function(err, channel){
         if (err) throw err;
-
-        // console.log('created channel', channel);
 
         var options = { channels: [ channel ]
             , events: [ 'messages' ]
@@ -46,16 +41,11 @@
 
 
         $.spire.requests.subscriptions.create(options, function(err, subscription){
-          // console.log('subscription created', subscription);
-
           var options = { subscription: subscription };
 
           // get the events from the subscription
           var get = function(){
             $.spire.requests.subscriptions.get(options, function(err, events){
-              // console.log("subscription['last-message']", subscription['last-message']);
-              // console.log('events!!!!', events);
-
               if (events.messages.length > 0){
                 callback(null, events.messages);
               }
@@ -75,7 +65,9 @@
   $.spire.messages.publish = function(message, callback){
     // busy connecting, queuing the message
     if ($.spire.isConnecting){
-      $.spire.messages.queue.push({ message: message, callback: callback});
+      $.spire.messages.queue.push({ message: message
+      , callback: callback
+      });
 
       return;
     }
@@ -114,8 +106,6 @@
       var options = { key: $.spire.options.key }
 
       ;
-
-      // console.log('pre $.spire.messages.session', $.spire.messages.session);
 
       var sessionBack = function(err, session){
         if (err) throw err;

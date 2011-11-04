@@ -20,3 +20,16 @@ task 'test:server', 'launch a server for the browser tests', (o)->
 
   process.stdout.write 'Test server running at: http://localhost:' + o.port
   process.stdout.write '\n'
+
+task 'bundle', 'create the minified version of jquery.spire.js', (o)->
+  fs = require 'fs'
+  uglify = require 'uglify-js'
+
+  fs.readFile 'jquery.spire.js', 'utf8', (err, data)->
+    throw err if err
+
+
+    out = uglify data
+
+    fs.writeFile 'jquery.spire.min.js', out, (err)->
+      throw err if err

@@ -86,9 +86,11 @@ describe('jquery.spire.js', function(){
         //   $.spire.messages.publish(channelName, content);
         // });
 
-        // $.spire.messages.connect();
-        //
-        // $.spire.messages.publish(channelName, 'wtf');
+        $.spire.messages.publish({ channel: channelName
+        , content: 'wtf'
+        }, function(err, message){
+          console.log('message published: ', message.content);
+        });
 
         waitsFor(function(){ return callback.calledThrice; }, '', 10000);
 

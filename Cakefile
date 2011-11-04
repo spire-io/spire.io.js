@@ -33,3 +33,13 @@ task 'bundle', 'create the minified version of jquery.spire.js', (o)->
 
     fs.writeFile 'jquery.spire.min.js', out, (err)->
       throw err if err
+
+task 'docs', 'generate the inline documentation', ->
+  {spawn, exec} = require 'child_process'
+
+  command = [
+    'rm -r docs'
+    'node_modules/docco/bin/docco jquery.spire.js'
+  ].join(' && ')
+
+  exec(command, (err) -> throw err if err)

@@ -1,9 +1,37 @@
 
 # Synopsis
 
-## What is spire.io?
+$.spire is a jQuery plugin and wrapper library for the spire.io API.
 
-##
+    $.spire.options.key = '<your account key>';
+
+    $.spire.messages.subscribe('chat example', function(err, messages){
+      $.each(messages, function(i, message){
+        var p = $('<p>').text(message.content);
+
+        $('body').append(p);
+      });
+    });
+
+Construct a message to send, `message.content` can be a string or json object.
+
+    var message = { channel: 'chat example'
+        , content: 'herow'
+        }
+    ;
+
+    $.spire.messages.publish(message, function(err, message){
+      if (err) throw err; // you could do better ;)
+
+      alert('message sent!');
+    });
+
+Or if you don't care that the message was sent
+
+    $.spire.messages.publish(options);
+
+
+## What is spire.io?
 
 # Development
 

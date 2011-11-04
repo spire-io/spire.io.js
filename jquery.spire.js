@@ -1,8 +1,21 @@
+// $.spire is a jQuery plugin designed to help you get your client-side web applications up and running with the high level services provided by the spire.io API. This plugin also exposes a methodology for directly interfacing with the spire.io REST interface.
+
+// You can learn more about spire.io and it's services at http://spire.io, or find help with the following things:
+
+// * source code
+// * issues
+// * contact spire.io
+// * #spire
 
 (function($){
+  // # $.spire
+  //
+  // Set up the $.spire object with default `options` for `url`, `version`, and `timeout` as well as some stub objects to make method definitions obvious.
   $.spire = { options: { url: 'http://api.spire.io'
+    // **$.spire.options.version** The spire.io API version to use when making requests for resources. **defaults to 1.0**
     , version: '1.0'
-    , timeout: 1000 * 30 // 30 secs
+    // **$.spire.options.timeout** The timeout for long-polling in seconds, defaults to 30 seconds
+    , timeout: 1000 * 30
     }
   , isConnecting: false
   , headers: {}
@@ -15,6 +28,11 @@
     }
   };
 
+  // # $.spire.headers
+
+  // Helpers for
+
+  //
   $.spire.headers.authorization = function(resource){
     return ['Capability', resource.capability].join(' ');
   };

@@ -1,7 +1,7 @@
 
 # Synopsis
 
-$.spire is a jQuery plugin and wrapper library for the spire.io API.
+`$.spire` is a jQuery plugin and wrapper library for the spire.io API.
 
     $.spire.options.key = '<your account key>';
 

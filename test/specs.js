@@ -164,7 +164,7 @@ describe('jquery.spire.js', function(){
       });
 
       it('can get a success', function(){
-        callback = sinon.spy();
+        var callback = sinon.spy();
 
         $.spire.requests.description.get(callback);
 
@@ -198,7 +198,7 @@ describe('jquery.spire.js', function(){
       });
     }); // describe('description', ...
 
-    xdescribe('sessions', function(){
+    describe('sessions', function(){
       it('$.spire.requests.sessions should exist', function(){
         expect($.spire.requests.sessions).toBeDefined();
       });
@@ -209,9 +209,11 @@ describe('jquery.spire.js', function(){
         });
 
         it('can get a success', function(){
-          callback = sinon.spy();
+          var callback = sinon.spy()
+            , options = { key: $.spire.options.key }
+          ;
 
-          $.spire.requests.sessions.create(callback);
+          $.spire.requests.sessions.create(options, callback);
 
           waitsFor(function(){ return callback.called; }, '', 10000);
 
@@ -234,7 +236,7 @@ describe('jquery.spire.js', function(){
       }); // describe('create', ...
     }); // describe('sessions', ...
 
-    xdescribe('channels', function(){
+    describe('channels', function(){
       it('$.spire.requests.channels should exist', function(){
         expect($.spire.requests.channels).toBeDefined();
       });
@@ -246,12 +248,19 @@ describe('jquery.spire.js', function(){
 
         describe('without a session', function(){
           it('can get a success ', function(){
-            callback = sinon.spy();
+            var callback = sinon.spy()
+              , sessionOptions = { key: $.spire.options.key }
+              , channelOptions
+            ;
 
-            $.spire
-              .requests
-              .channels
-              .create('jquery.spire.js specs channel', callback);
+            // needs a session first, using the cached one via $.spire.connect
+            $.spire.connect(function(session){
+              channelOptions = { session: session
+              , name: 'jquery.spire.js specs channel'
+              };
+
+              $.spire.requests.channels.create(channelOptions, callback);
+            });
 
             waitsFor(function(){ return callback.called; }, '', 10000);
 
@@ -270,39 +279,10 @@ describe('jquery.spire.js', function(){
             });
           });
         }); // describe('without a session', ...
-
-        describe('with a session', function(){
-          it('can get a success', function(){
-            callback = sinon.spy();
-
-            $.spire.requests.sessions.create(function(err, session){
-              $.spire
-                .requests
-                .channels
-                .create('jquery.spire.js specs channel', session, callback);
-            });
-
-            waitsFor(function(){ return callback.called; }, '', 10000);
-
-            runs(function(){
-              expect(callback).toHaveBeenCalled();
-
-              var err = callback.getCall(0).args[0]
-                , channel = callback.getCall(0).args[1]
-              ;
-
-              expect(err).toBeFalsy();
-
-              expect(channel).toBeAResourceObject();
-              expect(channel).toHaveACapability();
-              expect(channel.name).toBeDefined();
-            });
-          });
-        }); // describe('with a session', ...
       }); // describe('create', ...
     }); // describe('channels', ...
 
-    xdescribe('subscriptions', function(){
+    describe('subscriptions', function(){
       it('$.spire.requests.subscriptions should exist', function(){
         expect($.spire.requests.subscriptions).toBeDefined();
       });
@@ -313,9 +293,24 @@ describe('jquery.spire.js', function(){
         });
 
         it('can get a success', function(){
-          callback = sinon.spy();
+          var callback = sinon.spy();
 
-          $.spire.requests.subscriptions.create('random chanel', callback);
+
+          $.spire.connect(function(session){
+            var options = { session: session
+            , name: 'jquery.spire.js specs channel'
+            };
+
+            $.spire.requests.channels.create(options, function(e, channel){
+              var options = { channels: [ channel ]
+                  , events: [ 'messages' ]
+                  , session: session
+                  }
+              ;
+
+             $.spire.requests.subscriptions.create(options, callback);
+            });
+          });
 
           waitsFor(function(){ return callback.called; }, '', 10000);
 
@@ -342,15 +337,29 @@ describe('jquery.spire.js', function(){
         it('can get a success', function(){
             callback = sinon.spy();
 
-            $.spire
-              .requests
-              .subscriptions
-              .create('random channel', function(err, subscription){
-                $.spire
-                  .requests
-                  .subscriptions
-                  .get(subscription, callback);
+            $.spire.connect(function(session){
+              var options = { session: session
+              , name: 'jquery.spire.js specs channel'
+              };
+
+              $.spire.requests.channels.create(options, function(e, channel){
+                var options = { channels: [ channel ]
+                    , events: [ 'messages' ]
+                    , session: session
+                    }
+                ;
+
+               $.spire.requests
+                .subscriptions.create(options, function(err, subscription){
+                  var options = { subscription: subscription
+                      , timeout: 1 // I don't want to wait
+                      }
+                  ;
+
+                  $.spire.requests.subscriptions.get(options, callback);
+               });
               });
+            });
 
             waitsFor(function(){ return callback.called; }, '', 10000);
 
@@ -371,7 +380,7 @@ describe('jquery.spire.js', function(){
       }); // describe('get', ...
     }); // describe('subscriptions', ...
 
-    xdescribe('messages', function(){
+    describe('messages', function(){
       it('spire.requests.messages should exist', function(){
         expect($.spire.requests.messages).toBeDefined();
       });
@@ -382,19 +391,25 @@ describe('jquery.spire.js', function(){
         });
 
         it('can get a success', function(){
-          callback = sinon.spy();
-          newMessage = { content: 'hi' };
+          var callback = sinon.spy()
+          ;
 
+          $.spire.connect(function(session){
+            var options = { session: session
+            , name: 'jquery.spire.js specs channel'
+            };
 
-          $.spire
-            .requests
-            .channels
-            .create('random channel too', function(err, channel){
-              $.spire
-                .requests
-                .messages
-                .create(channel, newMessage.content, callback);
+            $.spire.requests.channels.create(options, function(err, channel){
+              var options = { channel: channel
+                  , content: { author: 'rowboat cop'
+                    , body: 'Call Me Murphy, I mean Abed.'
+                    }
+                  }
+              ;
+
+              $.spire.requests.messages.create(options, callback);
             });
+          });
 
           waitsFor(function(){ return callback.called; }, '', 10000);
 
@@ -402,14 +417,15 @@ describe('jquery.spire.js', function(){
             expect(callback).toHaveBeenCalled();
 
             var err = callback.getCall(0).args[0]
-              , returnedMessage = callback.getCall(0).args[1]
+              , message = callback.getCall(0).args[1]
             ;
 
             expect(err).toBeFalsy();
 
-            expect(returnedMessage).toBeDefined();
-            expect(returnedMessage.content).toBeDefined();
-            expect(returnedMessage.content).toBe(newMessage.content);
+            expect(message).toBeDefined();
+            expect(message.content).toBeDefined();
+            expect(message.content.author).toBe('rowboat cop');
+            expect(message.content.body).toBe('Call Me Murphy, I mean Abed.');
           });
         });
       }); // describe('create', ...

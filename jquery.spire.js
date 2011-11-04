@@ -112,7 +112,7 @@
 
         $.spire.isConnecting = false;
         // save it for later.
-        $.spire.messages.session = session;
+        $.spire.session = session;
 
         // publish any messages in the queue
         if ($.spire.messages.queue.length > 0){
@@ -130,15 +130,17 @@
         return callback(session);
       };
 
-      if ($.spire.messages.session) {
+      if ($.spire.session) {
         // console.log('needs to handle exisiting session');
-        sessionBack(null, $.spire.messages.session);
+        sessionBack(null, $.spire.session);
       } else {
         // console.log('needs to create session');
         $.spire.requests.sessions.create(options, sessionBack);
       }
     });
   };
+
+  // requests are raw and assume noting besides the spire url
 
   // gets the description resource object and caches it for later, the callback is triggered with an err and the description resource
   $.spire.requests.description.get = function(callback){

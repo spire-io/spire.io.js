@@ -152,22 +152,21 @@ describe('jquery.spire.js', function(){
     }); // describe('subscribe', ...
   }); // describe('messages', ...
 
-  xdescribe('requests', function(){
+  describe('requests', function(){
     it('$.spire.requests should exist', function(){
       expect($.spire.requests).toBeDefined();
     });
 
-    describe('description', function(){
-      var callback;
-
+    describe('description.get', function(){
       it('$.spire.requests.description should exist', function(){
         expect($.spire.requests.description).toBeDefined();
+        expect($.spire.requests.description.get).toBeDefined();
       });
 
       it('can get a success', function(){
         callback = sinon.spy();
 
-        $.spire.requests.description(callback);
+        $.spire.requests.description.get(callback);
 
         waitsFor(function(){ return callback.called; }, '', 10000);
 
@@ -179,8 +178,6 @@ describe('jquery.spire.js', function(){
 
           var err = callback.getCall(0).args[0]
             , description = callback.getCall(0).args[1]
-            , resources
-            , schema
           ;
 
           expect(err).toBeFalsy();
@@ -199,13 +196,9 @@ describe('jquery.spire.js', function(){
           expect(description).toIncludeASchemaFor('subscription', '1.0');
         });
       });
-
-      describe('err requests', function(){
-
-      });
     }); // describe('description', ...
 
-    describe('sessions', function(){
+    xdescribe('sessions', function(){
       it('$.spire.requests.sessions should exist', function(){
         expect($.spire.requests.sessions).toBeDefined();
       });
@@ -241,7 +234,7 @@ describe('jquery.spire.js', function(){
       }); // describe('create', ...
     }); // describe('sessions', ...
 
-    describe('channels', function(){
+    xdescribe('channels', function(){
       it('$.spire.requests.channels should exist', function(){
         expect($.spire.requests.channels).toBeDefined();
       });
@@ -309,7 +302,7 @@ describe('jquery.spire.js', function(){
       }); // describe('create', ...
     }); // describe('channels', ...
 
-    describe('subscriptions', function(){
+    xdescribe('subscriptions', function(){
       it('$.spire.requests.subscriptions should exist', function(){
         expect($.spire.requests.subscriptions).toBeDefined();
       });
@@ -378,7 +371,7 @@ describe('jquery.spire.js', function(){
       }); // describe('get', ...
     }); // describe('subscriptions', ...
 
-    describe('messages', function(){
+    xdescribe('messages', function(){
       it('spire.requests.messages should exist', function(){
         expect($.spire.requests.messages).toBeDefined();
       });

@@ -116,12 +116,14 @@
 
         // publish any messages in the queue
         if ($.spire.messages.queue.length > 0){
-          $.each($.spire.messages.queue, function(i, args){
-            // remove from the queue
-            $.spire.messages.queue.splice(i, 1);
+          $.each($.spire.messages.queue, function(i){
+            var args = $.spire.messages.queue.pop()
 
-            // try it again
-            $.spire.messages.publish(args.message, args.callback);
+
+            // try it again, its possible this loop might get fired in
+            // parallel effecting the queue so make sure that the args are
+            // defined before calling the publish function
+            if (args) $.spire.messages.publish(args.message, args.callback);
           });
         }
 

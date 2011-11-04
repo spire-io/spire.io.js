@@ -71,41 +71,38 @@ describe('jquery.spire.js', function(){
         expect($.spire.messages.subscribe).toBeDefined();
       });
 
-      it('should hook the callback to fire on every new message', function(){
-        var channelName = 'cowboys and indians ' + (new Date().getTime());
+      it('should hook the callback to fire on new message events', function(){
+        var channel = 'cowboys and indians ' + (new Date().getTime());
 
-        var callback = sinon.spy(function(err, messages){
-          console.log('new messages', messages);
+        var callback = sinon.spy();
+
+        $.spire.messages.subscribe(channel, callback);
+
+        $.each(['tonto', 'injun joe', 'hiawatha'], function(i, indian){
+          $.spire.messages.publish({ channel: channel
+          , content: indian + ' says how'
+          });
         });
 
-        // $.each(['tonto', 'injun joe', 'hiawatha'], function(i, indian){
-        //   var content = indian + 'says how';
-        //
-        //   $.spire.messages.publish(channelName, content);
-        // });
-
-        $.spire.messages.subscribe(channelName, callback);
-
-        $.spire.messages.publish({ channel: channelName
-        , content: 'wtf'
-        }, function(err, message){
-          console.log('message published: ', message.content);
-        });
-
-        waitsFor(function(){ return callback.calledThrice; }, '', 10000);
+        waitsFor(function(){ return callback.called; }, '', 10000);
 
         runs(function(){
           expect(callback).toHaveBeenCalled();
 
-          // var err = callback.getCall(0).args[0]
-          //   , returnedMessage = callback.getCall(0).args[1]
-          // ;
-          //
-          // expect(err).toBeFalsy();
-          //
-          // expect(returnedMessage).toBeDefined();
-          // expect(returnedMessage.content).toBeDefined();
-          // expect(returnedMessage.content).toBe(newMessage.content);
+          var err = callback.getCall(0).args[0]
+            , messages = callback.getCall(0).args[1]
+          ;
+
+          expect(err).toBeFalsy();
+
+          expect(messages).toBeDefined();
+          expect(messages.length).toBeDefined();
+
+          $.each(messages, function(i, message){
+            expect(message.content).toBeDefined();
+            expect(message.content.match('says how')).toBeTruthy();
+            expect(message.key).toBeDefined();
+          });
         });
 
         //     newMessage = { content: 'hi' };

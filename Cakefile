@@ -37,102 +37,51 @@ task 'bundle', 'create the minified version of jquery.spire.js', (o)->
 task 'docs', 'generate the inline documentation', ->
   fs = require 'fs'
   {spawn, exec} = require 'child_process'
-
   command = [
-    'rm -r docs'
+    'rm -r docs/*.html'
     'node_modules/docco/bin/docco jquery.spire.js'
   ].join(' && ')
-
   exec command, (err) ->
     throw err if err
-
     # move to the index
     fs.rename 'docs/jquery.spire.html', 'docs/index.html', (err)->
 
 # Adapted from http://bit.ly/v02mG8
-task 'docs:publish', 'publish whats inside the ./docs dir to guthub pages', ->
-  {spawn, exec} = require 'child_process'
-
-  #  =
-  # get the revision
-  exec 'git rev-parse --short HEAD', (err, stdout, stderr)->
-    throw err if err
-
-    revision = stdout
-
-    process.chdir 'docs'
-
-    exec 'git add *.html', (err, stdout, stderr)->
-      throw err if err
-
-      process.stdout.write stdout
-      process.stderr.write stdout
-
-      commit = "git commit -m 'rebuild pages from " + revision + "'"
-
-      exec commit , (err, stdout, stderr)->
-        throw err if err
-
-        process.stdout.write stdout
-        # process.stderr.write stdout
-  # git add
-  # git commit
-  # git push
-
-  # process.chdir 'docs'
-
-task 'docs:init', 'git init the ./docs dir', ->
-  fs = require 'fs'
+task 'docs:pages', 'Update gh-pages branch', ->
   path = require 'path'
-  {spawn, exec} = require 'child_process'
-
-  # init a git repo if it hasn't already happened
-  path.exists 'docs/.git', (exists)->
-    return if exists
-
-    process.chdir 'docs'
-
-    exec 'git init && git remote add o ../.git', (err, stdout, stderr)->
+  cwd = process.cwd()
+  {exec} = require 'child_process'
+  commitDocs = ->
+    process.chdir cwd
+    exec 'git rev-parse --short HEAD', (err, stdout, stderr)->
       throw err if err
-
-      process.stdout.write stdout
-
-  # exec 'git fetch o && git reset --hard o/gh-pages && touch .', (err, stdout, stderr)->
-  #
-  #   console.log stdout
-
-
-    #
-    #
-    # init = spawn 'git', ['init']
-    #
-    # init.stdout.on 'data', (data)->
-    #   process.stdout.write data
-    #
-    # init.stderr.on 'data', (data)->
-    #   process.stdout.stderr data
-    #
-    # init.on 'exit', (code)->
-    #   remote = spawn 'git', [
-    #     'remote'
-    #     'add'
-    #     'o'
-    #     '../.git'
-    #     ]
-    #
-    #   remote.stdout.on 'data', (data)->
-    #     process.stdout.write data
-    #
-    #   remote.stderr.on 'data', (data)->
-    #     process.stdout.stderr data
-
-
-
-
-
-
-
-
-
-
-
+      revision = stdout
+      process.chdir 'docs'
+      exec 'git add *.html', (err, stdout, stderr)->
+        process.stdout.write stdout
+        process.stderr.write stderr
+        throw err if err
+        commit = "git commit -m 'rebuild pages from " + revision + "'"
+        exec commit, (err, stdout, stderr)->
+          process.stdout.write stdout
+          process.stderr.write stderr
+          if !err # its possible to get a benign 'nothing to commit' err
+            exec 'git push -q o HEAD:gh-pages', (err, stdout, stderr)->
+              process.stdout.write stdout
+              process.stderr.write stderr
+              throw err if err
+              process.chdir cwd
+  path.exists 'docs/.git', (exists)->
+    if exists
+      commitDocs()
+    else
+      process.chdir 'docs'
+      exec 'git init && git remote add o ../.git', (err, stdout, stderr)->
+        process.stdout.write stdout
+        process.stderr.write stderr
+        throw err if err
+        command = 'git fetch o && git reset --hard o/gh-pages && touch .'
+        exec command, (err, stdout, stderr)->
+          process.stderr.write stderr
+          throw err if err
+          commitDocs()

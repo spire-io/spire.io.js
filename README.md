@@ -1,7 +1,7 @@
 
 # Synopsis
 
-`$.spire` is a jQuery plugin and wrapper library for the spire.io API.
+`$.spire` is a [jQuery](http://jquery.com/) plugin and wrapper library for the [spire.io API](http://www.spire.io/).
 
     $.spire.options.key = '<your account key>';
 
@@ -28,10 +28,18 @@ Construct a message to send, `message.content` can be a string or json object.
 
 Or if you don't care that the message was sent
 
-    $.spire.messages.publish(options);
+    $.spire.messages.publish(message);
 
 
 ## What is spire.io?
+
+## Working with this library
+
+* [source code](https://github.com/spire-io/jquery.spire.js)
+* [inline documentation](http://spire-io.github.com/jquery.spire.js/) (via [docco](http://jashkenas.github.com/docco/))
+* [issues](https://github.com/spire-io/jquery.spire.js/issues)
+* contact spire.io
+* #spire
 
 # Development
 

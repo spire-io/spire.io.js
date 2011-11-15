@@ -361,7 +361,7 @@
       , success: function(events, status, xhr){
           // set the last message key if there are messages
           if (events.messages.length > 0){
-            subscription['last-message'] = $(events.messages).last()[0].key;
+            subscription['last-message'] = $(events.messages).last()[0].timestamp;
           }
 
           callback(null, events);

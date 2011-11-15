@@ -1,7 +1,7 @@
 
 $.spire
   .options
-  .key = 'RcoTEuYi823VJUjJdCKj9xAHKwr%2FMxOav%2BG2j%2BNhFtEXfRkNo2VYsQ%3D%3D';
+  .key = 'c9KfjaIirRlg9YKpCck97Q-1321321628';
 
 // $.spire
 //   .options

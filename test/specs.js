@@ -107,13 +107,16 @@ describe('jquery.spire.js', function(){
       });
 
       it('should handle long-polling', function(){
-        var channel = 'cyborgs ' + (new Date().getTime())
+        var channel = 'cyborgs'
           , callback = sinon.spy()
         ;
+
+         // + (new Date().getTime())
 
         $.spire.messages.publish({ channel: channel
         , content: 'robocop says "My name is Murphy."'
         }, function(err, msg){
+          console.log('new msg', msg);
           $.spire.messages.subscribe(channel, function(err, messages){
             if (err) throw err;
 
@@ -127,12 +130,16 @@ describe('jquery.spire.js', function(){
         runs(function(){
           console.log('callback fired the first time');
 
-          $.spire.messages.publish({ channel: channel
-          , content: 'darthvader says "I am your father"'
-          });
+          setTimeout(function(){
+            $.spire.messages.publish({ channel: channel
+            , content: 'darthvader says "I am your father"'
+            }, function(err, msg){
+              console.log('new msg', msg);
+            });
+          }, 100);
         });
 
-        waitsFor(function(){ return callback.callCount > 2; }
+        waitsFor(function(){ return callback.callCount >= 2; }
         ,'long-polling to come back with the last message'
         , 10000);
 

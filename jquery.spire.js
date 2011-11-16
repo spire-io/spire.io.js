@@ -25,6 +25,7 @@
     , channels: {}
     , subscriptions: {}
     , messages: {}
+    , accounts: {}
     }
   };
 
@@ -388,6 +389,22 @@
         }
       , success: function(message, status, xhr){
           callback(null, message);
+        }
+    });
+  };
+
+  $.spire.requests.accounts.create = function(account, callback){
+    $.ajax({ type: 'post'
+      , url: $.spire.resources.accounts.url
+      , headers: { 'Content-Type': $.spire.headers.mediaType('account')
+        , 'Accept': $.spire.headers.mediaType('session')
+        }
+      , data: JSON.stringify(account)
+      , success: function(session, status, xhr){
+          callback(null, session);
+        }
+      , error: function(xhr, status, err){
+          // ...
         }
     });
   };

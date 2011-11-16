@@ -430,5 +430,56 @@ describe('jquery.spire.js', function(){
         });
       }); // describe('create', ...
     }); // describe('messages', ...
+
+    describe('accounts', function(){
+      it('$.spire.requests.accounts should exist', function(){
+        expect($.spire.requests.accounts).toBeDefined();
+      });
+
+      describe('create', function(){
+        it('$.spire.requests.accounts.create should exist', function(){
+          expect($.spire.requests.accounts.create).toBeDefined();
+        });
+
+        it('can get a success', function(){
+          var callback = sinon.spy()
+            , stamp = new(Date)().getTime()
+            , account = { email: 'random-' + stamp + '@email.com'
+              , password: 'totallysecure'
+              }
+          ;
+
+          $.spire.requests.description.get(function(){
+            $.spire.requests.accounts.create(account, callback);
+          });
+
+          waitsFor(function(){ return callback.called; }, '', 10000);
+
+          runs(function(){
+            expect(callback).toHaveBeenCalled();
+
+            var err = callback.getCall(0).args[0]
+              , session = callback.getCall(0).args[1]
+            ;
+
+            expect(err).toBeFalsy();
+
+            expect(session).toBeAResourceObject();
+            expect(session).toHaveACapability();
+
+            expect(session.resources).toBeDefined();
+
+            expect(session.resources.channels).toBeAResourceObject();
+            expect(session.resources.channels).toHaveACapability();
+
+            expect(session.resources.account).toBeAResourceObject();
+            expect(session.resources.account).toHaveACapability();
+
+            expect(session.resources.subscriptions).toBeAResourceObject();
+            expect(session.resources.subscriptions).toHaveACapability();
+          });
+        });
+      }); // describe('create', ...
+    }); // describe('accounts', ...
   });
 });

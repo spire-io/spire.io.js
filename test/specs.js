@@ -58,7 +58,7 @@ describe('jquery.spire.js', function(){
     });
   });
 
-  xdescribe('$.spire', function(){
+  describe('$.spire', function(){
     it('should exist', function(){
       expect($.spire).toBeDefined();
     });
@@ -70,19 +70,19 @@ describe('jquery.spire.js', function(){
   });
 
   describe('messages', function(){
-    xit('should exist', function(){
+    it('should exist', function(){
       expect($.spire.messages).toBeDefined();
     });
 
     describe('subscribe', function(){
-      xit('should exist', function(){
+      it('should exist', function(){
         expect($.spire.messages.subscribe).toBeDefined();
       });
 
-      xit('should hook the callback to fire on new message events', function(){
-        var channel = 'cowboys and indians ' + (new Date().getTime());
-
-        var callback = sinon.spy();
+      it('should hook the callback to fire on new message events', function(){
+        var channel = 'cowboys and indians ' + (new Date().getTime())
+          , callback = sinon.spy()
+        ;
 
         $.spire.messages.subscribe(channel, callback);
 
@@ -115,36 +115,26 @@ describe('jquery.spire.js', function(){
       });
 
       it('should handle long-polling', function(){
-        var channel = 'cyborgs'
+        var channel = 'cyborgs ' + (new Date().getTime())
           , callback = sinon.spy()
         ;
-
-         // + (new Date().getTime())
 
         $.spire.messages.publish({ channel: channel
         , content: 'robocop says "My name is Murphy."'
         }, function(err, msg){
-          console.log('new msg', msg);
-          $.spire.messages.subscribe(channel, function(err, messages){
-            if (err) throw err;
+          if (err) throw err;
 
-            console.log('messages', messages);
-            callback();
-          });
+          $.spire.messages.subscribe(channel, callback);
         });
 
-        waitsFor(function(){ return callback.called; }, '', 10000);
+        waitsFor(function(){ return callback.called; }
+        , 'The first subscription GET request to come back'
+        , 10000);
 
         runs(function(){
-          console.log('callback fired the first time');
-
-          setTimeout(function(){
-            $.spire.messages.publish({ channel: channel
-            , content: 'darthvader says "I am your father"'
-            }, function(err, msg){
-              console.log('new msg', msg);
-            });
-          }, 100);
+          $.spire.messages.publish({ channel: channel
+          , content: 'darthvader says "I am your father"'
+          });
         });
 
         waitsFor(function(){ return callback.callCount >= 2; }
@@ -152,31 +142,25 @@ describe('jquery.spire.js', function(){
         , 10000);
 
         runs(function(){
-          // ...
-        });
+          expect(callback).toHaveBeenCalled();
 
-        // runs(function(){
-        //   expect(callback).toHaveBeenCalled();
-        //
-        //   var err = callback.getCall(0).args[0]
-        //     // , messages = callback.getCall(0).args[1]
-        //   ;
-        //
-        //   expect(err).toBeFalsy();
-        //   //
-        //   // expect(messages).toBeDefined();
-        //   // expect(messages.length).toBeDefined();
-        //   //
-        //   // $.each(messages, function(i, message){
-        //   //   expect(message.content).toBeDefined();
-        //   //   expect(message.content.match('says how')).toBeTruthy();
-        //   //   expect(message.key).toBeDefined();
-        //   // });
-        // });
+          var err = callback.getCall(1).args[0]
+            , messages = callback.getCall(1).args[1]
+            , message = messages[0]
+          ;
+
+          expect(err).toBeFalsy();
+
+          expect(messages).toBeDefined();
+          expect(messages.length).toBe(1);
+          expect(message.content).toBe('darthvader says "I am your father"');
+          expect(message.key).toBeDefined();
+          expect(message.timestamp).toBeDefined();
+        });
       });
     }); // describe('subscribe', ...
 
-    xdescribe('publish', function(){
+    describe('publish', function(){
       it('should exist', function(){
         expect($.spire.messages.publish).toBeDefined();
       });
@@ -221,7 +205,7 @@ describe('jquery.spire.js', function(){
     }); // describe('subscribe', ...
   }); // describe('messages', ...
 
-  xdescribe('requests', function(){
+  describe('requests', function(){
     it('$.spire.requests should exist', function(){
       expect($.spire.requests).toBeDefined();
     });

@@ -50,7 +50,7 @@ describe('jquery.spire.js', function(){
     });
   });
 
-  describe('$.spire', function(){
+  xdescribe('$.spire', function(){
     it('should exist', function(){
       expect($.spire).toBeDefined();
     });
@@ -62,16 +62,16 @@ describe('jquery.spire.js', function(){
   });
 
   describe('messages', function(){
-    it('should exist', function(){
+    xit('should exist', function(){
       expect($.spire.messages).toBeDefined();
     });
 
     describe('subscribe', function(){
-      it('should exist', function(){
+      xit('should exist', function(){
         expect($.spire.messages.subscribe).toBeDefined();
       });
 
-      it('should hook the callback to fire on new message events', function(){
+      xit('should hook the callback to fire on new message events', function(){
         var channel = 'cowboys and indians ' + (new Date().getTime());
 
         var callback = sinon.spy();
@@ -161,7 +161,7 @@ describe('jquery.spire.js', function(){
       });
     }); // describe('subscribe', ...
 
-    describe('publish', function(){
+    xdescribe('publish', function(){
       it('should exist', function(){
         expect($.spire.messages.publish).toBeDefined();
       });
@@ -206,7 +206,7 @@ describe('jquery.spire.js', function(){
     }); // describe('subscribe', ...
   }); // describe('messages', ...
 
-  describe('requests', function(){
+  xdescribe('requests', function(){
     it('$.spire.requests should exist', function(){
       expect($.spire.requests).toBeDefined();
     });

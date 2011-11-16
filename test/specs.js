@@ -1,11 +1,19 @@
 
-$.spire
-  .options
-  .key = 'c9KfjaIirRlg9YKpCck97Q-1321321628';
+if (location.hash){
+  $.spire
+    .options
+    .key = location.hash.replace('#', '');
 
-$.spire
-  .options
-  .url = 'http://localhost:1337';
+  $.spire
+    .options
+    .url = 'http://localhost:1337';
+
+} else {
+  $.spire
+    .options
+    .key = 'c9KfjaIirRlg9YKpCck97Q-1321321628';
+}
+
 
 describe('jquery.spire.js', function(){
   beforeEach(function(){

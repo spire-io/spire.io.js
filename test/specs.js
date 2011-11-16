@@ -105,6 +105,60 @@ describe('jquery.spire.js', function(){
           });
         });
       });
+
+      it('should handle long-polling', function(){
+        var channel = 'cyborgs ' + (new Date().getTime())
+          , callback = sinon.spy()
+        ;
+
+        $.spire.messages.publish({ channel: channel
+        , content: 'robocop says "My name is Murphy."'
+        }, function(err, msg){
+          $.spire.messages.subscribe(channel, function(err, messages){
+            if (err) throw err;
+
+            console.log('messages', messages);
+            callback();
+          });
+        });
+
+        waitsFor(function(){ return callback.called; }, '', 10000);
+
+        runs(function(){
+          console.log('callback fired the first time');
+
+          $.spire.messages.publish({ channel: channel
+          , content: 'darthvader says "I am your father"'
+          });
+        });
+
+        waitsFor(function(){ return callback.callCount > 2; }
+        ,'long-polling to come back with the last message'
+        , 10000);
+
+        runs(function(){
+          // ...
+        });
+
+        // runs(function(){
+        //   expect(callback).toHaveBeenCalled();
+        //
+        //   var err = callback.getCall(0).args[0]
+        //     // , messages = callback.getCall(0).args[1]
+        //   ;
+        //
+        //   expect(err).toBeFalsy();
+        //   //
+        //   // expect(messages).toBeDefined();
+        //   // expect(messages.length).toBeDefined();
+        //   //
+        //   // $.each(messages, function(i, message){
+        //   //   expect(message.content).toBeDefined();
+        //   //   expect(message.content.match('says how')).toBeTruthy();
+        //   //   expect(message.key).toBeDefined();
+        //   // });
+        // });
+      });
     }); // describe('subscribe', ...
 
     describe('publish', function(){

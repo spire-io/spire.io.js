@@ -3,9 +3,9 @@ $.spire
   .options
   .key = 'c9KfjaIirRlg9YKpCck97Q-1321321628';
 
-// $.spire
-//   .options
-//   .timeout = 0;
+$.spire
+  .options
+  .url = 'http://localhost:1337';
 
 describe('jquery.spire.js', function(){
   beforeEach(function(){

@@ -17,9 +17,12 @@
     // **$.spire.options.timeout** The timeout for long-polling in seconds, defaults to 30 seconds
     , timeout: 1000 * 30
     }
+  , cache: {}
   , isConnecting: false
   , headers: {}
   , messages: { queue: [] }
+  , accounts: {}
+  , account: {}
   , requests: { description: {}
     , sessions: {}
     , channels: {}
@@ -160,6 +163,43 @@
     });
   };
 
+/*
+
+A shortcut to account creation, triggers the callback with an err, and a session for that user.
+
+*/
+  $.spire.accounts.create = function(account, callback){
+    $.spire.requests.description.get(function(err, description){
+      if (err) throw err; // TODO: call the callback with an err
+
+      $.spire.requests.accounts.create(account, callback);
+    });
+  };
+
+/*
+
+needs the account resource from an authenticated session, or an account object with credentials
+
+*/
+  $.spire.accounts.update = function(account, callback){
+    $.spire.requests.accounts.update(account, callback);
+  };
+
+  // creates a session for a given account, expects a login and a password.
+  // the callback gets called with the args `err`, `session`
+  $.spire.accounts.authenticate = function(account, callback){
+    $.spire.requests.description.get(function(err, description){
+      if (err) throw err;
+
+      var options = { key: $.spire.options.key
+          , email: account.email
+          , password: account.password
+          }
+
+      $.spire.requests.sessions.create(options, callback);
+    });
+  };
+
   // provides a single point of connection that builds up the needed objects
   // for discovery and sharing a session between requests.
   // the callback is triggered with an error and a session
@@ -249,13 +289,15 @@
       throw new Error(message);
     }
 
+    if (options.email && options.password) options.key = null;
+
     $.ajax({ type: 'post'
       , url: $.spire.resources.sessions.url
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': $.spire.headers.mediaType('account')
         , 'Accept': $.spire.headers.mediaType('session')
         }
-      , data: JSON.stringify({ key: options.key })
+      , data: JSON.stringify(options)
       , dataType: 'json'
       , error: function(xhr){
           // ...
@@ -402,6 +444,39 @@
       , data: JSON.stringify(account)
       , success: function(session, status, xhr){
           callback(null, session);
+        }
+      , error: function(xhr, status, err){
+          // ...
+        }
+    });
+  };
+
+  $.spire.requests.accounts.update = function(account, callback){
+    $.ajax({ type: 'put'
+      , url: account.url
+      , headers: { 'Content-Type': $.spire.headers.mediaType('account')
+        , 'Accept': $.spire.headers.mediaType('account')
+        , 'Authorization': $.spire.headers.authorization(account)
+        }
+      , data: JSON.stringify(account)
+      , success: function(account, status, xhr){
+          callback(null, account);
+        }
+      , error: function(xhr, status, err){
+          // ...
+        }
+    });
+  };
+
+  $.spire.requests.accounts.reset = function(account, callback){
+    $.ajax({ type: 'post'
+      , url: account.url
+      , headers: { 'Content-Type': $.spire.headers.mediaType('account')
+        , 'Accept': $.spire.headers.mediaType('account')
+        , 'Authorization': $.spire.headers.authorization(account)
+        }
+      , success: function(account, status, xhr){
+          callback(null, account);
         }
       , error: function(xhr, status, err){
           // ...

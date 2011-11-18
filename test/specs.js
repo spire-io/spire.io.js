@@ -205,6 +205,145 @@ describe('jquery.spire.js', function(){
     }); // describe('subscribe', ...
   }); // describe('messages', ...
 
+  describe('accounts', function(){
+    it('should exist', function(){
+      expect($.spire.accounts).toBeDefined();
+    });
+
+    describe('create', function(){
+      it('should exist', function(){
+        expect($.spire.accounts.create).toBeDefined();
+      });
+
+      it('should create an account successfully', function(){
+        var callback = sinon.spy()
+          , stamp = new(Date)().getTime()
+          , account = { email: 'random-' + stamp + '@test.com'
+            , password: 'totallysecure'
+            }
+        ;
+
+        $.spire.accounts.create(account, callback);
+
+        waitsFor(function(){ return callback.called; }, '', 10000);
+
+        runs(function(){
+          expect(callback).toHaveBeenCalled();
+
+          var err = callback.getCall(0).args[0]
+            , session = callback.getCall(0).args[1]
+          ;
+
+          expect(err).toBeFalsy();
+
+          expect(session).toBeAResourceObject();
+          expect(session).toHaveACapability();
+
+          expect(session.resources).toBeDefined();
+
+          expect(session.resources.channels).toBeAResourceObject();
+          expect(session.resources.channels).toHaveACapability();
+
+          expect(session.resources.account).toBeAResourceObject();
+          expect(session.resources.account).toHaveACapability();
+
+          expect(session.resources.subscriptions).toBeAResourceObject();
+          expect(session.resources.subscriptions).toHaveACapability();
+        });
+      });
+    });
+
+    describe('update', function(){
+      it('should exist', function(){
+        expect($.spire.accounts.update).toBeDefined();
+      });
+
+      describe('with an authenticated account', function(){
+        it('should update successfully', function(){
+          var callback = sinon.spy()
+            , stamp = new(Date)().getTime()
+            , account = { email: 'random-' + stamp + '@test.com'
+              , password: 'totallysecure'
+              }
+            , email = 'different-' + stamp + '@test.com';
+          ;
+
+          // create a new user then update it for the test
+          $.spire.accounts.create(account, function(err, session){
+            var account = session.resources.account
+            ;
+
+            account.email = email;
+            account.password = 'notsosecure';
+
+            $.spire.accounts.update(account, callback)
+          });
+
+          waitsFor(function(){ return callback.called; }, '', 10000);
+
+          runs(function(){
+            expect(callback).toHaveBeenCalled();
+
+            var err = callback.getCall(0).args[0]
+              , account = callback.getCall(0).args[1]
+            ;
+
+            expect(err).toBeFalsy();
+
+            expect(account).toBeAResourceObject();
+            expect(account).toHaveACapability();
+            expect(account.email).toBe(email);
+          });
+        });
+      }); // describe('with an authenticated session', ...
+    }); // describe('update', ...
+
+    describe('authenticate', function(){
+      it('should exist', function(){
+        expect($.spire.accounts.authenticate).toBeDefined();
+      });
+
+      describe('with a valid account', function(){
+        it('should update successfully', function(){
+          var callback = sinon.spy()
+            , stamp = new(Date)().getTime()
+            , account = { email: 'random-' + stamp + '@test.com'
+              , password: 'totallysecure'
+              }
+          ;
+
+          // create a new user then update it for the test
+          $.spire.accounts.create(account, function(err, session){
+            // NOTE: not using the `session`
+            $.spire.accounts.authenticate(account, callback);
+          });
+
+          waitsFor(function(){ return callback.called; }, '', 10000);
+
+          runs(function(){
+            expect(callback).toHaveBeenCalled();
+
+            var err = callback.getCall(0).args[0]
+              , session = callback.getCall(0).args[1]
+            ;
+
+            expect(err).toBeFalsy();
+
+            expect(session).toBeAResourceObject();
+            expect(session).toHaveACapability();
+
+            expect(session).toIncludeResource('channels');
+            expect(session).toIncludeResource('subscriptions');
+          });
+        });
+      }); // describe('with a valid account', ...
+
+      describe('with an invalid account', function(){
+
+      }); // describe('with an invalid account', ...
+    }); // describe('authenticate', ...
+  });
+
   describe('requests', function(){
     it('$.spire.requests should exist', function(){
       expect($.spire.requests).toBeDefined();
@@ -533,6 +672,102 @@ describe('jquery.spire.js', function(){
           });
         });
       }); // describe('create', ...
+
+      describe('update', function(){
+        it('$.spire.requests.accounts.update should exist', function(){
+          expect($.spire.requests.accounts.update).toBeDefined();
+        });
+
+        it('can get a success', function(){
+          var callback = sinon.spy()
+            , stamp = new(Date)().getTime()
+            , account = { email: 'random-' + stamp + '@email.com'
+              , password: 'totallysecure'
+              }
+            , email
+          ;
+
+          // create the account first
+          $.spire.requests.description.get(function(){
+            $.spire.requests.accounts.create(account, function(err, session){
+              var account = session.resources.account
+              ;
+
+              email = 'different-' + stamp + '@test.com';
+
+              account.email = email;
+              account.password = 'notsosecure';
+
+              $.spire.requests.accounts.update(account, callback);
+            });
+          });
+
+          waitsFor(function(){ return callback.called; }, '', 10000);
+
+          runs(function(){
+            expect(callback).toHaveBeenCalled();
+
+            var err = callback.getCall(0).args[0]
+              , account = callback.getCall(0).args[1]
+            ;
+
+            expect(err).toBeFalsy();
+
+            expect(account).toBeAResourceObject();
+            expect(account).toHaveACapability();
+            expect(account.email).toBe(email);
+          });
+        });
+      }); // describe('update', ...
+
+
+      describe('reset', function(){
+        it('$.spire.requests.accounts.reset should exist', function(){
+          expect($.spire.requests.accounts.reset).toBeDefined();
+        });
+
+        it('can get a success', function(){
+          var callback = sinon.spy()
+            , stamp = new(Date)().getTime()
+            , account = { email: 'random-' + stamp + '@email.com'
+              , password: 'totallysecure'
+              }
+            , key
+          ;
+
+          // create the account first
+          $.spire.requests.description.get(function(){
+            $.spire.requests.accounts.create(account, function(err, session){
+              var account = session.resources.account
+              ;
+
+              key = account.key;
+
+              account.email = 'different-' + stamp + '@test.com';
+              account.password = 'notsosecure';
+
+              $.spire.requests.accounts.reset(account, callback);
+            });
+          });
+
+          waitsFor(function(){ return callback.called; }, '', 10000);
+
+          runs(function(){
+            expect(callback).toHaveBeenCalled();
+
+            var err = callback.getCall(0).args[0]
+              , account = callback.getCall(0).args[1]
+            ;
+
+            expect(err).toBeFalsy();
+
+            expect(account).toBeAResourceObject();
+            expect(account).toHaveACapability();
+            expect(account.key).not.toBe(key);
+          });
+        });
+      }); // describe('reset', ...
+
     }); // describe('accounts', ...
   });
 });

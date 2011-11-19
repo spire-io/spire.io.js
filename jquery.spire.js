@@ -8,6 +8,19 @@
 // * #spire
 
 (function($){
+  var XHRError = function(xhr, status, err){
+    this.name = 'XHRError';
+    this.message = message || 'XHRError';
+    this.xhr = xhr;
+    this.status = status;
+    this.jqueryErr = err;
+  };
+
+  XHRError.prototype = new Error();
+  XHRError.prototype.constructor = XHRError;
+
+
+
   // # $.spire
   //
   // Set up the $.spire object with default `options` for `url`, `version`, and `timeout` as well as some stub objects to make method definitions obvious.
@@ -182,7 +195,11 @@ needs the account resource from an authenticated session, or an account object w
 
 */
   $.spire.accounts.update = function(account, callback){
-    $.spire.requests.accounts.update(account, callback);
+    $.spire.requests.description.get(function(err, description){
+      if (err) return callback(err);
+
+      $.spire.requests.accounts.update(account, callback);
+    });
   };
 
   // creates a session for a given account, expects a login and a password.
@@ -280,7 +297,7 @@ needs the account resource from an authenticated session, or an account object w
   };
 
   $.spire.requests.sessions.create = function(options, callback){
-    if (! options.key){
+    if (! options.key && !(options.email && options.password)){
       var message = [ 'You need a key to do that! Try doing this:'
           , '   $.spire.options.key = <your account key>'
           ].join('\n');
@@ -446,7 +463,9 @@ needs the account resource from an authenticated session, or an account object w
           callback(null, session);
         }
       , error: function(xhr, status, err){
-          // ...
+          var error = new XHRError(arguments);
+
+          callback(error);
         }
     });
   };

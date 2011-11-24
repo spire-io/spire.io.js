@@ -680,6 +680,7 @@ describe('jquery.spire.js', function(){
 
         it('can get a success', function(){
           var callback = sinon.spy()
+            , sessionBack = sinon.spy()
             , stamp = new(Date)().getTime()
             , account = { email: 'random-' + stamp + '@email.com'
               , password: 'totallysecure'
@@ -716,6 +717,24 @@ describe('jquery.spire.js', function(){
             expect(account).toBeAResourceObject();
             expect(account).toHaveACapability();
             expect(account.email).toBe(email);
+
+            $.spire.accounts.authenticate({ email: account.email
+            , password: account.password
+            }, sessionBack);
+          });
+
+          waitsFor(function(){ return sessionBack.called; }, '', 10000);
+
+          runs(function(){
+            expect(sessionBack).toHaveBeenCalled();
+
+            var err = callback.getCall(0).args[0]
+              , account = callback.getCall(0).args[1]
+            ;
+
+            expect(err).toBeFalsy();
+
+            console.log('session after password change');
           });
         });
       }); // describe('update', ...

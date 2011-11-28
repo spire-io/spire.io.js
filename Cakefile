@@ -1,4 +1,6 @@
-option '-p', '--port [PORT]', 'port to run the server on'
+option '-p', '--port [PORT]', 'port to run the server on.  defaults to 8080.'
+option '-h', '--host [HOST]', 'ip/host to listen on.  set to 0.0.0.0 for all interfaces.  defaults to localhost.'
+
 task 'test:server', 'launch a server for the browser tests', (o)->
   path = require 'path'
   express = require 'express'
@@ -7,6 +9,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
   src = path.join __dirname, 'jquery.spire.js'
 
   o.port = o.port || 8080
+  o.host = o.host || "localhost"
 
   app.configure ->
     app.use express.logger 'dev'
@@ -16,9 +19,9 @@ task 'test:server', 'launch a server for the browser tests', (o)->
     res.header 'Content-Type', 'text/javascript'
     res.sendfile src
 
-  app.listen o.port
+  app.listen(o.port, o.host)
 
-  process.stdout.write 'Test server running at: http://localhost:' + o.port
+  process.stdout.write 'Test server running at: http://' + o.host + ':' + o.port
   process.stdout.write '\n'
 
 task 'bundle', 'create the minified version of jquery.spire.js', (o)->

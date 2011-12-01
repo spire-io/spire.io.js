@@ -9,6 +9,7 @@
 , "devDependencies": { "express": "2.5.0"
   , "uglify-js": "1.1.1"
   , "docco": "0.3.0"
+  , "gitio": "1.0.1"
   }
 , "licenses" :
   [ { "type" : "MIT"

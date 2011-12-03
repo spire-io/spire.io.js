@@ -4,8 +4,36 @@ option '-k', '--api-key [KEY]', 'The API key to use'
 option '-u', '--api-url [URL]',  'The API url to use'
 option '-f', '--files [FILES]', 'Comma separated list of test files to run (no spaces!), defaults to all of them'
 
+fs = require 'fs'
+path = require 'path'
+colors = require 'colors'
+walk = (dir, callback)->
+  results = []
+  pending = 0
+  done = ->
+    --pending
+    callback(results) if pending == 0
+
+  walker = (dir)->
+    list = fs.readdirSync dir
+    pending = pending + list.length
+    list.forEach (item)->
+      path_ = path.join(dir, item)
+      stat = fs.statSync path_
+
+      if stat.isDirectory()
+        --pending
+        walker(path_)
+      else
+        results.push path_
+        done()
+
+  walker(dir)
+
+
 task 'test:server', 'launch a server for the browser tests', (o)->
   path = require 'path'
+  fs = require 'fs'
   {exec} = require 'child_process'
   express = require 'express'
   app = express.createServer()
@@ -15,18 +43,25 @@ task 'test:server', 'launch a server for the browser tests', (o)->
   link = undefined
   http = require 'http'
   gitio = require 'gitio'
+  _ = require 'underscore'
 
   o.port = o.port || 8080
   o.host = o.host || 'localhost'
-  o['api-key'] = o['api-key'] || 'c9KfjaIirRlg9YKpCck97Q'
   o['api-url'] = o['api-url'] || 'http://api.spire.io'
-  o.files = o.files || 'test/specs.js'
 
-  tests = o.files.split(',')
+  if o.files
+    testFiles = o.files.split ','
+  else
+    walk 'test', (files)-> testFiles = files
 
-  tests.forEach (file, index, collection)->
-    file = file.replace(/(.*test\/)/, '')
-    collection[index] = '<script src="specs.js">' + file + '</script>'
+  tests = _.map testFiles, (file, index, collection)->
+    if file.match /test\/jasmine/
+      collection[index] = null
+    else
+      file = file.replace /(.*test\/)/, ''
+      '<script src="' + file + '"></script>'
+
+  tests = _.compact tests
 
   app.configure ->
     app.use express.logger 'dev'
@@ -51,14 +86,23 @@ task 'test:server', 'launch a server for the browser tests', (o)->
       ''
       '  <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>'
       '  <script src="jquery.spire.js"></script>'
-      '  <script src="specs.js"></script>'
+      '  <script src="jasmine/helpers.js"></script>'
+      '  ' + tests.join('\n  ')
       '</head>'
       ''
       '<body>'
       '  <p>'
-      '    sha: ' + sha + ' //=> <a href="' + link + '">' + link + '</a>'
+      '    commit: <a href="' + link + '">' + sha + '</a>'
+      '  </p>'
+      '  <p>'
+      '    --api-url <a href="' + o['api-url'] + '">' + o['api-url'] + '</a>'
+      '  </p>'
+      '  <p>'
+      '    --files ' + _.compact(testFiles).join(', ')
       '  </p>'
       '  <script type="text/javascript">'
+      '    $.spire.options.url = "' + o['api-url'] + '";'
+      '    $.spire.options.key = "' + o['api-key'] + '";'
       '    var jasmineEnv = jasmine.getEnv();'
       '    jasmineEnv.reporter = new jasmine.TrivialReporter();'
       '    jasmineEnv.execute();'

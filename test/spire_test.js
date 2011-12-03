@@ -1,31 +1,79 @@
-// $.spire = { options: { url: 'http://api.spire.io'
-//   // **$.spire.options.version** The spire.io API version to use when making requests for resources. **defaults to 1.0**
-//   , version: '1.0'
-//   // **$.spire.options.timeout** The timeout for long-polling in seconds, defaults to 30 seconds
-//   , timeout: 1000 * 30
-//   }
-// , cache: {}
-// , isConnecting: false
-// , headers: {}
-// , messages: { queue: [] }
-// , accounts: {}
-// , account: {}
-// , requests: { description: {}
-//   , sessions: {}
-//   , channels: {}
-//   , subscriptions: {}
-//   , messages: {}
-//   , accounts: {}
-//   }
-// };
+describe('$.spire', function(){
+  it('should exist', function(){
+    expect($.spire).toBeDefined();
+  });
 
-// describe('$.spire', function(){
-//   it('should exist', function(){
-//     expect($.spire).toBeDefined();
-//   });
-//
-//   it('should have the url option already set', function(){
-//     expect($.spire.options).toBeDefined();
-//     expect($.spire.options.url).toBe('http://api.spire.io');
-//   });
-// });
+  describe('$.spire.options', function(){
+    it('should exist', function(){
+      expect($.spire.options).toBeDefined();
+    });
+
+    it('should have a `url` property', function(){
+      expect($.spire.options.url).toBeDefined();
+    });
+
+    it('should have a `version` property', function(){
+      expect($.spire.options.version).toBeDefined();
+    });
+
+    it('should have a `timeout` property', function(){
+      expect($.spire.options.timeout).toBeDefined();
+    });
+  }); // describe('$.spire.options', ...
+
+  describe('$.spire.headers', function(){
+    it('should exist', function(){
+      expect($.spire.headers).toBeDefined();
+    });
+  }); // describe('$.spire.headers', ...
+
+  describe('$.spire.messages', function(){
+    it('should exist', function(){
+      expect($.spire.messages).toBeDefined();
+    });
+  }); // describe('$.spire.messages', ...
+
+  describe('$.spire.accounts', function(){
+    it('should exist', function(){
+      expect($.spire.accounts).toBeDefined();
+    });
+  }); // describe('$.spire.accounts', ...
+
+  describe('$.spire.requests', function(){
+    describe('$.spire.requests.description', function(){
+      it('should exist', function(){
+        expect($.spire.requests.description).toBeDefined();
+      });
+    }); // describe('$.spire.requests.description', ...
+
+    describe('$.spire.requests.sessions', function(){
+      it('should exist', function(){
+        expect($.spire.requests.sessions).toBeDefined();
+      });
+    }); // describe('$.spire.requests.sessions', ...
+
+    describe('$.spire.requests.channels', function(){
+      it('should exist', function(){
+        expect($.spire.requests.channels).toBeDefined();
+      });
+    }); // describe('$.spire.requests.channels', ...
+
+    describe('$.spire.requests.subscriptions', function(){
+      it('should exist', function(){
+        expect($.spire.requests.subscriptions).toBeDefined();
+      });
+    }); // describe('$.spire.requests.subscriptions', ...
+
+    describe('$.spire.requests.messages', function(){
+      it('should exist', function(){
+        expect($.spire.requests.messages).toBeDefined();
+      });
+    }); // describe('$.spire.requests.messages', ...
+
+    describe('$.spire.requests.accounts', function(){
+      it('should exist', function(){
+        expect($.spire.requests.accounts).toBeDefined();
+      });
+    }); // describe('$.spire.requests.accounts', ...
+  }); // describe('$.spire.requests', ...
+});

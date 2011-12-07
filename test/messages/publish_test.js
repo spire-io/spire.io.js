@@ -30,8 +30,6 @@ describe('$.spire.messages.publish(message, [callback])', function(){
       , 10000);
 
       runs(function(){
-        expect(callback).toHaveBeenCalled();
-
         var err = callback.getCall(0).args[0]
           , messageResource = callback.getCall(0).args[1]
         ;
@@ -42,12 +40,12 @@ describe('$.spire.messages.publish(message, [callback])', function(){
         expect(message.content).toBe(messageResource.content);
       });
     });
-    
+
     describe('when there are errors in sending the message', function(){
       it('should pass errors to the callback', function(){
         this.fail('needs error handling tests and code');
       });
-    }); // describe('when there are errors in sending the message', ...    
+    }); // describe('when there are errors in sending the message', ...
   }); // describe('with a callback', ...
 
   describe('without a callback', function(){
@@ -72,7 +70,7 @@ describe('$.spire.messages.publish(message, [callback])', function(){
 
       expect(function(){ $.spire.messages.publish(message); }).not.toThrow();
     });
-    
+
     describe('when there are errors in sending the message', function(){
       it('it should throw', function(){
         this.fail('needs error handling tests and code');

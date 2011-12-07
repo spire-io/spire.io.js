@@ -1,7 +1,6 @@
-// $.spire.accounts.create = function(account, callback){
 describe('$.spire.accounts.create(account, [callback])', function(){
   it('should exist', function(){
-    expect($.spire.messages.publish).toBeDefined();
+    expect($.spire.accounts.create).toBeDefined();
   });
 
   it('should create an account', function(){

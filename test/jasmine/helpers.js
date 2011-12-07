@@ -19,7 +19,7 @@ var helpers = {}
 // need to worry about async setup. Your `it` blocks will simply wait for the
 // `helpers.account()` function to do it's work before running.
 helpers.account = function(callback){
-  var properties = { email: 'test-' + (new Date().getTime()) + '@spire.io'
+  var properties = { email: helpers.randomEmail()
       , password: 'super-secret'
       }
     , done
@@ -40,6 +40,10 @@ helpers.account = function(callback){
 // name.
 helpers.randomChannelName = function(){
   return 'random channel ' + (new Date().getTime());
+};
+
+helpers.randomEmail = function(){
+  return 'test-' + (new Date().getTime()) + '@spire.io';
 };
 
 beforeEach(function(){

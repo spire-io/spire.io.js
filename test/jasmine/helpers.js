@@ -73,6 +73,37 @@ helpers.channel = function(callback){
   });
 };
 
+helpers.subscription = function(callback){
+  helpers.channel(function(err, channel, session){
+    var options = { channels: [ channel ]
+        , events: [ 'messages' ]
+        , session: session
+        }
+      , done
+    ;
+
+    waitsFor(function(){ return done; }
+    , 'waiting for a test subscription creation'
+    , 10000);
+
+    $.spire
+      .requests
+      .subscriptions
+      .create(options, function(err, subscription){
+        done = true;
+
+        runs(function(){ callback(err, subscription); });
+      });
+  })
+};
+
+//
+// waitsFor(function(){ return callback.called; }
+// , 'waiting for the subscription creation request'
+// , 10000);
+//
+// runs(function(){
+
 // `helpers.randomChannelName()`: creates a random string to use as a channel
 // name.
 helpers.randomChannelName = function(){

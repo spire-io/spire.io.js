@@ -36,6 +36,12 @@ helpers.account = function(callback){
   });
 };
 
+// `helpers.randomChannelName()`: creates a random string to use as a channel
+// name.
+helpers.randomChannelName = function(){
+  return 'random channel ' + (new Date().getTime());
+};
+
 beforeEach(function(){
   this.addMatchers({
     toBeAResourceObject: function(expected){

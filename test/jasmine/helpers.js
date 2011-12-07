@@ -36,6 +36,43 @@ helpers.account = function(callback){
   });
 };
 
+// `helpers.channel(callback)` - async: wraps account and channel creation set
+// up:
+//     var channel
+//     ;
+//
+//     helpers.channel(function(err, channel, session){
+//       if (err) throw err;
+//       else channel = channel;
+//     });
+//
+// `helpers.channel()` also wraps any work needed to handle async in the
+// jasmine test suite so it can be used in a `beforeEach` call without the
+// need to worry about async setup. Your `it` blocks will simply wait for the
+// `helpers.channel()` function to do it's work before running.
+helpers.channel = function(callback){
+  helpers.account(function(err, session){
+    if (err) throw err;
+    else $.spire.options.key = session.resources.account.key;
+
+    var done
+      , options = { session: session
+        , name: helpers.randomChannelName()
+        }
+    ;
+
+    waitsFor(function(){ return done; }
+    , 'waiting for test channel creation'
+    , 10000);
+
+    $.spire.requests.channels.create(options, function(err, channel){
+      done = true;
+
+      runs(function(){ callback(err, channel, options.session); });
+    });
+  });
+};
+
 // `helpers.randomChannelName()`: creates a random string to use as a channel
 // name.
 helpers.randomChannelName = function(){

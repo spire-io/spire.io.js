@@ -1,7 +1,7 @@
 option '-p', '--port [PORT]', 'Test server\'s port, defaults to 8080.'
 option '-h', '--host [HOST]', 'Test server\'s ip/host to listen on. set to 0.0.0.0 for all interfaces.  defaults to localhost.'
 option '-k', '--api-key [KEY]', 'The API key to use'
-option '-u', '--api-url [URL]',  'The API url to use'
+option '-u', '--api-url [URL]',  'The API url to use, defaults to http://build.spire.io'
 option '-f', '--files [FILES]', 'Comma separated list of test files to run (no spaces!), defaults to all of them'
 
 fs = require 'fs'
@@ -47,7 +47,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
 
   o.port = o.port || 8080
   o.host = o.host || 'localhost'
-  o['api-url'] = o['api-url'] || 'http://api.spire.io'
+  o['api-url'] = o['api-url'] || 'http://build.spire.io'
 
   if o.files
     testFiles = o.files.split ','

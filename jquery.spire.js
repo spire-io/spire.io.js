@@ -8,7 +8,7 @@
 // * #spire
 
 (function($){
-  var XHRError = function(xhr, status, err){
+  var XHRError = function(xhr, status, err, message){
     this.name = 'XHRError';
     this.message = message || 'XHRError';
     this.xhr = xhr;
@@ -88,14 +88,16 @@
   //       });
   //     });
   $.spire.messages.subscribe = function(name, callback){
-    $.spire.connect(function(session){
+    $.spire.connect(function(err, session){
+      if (err) return callback(err);
+
       var options = { session: session
           , name: name
           }
       ;
 
       $.spire.requests.channels.create(options, function(err, channel){
-        if (err) throw err;
+        if (err) return callback(err);
 
         var options = { channels: [ channel ]
             , events: [ 'messages' ]
@@ -104,12 +106,16 @@
         ;
 
 
-        $.spire.requests.subscriptions.create(options, function(err, subscription){
-          var options = { subscription: subscription };
+        $.spire.requests.subscriptions.create(options, function(err, sub){
+          if (err) return callback(err);
+
+          var options = { subscription: sub };
 
           // get the events from the subscription
           var get = function(){
             $.spire.requests.subscriptions.get(options, function(err, events){
+              if (err) return callback(err);
+
               if (events.messages.length > 0){
                 callback(null, events.messages);
               }
@@ -154,13 +160,17 @@
       return;
     }
 
-    $.spire.connect(function(session){
+    $.spire.connect(function(err, session){
+      if (err) return callback(err);
+
       var options = { session: session
           , name: message.channel
           }
       ;
 
       $.spire.requests.channels.create(options, function(err, channel){
+        if (err) return callback(err);
+
         var options = { channel: channel
             , content: message.content
             }
@@ -168,7 +178,7 @@
 
         // send message
         $.spire.requests.messages.create(options, function(err, message){
-          if (err) throw err;
+          if (err) return callback(err);
 
           if (callback) callback(null, message);
         });
@@ -183,7 +193,7 @@ A shortcut to account creation, triggers the callback with an err, and a session
 */
   $.spire.accounts.create = function(account, callback){
     $.spire.requests.description.get(function(err, description){
-      if (err) throw err; // TODO: call the callback with an err
+      if (err) return callback(err);
 
       $.spire.requests.accounts.create(account, callback);
     });
@@ -206,7 +216,7 @@ needs the account resource from an authenticated session, or an account object w
   // the callback gets called with the args `err`, `session`
   $.spire.accounts.authenticate = function(account, callback){
     $.spire.requests.description.get(function(err, description){
-      if (err) throw err;
+      if (err) return callback(err);
 
       var options = { key: $.spire.options.key
           , email: account.email
@@ -224,14 +234,14 @@ needs the account resource from an authenticated session, or an account object w
     $.spire.isConnecting = true;
 
     $.spire.requests.description.get(function(err, description){
-      if (err) throw err;
+      if (err) return callback(err);
 
       var options = { key: $.spire.options.key }
 
       ;
 
       var sessionBack = function(err, session){
-        if (err) throw err;
+        if (err) return callback(err);
 
         $.spire.isConnecting = false;
         // save it for later.
@@ -250,7 +260,7 @@ needs the account resource from an authenticated session, or an account object w
           });
         }
 
-        return callback(session);
+        return callback(null, session);
       };
 
       if ($.spire.session) {
@@ -282,7 +292,8 @@ needs the account resource from an authenticated session, or an account object w
       , url: $.spire.options.url
       , dataType: 'json'
       , error: function(xhr, status, errorThrown){
-          // throw new Error('Problem with the spire.io discovery request');
+          var error = new XHRError(arguments);
+          callback(error);
         }
         // xhr handlers always get executed on the window, I tried to
         // write a nice wrapper to help with testing but all it's methods
@@ -317,7 +328,8 @@ needs the account resource from an authenticated session, or an account object w
       , data: JSON.stringify(options)
       , dataType: 'json'
       , error: function(xhr){
-          // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
       , success: function(session, status, xhr){
           callback(null, session);
@@ -342,7 +354,8 @@ needs the account resource from an authenticated session, or an account object w
       , data: JSON.stringify({ name: name })
       , dataType: 'json'
       , error: function(xhr){
-        // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
       , success: function(channel, status, xhr){
           callback(null, channel);
@@ -381,7 +394,8 @@ needs the account resource from an authenticated session, or an account object w
       , data: JSON.stringify(data)
       // , dataType: 'json'
       , error: function(xhr){
-        // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
       , success: function(subscription, status, xhr){
           callback(null, subscription);
@@ -416,12 +430,19 @@ needs the account resource from an authenticated session, or an account object w
       , error: function(xhr, status, err){
         console.log('errr', err);
           // fake a returned events object
-          if (err === 'timeout') callback(null, { messages: [] });
+          if (err === 'timeout') {
+            callback(null, { messages: [] });
+          } else {
+            var error = new XHRError(arguments);
+            callback(error);
+          }
         }
       , success: function(events, status, xhr){
           // set the last message key if there are messages
           if (events.messages.length > 0){
-            subscription['last-message'] = $(events.messages).last()[0].timestamp;
+            subscription['last-message'] = $(events.messages)
+              .last()[0]
+              .timestamp;
           }
 
           callback(null, events);
@@ -444,7 +465,8 @@ needs the account resource from an authenticated session, or an account object w
         }
       , data: JSON.stringify({ content: content })
       , error: function(xhr){
-        // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
       , success: function(message, status, xhr){
           callback(null, message);
@@ -464,7 +486,6 @@ needs the account resource from an authenticated session, or an account object w
         }
       , error: function(xhr, status, err){
           var error = new XHRError(arguments);
-
           callback(error);
         }
     });
@@ -482,7 +503,8 @@ needs the account resource from an authenticated session, or an account object w
           callback(null, account);
         }
       , error: function(xhr, status, err){
-          // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
     });
   };
@@ -498,7 +520,8 @@ needs the account resource from an authenticated session, or an account object w
           callback(null, account);
         }
       , error: function(xhr, status, err){
-          // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
     });
   };

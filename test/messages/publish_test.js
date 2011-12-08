@@ -42,8 +42,46 @@ describe('$.spire.messages.publish(message, [callback])', function(){
     });
 
     describe('when there are errors in sending the message', function(){
+      var stub
+        , account
+      ;
+
+      beforeEach(function(){
+        helpers.account(function(err, session){
+          if (err) throw err;
+          else account = session.resources.account;
+
+          stub = sinon.stub(jQuery, 'ajax', function(options){
+            return options.error();
+          });
+        });
+      });
+
+      afterEach(function(){
+        jQuery.ajax.restore();
+      });
+
       it('should pass errors to the callback', function(){
-        this.fail('needs error handling tests and code');
+        var callback = sinon.spy()
+          , message = { channel: helpers.randomChannelName()
+            , content: 'Godzilla attacks!'
+            }
+        ;
+
+        $.spire.options.key = account.key;
+
+        $.spire.messages.publish(message, callback);
+
+        waitsFor(function(){ return callback.called; }
+        , 'waiting for a message to be published'
+        , 10000);
+
+        runs(function(){
+          var err = callback.getCall(0).args[0]
+          ;
+
+          expect(err).toBeTruthy();
+        });
       });
     }); // describe('when there are errors in sending the message', ...
   }); // describe('with a callback', ...
@@ -72,8 +110,35 @@ describe('$.spire.messages.publish(message, [callback])', function(){
     });
 
     describe('when there are errors in sending the message', function(){
-      it('it should throw', function(){
-        this.fail('needs error handling tests and code');
+      var stub
+        , account
+      ;
+
+      beforeEach(function(){
+        helpers.account(function(err, session){
+          if (err) throw err;
+          else account = session.resources.account;
+
+          stub = sinon.stub(jQuery, 'ajax', function(options){
+            return options.error();
+          });
+        });
+      });
+
+      afterEach(function(){
+        jQuery.ajax.restore();
+      });
+
+      it('should throw', function(){
+        var callback = sinon.spy()
+          , message = { channel: helpers.randomChannelName()
+            , content: 'Godzilla attacks!'
+            }
+        ;
+
+        $.spire.options.key = account.key;
+
+        expect(function(){ $.spire.messages.publish(message); }).toThrow();
       });
     }); // describe('when there are errors in sending the message', ...
   }); // describe('without a callback', ...

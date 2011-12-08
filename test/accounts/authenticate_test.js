@@ -10,11 +10,11 @@ describe('$.spire.accounts.authenticate(account, callback)', function(){
   });
 
 
-  xit('should exist', function(){
+  it('should exist', function(){
     expect($.spire.accounts.authenticate).toBeDefined();
   });
 
-  xit('should authenticate an account', function(){
+  it('should authenticate an account', function(){
     var callback = sinon.spy()
       , properties = { email: account.email
         , password: 'super-secret'

@@ -52,8 +52,47 @@ describe('$.spire.requests.accounts.create', function(){
   });
 
   describe('when there are errors', function(){
+    var stub
+      , account
+    ;
+
+    beforeEach(function(){
+      helpers.account(function(err, session){
+        if (err) throw err;
+        else account = session.resources.account;
+
+        $.spire.options.key = account.key;
+
+        stub = sinon.stub(jQuery, 'ajax', function(options){
+          return options.error();
+        });
+      });
+    });
+
+    afterEach(function(){
+      jQuery.ajax.restore();
+    });
+
     it('should pass errors to the callback', function(){
-      this.fail('needs error handling tests and code');
+      var callback = sinon.spy()
+        , properties = { email: helpers.randomEmail()
+          , password: 'super-secret'
+          }
+      ;
+
+      $.spire.requests.accounts.create(properties, callback);
+
+      waitsFor(function(){ return callback.called; }
+      , 'waiting for account creation'
+      , 10000);
+
+
+      runs(function(){
+        var err = callback.getCall(0).args[0]
+        ;
+
+        expect(err).toBeTruthy();
+      });
     });
   }); // describe('when there are errors', ...
 });

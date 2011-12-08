@@ -42,8 +42,46 @@ describe('$.spire.requests.channels.create', function(){
   });
 
   describe('when there are errors', function(){
+    var stub
+      , session
+    ;
+
+    beforeEach(function(){
+      helpers.account(function(err, data){
+        if (err) throw err;
+        else session = data;
+
+        $.spire.options.key = data.resources.account.key;
+
+        stub = sinon.stub(jQuery, 'ajax', function(options){
+          return options.error();
+        });
+      });
+    });
+
+    afterEach(function(){
+      jQuery.ajax.restore();
+    });
+
     it('should pass errors to the callback', function(){
-      this.fail('needs error handling tests and code');
+      var callback = sinon.spy()
+        , options = { session: session
+          , name: helpers.randomChannelName()
+          }
+      ;
+
+      $.spire.requests.channels.create(options, callback);
+
+      waitsFor(function(){ return callback.called; }
+      , 'waiting on the channel creation request'
+      , 10000);
+
+      runs(function(){
+        var err = callback.getCall(0).args[0]
+        ;
+
+        expect(err).toBeTruthy();
+      });
     });
   }); // describe('when there are errors', ...
 });

@@ -42,6 +42,7 @@
     , subscriptions: {}
     , messages: {}
     , accounts: {}
+    , billing: {}
     }
   };
 
@@ -522,6 +523,26 @@ needs the account resource from an authenticated session, or an account object w
       , error: function(xhr, status, err){
           var error = new XHRError(arguments);
           callback(error);
+        }
+    });
+  };
+
+  $.spire.requests.billing.get = function(callback){
+    $.ajax({ type: 'GET'
+      , url: $.spire.resources.billing.url
+      , headers: { 'Content-Type': $.spire.headers.mediaType('billing')
+        , 'Accept': $.spire.headers.mediaType('billing')
+        }
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(arguments);
+
+          callback(error);
+        }
+        // xhr handlers always get executed on the window, I tried to
+        // write a nice wrapper to help with testing but all it's methods
+        // were getting called with `this` bound to the window
+      , success: function(billing, status, xhr){
+          callback(null, billing);
         }
     });
   };

@@ -45,8 +45,47 @@ describe('$.spire.requests.messages.create', function(){
   });
 
   describe('when there are errors', function(){
+    var stub
+      , channel
+    ;
+
+    beforeEach(function(){
+      helpers.channel(function(err, chan){
+        if (err) throw err;
+        else channel = chan;
+
+        stub = sinon.stub(jQuery, 'ajax', function(options){
+          return options.error();
+        });
+      });
+    });
+
+    afterEach(function(){
+      jQuery.ajax.restore();
+    });
+
     it('should pass errors to the callback', function(){
-      this.fail('needs error handling tests and code');
+      var callback = sinon.spy()
+        , options = { channel: channel
+          , content: { author: 'rowboat cop'
+            , body: 'Call Me Murphy, I mean Abed.'
+            }
+          }
+      ;
+
+      $.spire.requests.messages.create(options, callback);
+
+      waitsFor(function(){ return callback.called; }
+      , 'waiting for a message to be created'
+      , 10000);
+
+
+      runs(function(){
+        var err = callback.getCall(0).args[0]
+        ;
+
+        expect(err).toBeTruthy();
+      });
     });
   }); // describe('when there are errors', ...
 });

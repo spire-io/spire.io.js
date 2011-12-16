@@ -13,7 +13,7 @@ describe('$.spire.requests.subscriptions.get', function(){
     expect($.spire.requests.subscriptions.get).toBeDefined();
   });
 
-  it('should create a subscription', function(){
+  it('should get a subscription', function(){
     var callback = sinon.spy()
       , options = { subscription: subscription
         , timeout: 1
@@ -40,8 +40,44 @@ describe('$.spire.requests.subscriptions.get', function(){
   });
 
   describe('when there are errors', function(){
+    var stub
+      , subscription
+    ;
+
+    beforeEach(function(){
+      helpers.subscription(function(err, sub){
+        if (err) throw err;
+        else subscription = sub;
+
+        stub = sinon.stub(jQuery, 'ajax', function(options){
+          return options.error();
+        });
+      });
+    });
+
+    afterEach(function(){
+      jQuery.ajax.restore();
+    });
+
     it('should pass errors to the callback', function(){
-      this.fail('needs error handling tests and code');
+      var callback = sinon.spy()
+        , options = { subscription: subscription
+          , timeout: 1
+          }
+      ;
+
+      $.spire.requests.subscriptions.get(options, callback);
+
+      waitsFor(function(){ return callback.called; }
+      , 'waiting to get a test subscription'
+      , 10000);
+
+      runs(function(){
+        var err = callback.getCall(0).args[0]
+        ;
+
+        expect(err).toBeTruthy();
+      });
     });
   }); // describe('when there are errors', ...
 });

@@ -429,7 +429,6 @@ needs the account resource from an authenticated session, or an account object w
         }
       , data: data
       , error: function(xhr, status, err){
-        console.log('errr', err);
           // fake a returned events object
           if (err === 'timeout') {
             callback(null, { messages: [] });

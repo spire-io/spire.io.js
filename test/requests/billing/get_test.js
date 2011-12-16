@@ -50,15 +50,8 @@ describe('$.spire.requests.billing.get', function(){
     ;
 
     beforeEach(function(){
-      helpers.account(function(err, session){
-        if (err) throw err;
-        else account = session.resources.account;
-
-        $.spire.options.key = account.key;
-
-        stub = sinon.stub(jQuery, 'ajax', function(options){
-          return options.error();
-        });
+      stub = sinon.stub(jQuery, 'ajax', function(options){
+        return options.error();
       });
     });
 
@@ -77,7 +70,7 @@ describe('$.spire.requests.billing.get', function(){
       });
 
       waitsFor(function(){ return callback.called; }
-      , 'waiting for stuff'
+      , 'waiting for `$.spire.requests.billing.get`'
       , 10000);
 
 

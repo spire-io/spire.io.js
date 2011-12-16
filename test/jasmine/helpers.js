@@ -30,6 +30,9 @@ helpers.account = function(callback){
   , 10000);
 
   $.spire.accounts.create(properties, function(err, session){
+    if (err) throw err;
+    else $.spire.options.key = session.resources.account.key;
+
     done = true;
 
     runs(function(){ callback(err, session); });

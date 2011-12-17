@@ -2,13 +2,19 @@
 
 // You can learn more about spire.io and it's services at http://spire.io, or find help with the following things:
 
-// * source code
-// * issues
-// * contact spire.io
-// * #spire
+// * [source code](http://github.com/spire-io/jquery.spire.js)
+// * [issues](http://github.com/spire-io/jquery.spire.js/issues)
+// * [contact spire.io](http://spire.io/contact.html)
 
 (function($){
-  var XHRError = function(xhr, status, err){
+
+  // # XHRError
+  //
+  // XHRError is a wrapper for the xhr errors triggered by jQuery, this makes
+  // it easier to pass an error to the callbacks of the async functions that
+  // still retain their extra contextual information passed into the
+  // `arguments` of `jQuery.ajax`'s `error` handler
+  var XHRError = function(xhr, status, err, message){
     this.name = 'XHRError';
     this.message = message || 'XHRError';
     this.xhr = xhr;
@@ -23,11 +29,16 @@
 
   // # $.spire
   //
-  // Set up the $.spire object with default `options` for `url`, `version`, and `timeout` as well as some stub objects to make method definitions obvious.
+  // Set up the $.spire object with default `options` for `url`, `version`,
+  // and `timeout` as well as stub out some objects to make method definitions
+  // obvious.
+  //
+  // * **$.spire.options.url**: The url of the spire.io API, defaults to
+  // [http://api.spire.io](http://api.spire.io).
   $.spire = { options: { url: 'http://api.spire.io'
-    // **$.spire.options.version** The spire.io API version to use when making requests for resources. **defaults to 1.0**
+    // * **$.spire.options.version**: The spire.io API version to use when making requests for resources, defaults to 1.0.
     , version: '1.0'
-    // **$.spire.options.timeout** The timeout for long-polling in seconds, defaults to 30 seconds
+    // * **$.spire.options.timeout**: The timeout for long-polling in seconds, defaults to 30 seconds
     , timeout: 1000 * 30
     }
   , cache: {}
@@ -42,16 +53,19 @@
     , subscriptions: {}
     , messages: {}
     , accounts: {}
+    , billing: {}
     }
   };
 
   // # $.spire.headers
-
-  // Helpers for generating headers to send in the http requests to the spire.io API.
+  //
+  // Helpers for generating header values for the http requests to the
+  // spire.io API.
 
   // ## $.spire.headers.authorization
   //
-  // Generate the authorization header for a resource with a capability. Requires a resource object with a `capability` key.
+  // Generate the authorization header for a resource with a capability.
+  // Requires a resource object with a `capability` key.
   //
   //     authorization = $.spire.headers.authorization(subscription);
   //     //=> 'Capability 5iyTrZrcGw/X4LxhXJRIEn4HwFKSFB+iulVKkUjqxFq30cFBqEm'
@@ -62,7 +76,9 @@
 
   // ## $.spire.headers.mediaType
   //
-  // Generate either a 'content-type' or 'authorization' header, requires a string with the name of the resource so it can extract the media type from the API's schema.
+  // Generate either a 'content-type' or 'authorization' header, requires a
+  // string with the name of the resource so it can extract the media type
+  // from the API's schema.
   //
   //     $.spire.headers.mediaType('channel');
   //     //=> 'application/vnd.spire-io.channel+json;version=1.0'
@@ -72,13 +88,19 @@
 
   // # $.spire.messages
   //
-  // Provides a high level interface for sending and receiving messages through the spire.io API
+  // Provides a high level interface for message publishing and subscribing.
 
   // ## $.spire.messages.subscribe
   //
-  // Subscribe to a channel with the `name`, when new messages come in trigger the `callback` every time. This method uses long-polling to get the events from a subscription resource and wraps up all the complexities of interfacing with the REST API (discovery, session creation, channel creation, subscription creation, and event listening for the subscription).
+  // Subscribe to a channel with the `name`, when new messages come in trigger
+  // the `callback` every time. This method uses long-polling to get the
+  // events from a subscription resource and wraps up all the complexities of
+  // interfacing with the REST API (discovery, session creation, channel
+  // creation, subscription creation, and event listening for the
+  // subscription).
   //
-  // The callback takes two arguments, an `error` and a `messages` array
+  // The callback is triggered with two arguments, an `error` object and a
+  // `messages` array
   //
   //     $.spire.messages.subscribe('chat example', function(err, messages){
   //       $.each(messages, function(i, message){
@@ -87,15 +109,18 @@
   //         $('.messages').append(el);
   //       });
   //     });
+  //
   $.spire.messages.subscribe = function(name, callback){
-    $.spire.connect(function(session){
+    $.spire.connect(function(err, session){
+      if (err) return callback(err);
+
       var options = { session: session
           , name: name
           }
       ;
 
       $.spire.requests.channels.create(options, function(err, channel){
-        if (err) throw err;
+        if (err) return callback(err);
 
         var options = { channels: [ channel ]
             , events: [ 'messages' ]
@@ -104,21 +129,26 @@
         ;
 
 
-        $.spire.requests.subscriptions.create(options, function(err, subscription){
-          var options = { subscription: subscription };
+        $.spire.requests.subscriptions.create(options, function(err, sub){
+          if (err) return callback(err);
 
-          // get the events from the subscription
+          var options = { subscription: sub };
+
+          // Get events from the subscription
           var get = function(){
             $.spire.requests.subscriptions.get(options, function(err, events){
+              if (err) return callback(err);
+
               if (events.messages.length > 0){
                 callback(null, events.messages);
               }
 
-              // start over
+              // Do it all over again
               get();
             });
           }
 
+          // Kick off long-polling
           get();
         });
       });
@@ -129,14 +159,20 @@
 
   // ## $.spire.messages.publish
   //
-  // Publish a message to the API, the method takes the `options` `channel` which is the name of the channel to publish the message to and `content` which is the content of the message you want to publish. It can also take an optional callback which gets called with an `error` and a `message` object.
+  // Publish a message. This method takes the `options` `channel`,
+  // which is the name of the channel to publish the message to and `content`
+  // which is the content of the message you want to publish. It can also take
+  // an optional callback which gets called with an `error` and a `message`
+  // object.
   //
+  //       // Fire and forget
   //       var options = { channel: 'chat example', content: 'herow' };
   //
   //       $.spire.messages.publish(options);
   //
   //   Or:
   //
+  //       // Do something specific to sending this message
   //       $.spire.messages.publish(options, function(err, message){
   //          // you should probably do something useful though
   //         if (err) throw err;
@@ -145,7 +181,7 @@
   //       });
   //
   $.spire.messages.publish = function(message, callback){
-    // busy connecting, queuing the message
+    // If the `$.spire` is busy connecting, queue the message and return.
     if ($.spire.isConnecting){
       $.spire.messages.queue.push({ message: message
       , callback: callback
@@ -154,21 +190,27 @@
       return;
     }
 
-    $.spire.connect(function(session){
+    // Connect; discover and create a session.
+    $.spire.connect(function(err, session){
+      if (err) return callback(err);
+
       var options = { session: session
           , name: message.channel
           }
       ;
 
+      // Create the channel before sending a message to it.
       $.spire.requests.channels.create(options, function(err, channel){
+        if (err) return callback(err);
+
         var options = { channel: channel
             , content: message.content
             }
         ;
 
-        // send message
+        // Finally send the message.
         $.spire.requests.messages.create(options, function(err, message){
-          if (err) throw err;
+          if (err) return callback(err);
 
           if (callback) callback(null, message);
         });
@@ -176,24 +218,53 @@
     });
   };
 
-/*
+  // # $.spire.accounts
+  //
+  // Provides a high level interface for accounts. This is what the spire.io
+  // website uses for logging in, registration, and account updates.
 
-A shortcut to account creation, triggers the callback with an err, and a session for that user.
-
-*/
+  // ## $.spire.accounts.create
+  //
+  // Wrapper for creating an account, makes a call for the API description
+  // then creates the account. It requires an account object (with at least an
+  // `email` and a `password`) and a `callback`. The `callback` will be called
+  // with the arguments: `error` and `session`. The `session` is a session
+  // resource.
+  //
+  //     var account = { email: 'jxson@jxson.cc'
+  //         , password: 'topsecret'
+  //         }
+  //     ;
+  //
+  //     $.spire.accounts.create(account, function(err, session){
+  //       // seriously, do something useful with this error...
+  //       if (err) throw err;
+  //
+  //       console.log(session);
+  //     });
+  //
   $.spire.accounts.create = function(account, callback){
     $.spire.requests.description.get(function(err, description){
-      if (err) throw err; // TODO: call the callback with an err
+      if (err) return callback(err);
 
       $.spire.requests.accounts.create(account, callback);
     });
   };
 
-/*
-
-needs the account resource from an authenticated session, or an account object with credentials
-
-*/
+  // ## $.spire.accounts.update
+  //
+  // Wrapper for updating an account, it requires an authenticated `account`
+  // resource and a `callback`. The callback will be triggered with the
+  // arguments: an `error` object and an `account` resource object.
+  //
+  //     account.email = 'something-else@test.com';
+  //
+  //     $.spire.accounts.update(account, function(err, account){
+  //       if (err) throw err;
+  //
+  //       console.log(account);
+  //     });
+  //
   $.spire.accounts.update = function(account, callback){
     $.spire.requests.description.get(function(err, description){
       if (err) return callback(err);
@@ -202,21 +273,40 @@ needs the account resource from an authenticated session, or an account object w
     });
   };
 
-  // creates a session for a given account, expects a login and a password.
-  // the callback gets called with the args `err`, `session`
+  // ## $.spire.accounts.authenticate
+  //
+  // Creates a session for a given account, expects an `account` object with
+  // `password` and `email` properties and a `callback`. The callback gets
+  // called with the arguments `error`, `session`
+  //
+  //
+  //     var account = { email: 'jxson@jxson.cc'
+  //         , password: 'totally-secure'
+  //         }
+  //     ;
+  //
+  //     $.spire.accounts.authenticate(account, function(err, session){
+  //       if (err) return callback(err);
+  //
+  //       console.log(session);
+  //     });
+  //
   $.spire.accounts.authenticate = function(account, callback){
     $.spire.requests.description.get(function(err, description){
-      if (err) throw err;
+      if (err) return callback(err);
 
       var options = { key: $.spire.options.key
           , email: account.email
           , password: account.password
           }
+      ;
 
       $.spire.requests.sessions.create(options, callback);
     });
   };
 
+  // # $.spire.connect
+  //
   // provides a single point of connection that builds up the needed objects
   // for discovery and sharing a session between requests.
   // the callback is triggered with an error and a session
@@ -224,14 +314,14 @@ needs the account resource from an authenticated session, or an account object w
     $.spire.isConnecting = true;
 
     $.spire.requests.description.get(function(err, description){
-      if (err) throw err;
+      if (err) return callback(err);
 
       var options = { key: $.spire.options.key }
 
       ;
 
       var sessionBack = function(err, session){
-        if (err) throw err;
+        if (err) return callback(err);
 
         $.spire.isConnecting = false;
         // save it for later.
@@ -250,24 +340,29 @@ needs the account resource from an authenticated session, or an account object w
           });
         }
 
-        return callback(session);
+        return callback(null, session);
       };
 
       if ($.spire.session) {
-        // console.log('needs to handle exisiting session');
         sessionBack(null, $.spire.session);
       } else {
-        // console.log('needs to create session');
         $.spire.requests.sessions.create(options, sessionBack);
       }
     });
   };
 
-  // requests are raw and assume noting besides the spire url
+  // # $.spire.requests
+  //
+  // Requests are raw and assume nothing besides the spire.io API url set in
+  // `$.spire.options.url`.
 
-  // gets the description resource object and caches it for later, the callback is triggered with an err and the description resource
+  // ## $.spire.requests.description.get
+  //
+  // Gets the description resource object and caches it for later, the
+  // `callback` is triggered with an `error` object and the `description`
+  // resource object.
   $.spire.requests.description.get = function(callback){
-    // if discovery has already happened use the cache
+    // If discovery has already happened use the cache.
     if ($.spire.resources) {
       var description = { resources: $.spire.resources
           , schema: $.spire.schema
@@ -277,16 +372,19 @@ needs the account resource from an authenticated session, or an account object w
       return callback(null, description);
     }
 
-
+    // If there isn't a cache make an XHR to get the description.
     $.ajax({ type: 'GET'
       , url: $.spire.options.url
       , dataType: 'json'
       , error: function(xhr, status, errorThrown){
-          // throw new Error('Problem with the spire.io discovery request');
+          var error = new XHRError(arguments);
+          callback(error);
         }
-        // xhr handlers always get executed on the window, I tried to
+        // ### UGH.
+        //
+        // XHR handlers always get executed on the `window`, I tried to
         // write a nice wrapper to help with testing but all it's methods
-        // were getting called with `this` bound to the window
+        // were getting called with `this` bound to the window.
       , success: function(description, status, xhr){
           $.spire.resources = description.resources;
           $.spire.schema = description.schema;
@@ -317,7 +415,8 @@ needs the account resource from an authenticated session, or an account object w
       , data: JSON.stringify(options)
       , dataType: 'json'
       , error: function(xhr){
-          // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
       , success: function(session, status, xhr){
           callback(null, session);
@@ -342,7 +441,8 @@ needs the account resource from an authenticated session, or an account object w
       , data: JSON.stringify({ name: name })
       , dataType: 'json'
       , error: function(xhr){
-        // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
       , success: function(channel, status, xhr){
           callback(null, channel);
@@ -366,7 +466,8 @@ needs the account resource from an authenticated session, or an account object w
         }
     ;
 
-    // The sub create request wants an array of channel urls not 'channel' resources
+    // **!** The subscription create request wants an array of channel urls
+    // not 'channel' resource objects.
     $.each(options.channels, function(i, channel){
       data.channels.push(channel.url);
     });
@@ -379,9 +480,9 @@ needs the account resource from an authenticated session, or an account object w
         , 'Authorization': $.spire.headers.authorization(subscriptions)
         }
       , data: JSON.stringify(data)
-      // , dataType: 'json'
       , error: function(xhr){
-        // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
       , success: function(subscription, status, xhr){
           callback(null, subscription);
@@ -414,14 +515,20 @@ needs the account resource from an authenticated session, or an account object w
         }
       , data: data
       , error: function(xhr, status, err){
-        console.log('errr', err);
           // fake a returned events object
-          if (err === 'timeout') callback(null, { messages: [] });
+          if (err === 'timeout') {
+            callback(null, { messages: [] });
+          } else {
+            var error = new XHRError(arguments);
+            callback(error);
+          }
         }
       , success: function(events, status, xhr){
           // set the last message key if there are messages
           if (events.messages.length > 0){
-            subscription['last-message'] = $(events.messages).last()[0].timestamp;
+            subscription['last-message'] = $(events.messages)
+              .last()[0]
+              .timestamp;
           }
 
           callback(null, events);
@@ -444,7 +551,8 @@ needs the account resource from an authenticated session, or an account object w
         }
       , data: JSON.stringify({ content: content })
       , error: function(xhr){
-        // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
       , success: function(message, status, xhr){
           callback(null, message);
@@ -464,7 +572,6 @@ needs the account resource from an authenticated session, or an account object w
         }
       , error: function(xhr, status, err){
           var error = new XHRError(arguments);
-
           callback(error);
         }
     });
@@ -482,7 +589,8 @@ needs the account resource from an authenticated session, or an account object w
           callback(null, account);
         }
       , error: function(xhr, status, err){
-          // ...
+          var error = new XHRError(arguments);
+          callback(error);
         }
     });
   };
@@ -498,7 +606,25 @@ needs the account resource from an authenticated session, or an account object w
           callback(null, account);
         }
       , error: function(xhr, status, err){
-          // ...
+          var error = new XHRError(arguments);
+          callback(error);
+        }
+    });
+  };
+
+  $.spire.requests.billing.get = function(callback){
+    $.ajax({ type: 'GET'
+      , url: $.spire.resources.billing.url
+      , headers: { 'Content-Type': $.spire.headers.mediaType('billing')
+        , 'Accept': $.spire.headers.mediaType('billing')
+        }
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(arguments);
+
+          callback(error);
+        }
+      , success: function(billing, status, xhr){
+          callback(null, billing);
         }
     });
   };

@@ -33,13 +33,14 @@ Or if you don't care that the message was sent
 
 ## What is spire.io?
 
+[spire.io](http://spire.io) is a platform as service API.
+
 ## Working with this library
 
 * [source code](https://github.com/spire-io/jquery.spire.js)
 * [inline documentation](http://spire-io.github.com/jquery.spire.js/) (via [docco](http://jashkenas.github.com/docco/))
 * [issues](https://github.com/spire-io/jquery.spire.js/issues)
-* contact spire.io
-* #spire
+* [contact spire.io](http://spire.io/contact.html)
 
 # Development
 
@@ -58,6 +59,8 @@ So you made some changes and want to minify?
     cake bundle
 
 # Contributing
+
+Fork and send pull requests via github, also any [issues](https://github.com/spire-io/jquery.spire.js/issues) are always welcome
 
 # License
 

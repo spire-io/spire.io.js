@@ -41,7 +41,7 @@ describe('$.spire.messages.subscribe(channel, callback)', function(){
       $.each(messages, function(i, message){
         expect(message.content).toBeDefined();
         expect(message.content.match('says how')).toBeTruthy();
-        expect(message.key).toBeDefined();
+        expect(message.timestamp).toBeDefined();
       });
     });
   });
@@ -85,7 +85,6 @@ describe('$.spire.messages.subscribe(channel, callback)', function(){
       expect(messages).toBeDefined();
       expect(messages.length).toBe(1);
       expect(message.content).toBe('darthvader says "I am your father"');
-      expect(message.key).toBeDefined();
       expect(message.timestamp).toBeDefined();
     });
   });

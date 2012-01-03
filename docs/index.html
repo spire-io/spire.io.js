@@ -395,6 +395,7 @@ not 'channel' resource objects.</p>             </td>             <td class="cod
         <span class="p">,</span> <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">subscriptions</span><span class="p">)</span>
         <span class="p">}</span>
       <span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+      <span class="p">,</span> <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span>
       <span class="p">,</span> <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">xhr</span><span class="p">){</span>
           <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XHRError</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
           <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
@@ -427,6 +428,7 @@ not 'channel' resource objects.</p>             </td>             <td class="cod
         <span class="p">,</span> <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">subscription</span><span class="p">)</span>
         <span class="p">}</span>
       <span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">data</span>
+      <span class="p">,</span> <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span>
       <span class="p">,</span> <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">err</span><span class="p">){</span></pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <p>fake a returned events object</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">===</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span> <span class="p">{</span>
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="p">{</span> <span class="nx">messages</span><span class="o">:</span> <span class="p">[]</span> <span class="p">});</span>
           <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -456,6 +458,7 @@ not 'channel' resource objects.</p>             </td>             <td class="cod
         <span class="p">,</span> <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span>
         <span class="p">}</span>
       <span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="nx">content</span><span class="o">:</span> <span class="nx">content</span> <span class="p">})</span>
+      <span class="p">,</span> <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span>
       <span class="p">,</span> <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">xhr</span><span class="p">){</span>
           <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XHRError</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
           <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
@@ -491,6 +494,7 @@ not 'channel' resource objects.</p>             </td>             <td class="cod
         <span class="p">,</span> <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">account</span><span class="p">)</span>
         <span class="p">}</span>
       <span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">account</span><span class="p">)</span>
+      <span class="p">,</span> <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span>
       <span class="p">,</span> <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">){</span>
           <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">account</span><span class="p">);</span>
         <span class="p">}</span>
@@ -508,6 +512,7 @@ not 'channel' resource objects.</p>             </td>             <td class="cod
         <span class="p">,</span> <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">)</span>
         <span class="p">,</span> <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">account</span><span class="p">)</span>
         <span class="p">}</span>
+      <span class="p">,</span> <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span>
       <span class="p">,</span> <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">){</span>
           <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">account</span><span class="p">);</span>
         <span class="p">}</span>
@@ -524,6 +529,7 @@ not 'channel' resource objects.</p>             </td>             <td class="cod
       <span class="p">,</span> <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;billing&#39;</span><span class="p">)</span>
         <span class="p">,</span> <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;billing&#39;</span><span class="p">)</span>
         <span class="p">}</span>
+      <span class="p">,</span> <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span>
       <span class="p">,</span> <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">errorThrown</span><span class="p">){</span>
           <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XHRError</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
 

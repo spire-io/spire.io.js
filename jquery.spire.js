@@ -570,6 +570,7 @@
         , 'Accept': $.spire.headers.mediaType('session')
         }
       , data: JSON.stringify(account)
+      , dataType: 'json'
       , success: function(session, status, xhr){
           callback(null, session);
         }

@@ -480,6 +480,7 @@
         , 'Authorization': $.spire.headers.authorization(subscriptions)
         }
       , data: JSON.stringify(data)
+      , dataType: 'json'
       , error: function(xhr){
           var error = new XHRError(arguments);
           callback(error);
@@ -514,6 +515,7 @@
         , 'Authorization': $.spire.headers.authorization(subscription)
         }
       , data: data
+      , dataType: 'json'
       , error: function(xhr, status, err){
           // fake a returned events object
           if (err === 'timeout') {
@@ -550,6 +552,7 @@
         , 'Authorization': $.spire.headers.authorization(channel)
         }
       , data: JSON.stringify({ content: content })
+      , dataType: 'json'
       , error: function(xhr){
           var error = new XHRError(arguments);
           callback(error);
@@ -585,6 +588,7 @@
         , 'Authorization': $.spire.headers.authorization(account)
         }
       , data: JSON.stringify(account)
+      , dataType: 'json'
       , success: function(account, status, xhr){
           callback(null, account);
         }
@@ -602,6 +606,7 @@
         , 'Accept': $.spire.headers.mediaType('account')
         , 'Authorization': $.spire.headers.authorization(account)
         }
+      , dataType: 'json'
       , success: function(account, status, xhr){
           callback(null, account);
         }
@@ -618,6 +623,7 @@
       , headers: { 'Content-Type': $.spire.headers.mediaType('billing')
         , 'Accept': $.spire.headers.mediaType('billing')
         }
+      , dataType: 'json'
       , error: function(xhr, status, errorThrown){
           var error = new XHRError(arguments);
 

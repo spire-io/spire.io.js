@@ -395,7 +395,8 @@
   };
 
   $.spire.requests.sessions.create = function(options, callback){
-    if (! options.key && !(options.email && options.password)){
+    console.log('options', options);
+    if (! options.key && (typeof options.email !== 'string' && typeof options.password !== 'string')){
       var message = [ 'You need a key to do that! Try doing this:'
           , '   $.spire.options.key = <your account key>'
           ].join('\n');

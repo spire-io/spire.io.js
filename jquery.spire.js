@@ -133,8 +133,6 @@
               ;
 
               $.spire.requests.channels.get(channel, function(err, channel){
-                console.log('*** conflist resolved in subs');
-
                 var options = { channels: [ channel ]
                     , events: [ 'messages' ]
                     , session: session
@@ -251,10 +249,6 @@
 
       // Create the channel before sending a message to it.
       $.spire.requests.channels.create(options, function(err, channel){
-        console.log('err', err);
-        console.log('options', message.channel);
-        console.log('callback', callback);
-
         var options = { session: session
             , name: message.channel
             }
@@ -262,15 +256,12 @@
 
         if (err) {
           if (err.status === 409) {
-            console.log('resolving a 409', options, callback);
-
             return $.spire.requests.sessions.get(session, function(err, session){
               if (err) {
                 if (callback) return callback(err, null);
                 else throw err;
               }
 
-              console.log('got a new session', session);
               var channel = session
                   .resources
                   .channels
@@ -278,8 +269,6 @@
               ;
 
               $.spire.requests.channels.get(channel, function(err, channel){
-                console.log('got channel', channel);
-
                 var options = { channel: channel
                     , content: message.content
                     }
@@ -511,7 +500,6 @@
   };
 
   $.spire.requests.sessions.create = function(options, callback){
-    console.log('options', options);
     if (! options.key && (typeof options.email !== 'string' && typeof options.password !== 'string')){
       var message = [ 'You need a key to do that! Try doing this:'
           , '   $.spire.options.key = <your account key>'

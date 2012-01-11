@@ -33,6 +33,8 @@ describe('$.spire.messages.subscribe(channel, callback)', function(){
         , messages = callback.getCall(0).args[1]
       ;
 
+      console.log('## callback', err, messages);
+
       expect(err).toBeFalsy();
 
       expect(messages).toBeDefined();

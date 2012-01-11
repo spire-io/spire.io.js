@@ -18,7 +18,8 @@
     this.name = 'XHRError';
     this.message = message || 'XHRError';
     this.xhr = xhr;
-    this.status = status;
+    this.textStatus = status;
+    this.status = (xhr) ? xhr.status : null;
     this.jqueryErr = err;
   };
 
@@ -120,7 +121,56 @@
       ;
 
       $.spire.requests.channels.create(options, function(err, channel){
-        if (err) return callback(err);
+        if (err) {
+          if (err.status === 409) {
+            return $.spire.requests.sessions.get(session, function(err, session){
+              if (err) callback(err);
+
+              var channel = session
+                  .resources
+                  .channels
+                  .resources[name]
+              ;
+
+              $.spire.requests.channels.get(channel, function(err, channel){
+                console.log('*** conflist resolved in subs');
+
+                var options = { channels: [ channel ]
+                    , events: [ 'messages' ]
+                    , session: session
+                    }
+                ;
+
+
+                $.spire.requests.subscriptions.create(options, function(err, sub){
+                  if (err) return callback(err);
+
+                  var options = { subscription: sub };
+
+                  // Get events from the subscription
+                  var get = function(){
+                    $.spire.requests.subscriptions.get(options, function(err, events){
+                      if (err) return callback(err);
+
+                      if (events.messages.length > 0){
+                        callback(null, events.messages);
+                      }
+
+                      // Do it all over again
+                      get();
+                    });
+                  }
+
+                  // Kick off long-polling
+                  get();
+                });
+
+              });
+            });
+          } else {
+            return callback(err);
+          }
+        };
 
         var options = { channels: [ channel ]
             , events: [ 'messages' ]
@@ -201,7 +251,54 @@
 
       // Create the channel before sending a message to it.
       $.spire.requests.channels.create(options, function(err, channel){
-        if (err) return callback(err);
+        console.log('err', err);
+        console.log('options', message.channel);
+        console.log('callback', callback);
+
+        var options = { session: session
+            , name: message.channel
+            }
+        ;
+
+        if (err) {
+          if (err.status === 409) {
+            console.log('resolving a 409', options, callback);
+
+            return $.spire.requests.sessions.get(session, function(err, session){
+              if (err) {
+                if (callback) return callback(err, null);
+                else throw err;
+              }
+
+              console.log('got a new session', session);
+              var channel = session
+                  .resources
+                  .channels
+                  .resources[message.channel]
+              ;
+
+              $.spire.requests.channels.get(channel, function(err, channel){
+                console.log('got channel', channel);
+
+                var options = { channel: channel
+                    , content: message.content
+                    }
+                ;
+
+                // Finally send the message.
+                $.spire.requests.messages.create(options, function(err, message){
+                  if (err) return callback(err);
+
+                  if (callback) callback(null, message);
+                });
+              })
+            });
+          } else {
+            return callback(err, null);
+          }
+
+          return;
+        }
 
         var options = { channel: channel
             , content: message.content
@@ -377,7 +474,7 @@
       , url: $.spire.options.url
       , dataType: 'json'
       , error: function(xhr, status, errorThrown){
-          var error = new XHRError(arguments);
+          var error = new XHRError(xhr, status, errorThrown);
           callback(error);
         }
         // ### UGH.
@@ -392,6 +489,25 @@
           callback(null, description);
         }
     });
+  };
+
+  $.spire.requests.sessions.get = function(session, callback){
+    $.ajax({ type: 'get'
+      , url: session.url
+      , beforeSend: function(xhr){ xhr.withCredentials = true; }
+      , headers: { 'Accept': $.spire.headers.mediaType('session')
+        , 'Authorization': $.spire.headers.authorization(session)
+        }
+      , dataType: 'json'
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(xhr, status, errorThrown);
+          callback(error);
+        }
+      , success: function(session, status, xhr){
+          callback(null, session);
+        }
+    });
+
   };
 
   $.spire.requests.sessions.create = function(options, callback){
@@ -415,12 +531,32 @@
         }
       , data: JSON.stringify(options)
       , dataType: 'json'
-      , error: function(xhr){
-          var error = new XHRError(arguments);
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(xhr, status, errorThrown);
           callback(error);
         }
       , success: function(session, status, xhr){
           callback(null, session);
+        }
+    });
+  };
+
+  $.spire.requests.channels.get = function(channel, callback){
+    $.ajax({ type: 'get'
+      , url: channel.url
+      , beforeSend: function(xhr){
+          xhr.withCredentials = true;
+        }
+      , headers: { 'Accept': $.spire.headers.mediaType('channel')
+        , 'Authorization': $.spire.headers.authorization(channel)
+        }
+      , dataType: 'json'
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(xhr, status, errorThrown);
+          callback(error, null);
+        }
+      , success: function(channel, status, xhr){
+          callback(null, channel);
         }
     });
   };
@@ -441,8 +577,8 @@
         }
       , data: JSON.stringify({ name: name })
       , dataType: 'json'
-      , error: function(xhr){
-          var error = new XHRError(arguments);
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(xhr, status, errorThrown);
           callback(error);
         }
       , success: function(channel, status, xhr){
@@ -482,8 +618,8 @@
         }
       , data: JSON.stringify(data)
       , dataType: 'json'
-      , error: function(xhr){
-          var error = new XHRError(arguments);
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(xhr, status, errorThrown);
           callback(error);
         }
       , success: function(subscription, status, xhr){
@@ -517,12 +653,12 @@
         }
       , data: data
       , dataType: 'json'
-      , error: function(xhr, status, err){
+      , error: function(xhr, status, errorThrown){
           // fake a returned events object
-          if (err === 'timeout') {
+          if (errorThrown === 'timeout') {
             callback(null, { messages: [] });
           } else {
-            var error = new XHRError(arguments);
+            var error = new XHRError(xhr, status, errorThrown);
             callback(error);
           }
         }
@@ -554,8 +690,8 @@
         }
       , data: JSON.stringify({ content: content })
       , dataType: 'json'
-      , error: function(xhr){
-          var error = new XHRError(arguments);
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(xhr, status, errorThrown);
           callback(error);
         }
       , success: function(message, status, xhr){
@@ -575,8 +711,8 @@
       , success: function(session, status, xhr){
           callback(null, session);
         }
-      , error: function(xhr, status, err){
-          var error = new XHRError(arguments);
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(xhr, status, errorThrown);
           callback(error);
         }
     });
@@ -594,8 +730,8 @@
       , success: function(account, status, xhr){
           callback(null, account);
         }
-      , error: function(xhr, status, err){
-          var error = new XHRError(arguments);
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(xhr, status, errorThrown);
           callback(error);
         }
     });
@@ -612,8 +748,8 @@
       , success: function(account, status, xhr){
           callback(null, account);
         }
-      , error: function(xhr, status, err){
-          var error = new XHRError(arguments);
+      , error: function(xhr, status, errorThrown){
+          var error = new XHRError(xhr, status, errorThrown);
           callback(error);
         }
     });
@@ -627,7 +763,7 @@
         }
       , dataType: 'json'
       , error: function(xhr, status, errorThrown){
-          var error = new XHRError(arguments);
+          var error = new XHRError(xhr, status, errorThrown);
 
           callback(error);
         }

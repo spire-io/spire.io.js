@@ -49,14 +49,14 @@ describe('spire.requests.accounts.reset', function(){
 
         spire.options.key = account.key;
 
-        stub = sinon.stub(window, 'reqwest', function(options){
+        stub = sinon.stub(spire, 'ajax', function(options){
           return options.error();
         });
       });
     });
 
     afterEach(function(){
-      window.reqwest.restore();
+      spire.ajax.restore();
     });
 
     it('should pass errors to the callback', function(){

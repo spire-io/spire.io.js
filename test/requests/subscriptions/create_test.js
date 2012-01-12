@@ -57,14 +57,14 @@ describe('spire.requests.subscriptions.create', function(){
         channel = c;
         session = s;
 
-        stub = sinon.stub(window, 'reqwest', function(options){
+        stub = sinon.stub(spire, 'ajax', function(options){
           return options.error();
         });
       });
     });
 
     afterEach(function(){
-      window.reqwest.restore();
+      spire.ajax.restore();
     });
 
     it('should pass errors to the callback', function(){

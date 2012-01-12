@@ -7,7 +7,6 @@
 // * [contact spire.io](http://spire.io/contact.html)
 
 (function(){
-
   // # XHRError
   //
   // XHRError is a wrapper for the xhr errors triggered by jQuery, this makes
@@ -25,8 +24,6 @@
 
   XHRError.prototype = new Error();
   XHRError.prototype.constructor = XHRError;
-
-
 
   // # spire
   //
@@ -57,6 +54,27 @@
     , billing: {}
     }
   };
+
+
+  if (typeof reqwest === 'function') {
+    spire.ajax = reqwest;
+  } else {
+    // Hope we are in node land
+
+    var request = require('request');
+    spire.ajax = function (params) {
+      if (params.type === 'json') {
+        params.json = true;
+      }
+      return request(params, function (err, req, body) {
+        if (err) {
+          return params.error(req, req.status, err);
+        }
+        params.succes(body);
+      });
+    };
+  }
+
 
   // # spire.headers
   //
@@ -455,7 +473,7 @@
     }
 
     // If there isn't a cache make an XHR to get the description.
-    reqwest({ method: 'GET'
+    spire.ajax({ method: 'GET'
       , url: spire.options.url
       , type: 'json'
       , error: function(xhr, status, errorThrown){
@@ -477,7 +495,7 @@
   };
 
   spire.requests.sessions.get = function(session, callback){
-    reqwest({ method: 'get'
+    spire.ajax({ method: 'get'
       , url: session.url
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Accept': spire.headers.mediaType('session')
@@ -507,7 +525,7 @@
 
     if (options.email && options.password) options.key = null;
 
-    reqwest({ method: 'post'
+    spire.ajax({ method: 'post'
       , url: spire.resources.sessions.url
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('account')
@@ -526,7 +544,7 @@
   };
 
   spire.requests.channels.get = function(channel, callback){
-    reqwest({ method: 'get'
+    spire.ajax({ method: 'get'
       , url: channel.url
       , beforeSend: function(xhr){
           xhr.withCredentials = true;
@@ -550,7 +568,7 @@
       , name = options.name
     ;
 
-    reqwest({ method: 'post'
+    spire.ajax({ method: 'post'
       , url: channels.url
       , beforeSend: function(xhr){
           xhr.withCredentials = true;
@@ -593,7 +611,7 @@
       data.channels.push(options.channels[i].url);
     }
 
-    reqwest({ method: 'post'
+    spire.ajax({ method: 'post'
       , url: subscriptions.url
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('subscription')
@@ -629,7 +647,7 @@
       data['last-message'] = subscription['last-message'];
     }
 
-    reqwest({ method: 'get'
+    spire.ajax({ method: 'get'
       , url: subscription.url
       // , timeout: options.timeout + 10000
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
@@ -667,7 +685,7 @@
       , content = options.content
     ;
 
-    reqwest({ method: 'post'
+    spire.ajax({ method: 'post'
       , url: channel.url
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('message')
@@ -687,7 +705,7 @@
   };
 
   spire.requests.accounts.create = function(account, callback){
-    reqwest({ method: 'post'
+    spire.ajax({ method: 'post'
       , url: spire.resources.accounts.url
       , headers: { 'Content-Type': spire.headers.mediaType('account')
         , 'Accept': spire.headers.mediaType('session')
@@ -705,7 +723,7 @@
   };
 
   spire.requests.accounts.update = function(account, callback){
-    reqwest({ method: 'put'
+    spire.ajax({ method: 'put'
       , url: account.url
       , headers: { 'Content-Type': spire.headers.mediaType('account')
         , 'Accept': spire.headers.mediaType('account')
@@ -724,7 +742,7 @@
   };
 
   spire.requests.accounts.reset = function(account, callback){
-    reqwest({ method: 'post'
+    spire.ajax({ method: 'post'
       , url: account.url
       , headers: { 'Content-Type': spire.headers.mediaType('account')
         , 'Accept': spire.headers.mediaType('account')
@@ -742,7 +760,7 @@
   };
 
   spire.requests.billing.get = function(callback){
-    reqwest({ method: 'GET'
+    spire.ajax({ method: 'GET'
       , url: spire.resources.billing.url
       , headers: { 'Content-Type': spire.headers.mediaType('billing')
         , 'Accept': spire.headers.mediaType('billing')

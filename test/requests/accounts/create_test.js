@@ -1,4 +1,4 @@
-describe('$.spire.requests.accounts.create', function(){
+describe('spire.requests.accounts.create', function(){
   var session
   ;
 
@@ -7,12 +7,12 @@ describe('$.spire.requests.accounts.create', function(){
       if (err) throw err;
       else session = data;
 
-      $.spire.options.key = data.resources.account.key;
+      spire.options.key = data.resources.account.key;
     });
   });
 
   it('should exist', function(){
-    expect($.spire.requests.accounts.create).toBeDefined();
+    expect(spire.requests.accounts.create).toBeDefined();
   });
 
   it('should create an account', function(){
@@ -22,7 +22,7 @@ describe('$.spire.requests.accounts.create', function(){
         }
     ;
 
-    $.spire.requests.accounts.create(properties, callback);
+    spire.requests.accounts.create(properties, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'waiting for account creation'
@@ -61,7 +61,7 @@ describe('$.spire.requests.accounts.create', function(){
         if (err) throw err;
         else account = session.resources.account;
 
-        $.spire.options.key = account.key;
+        spire.options.key = account.key;
 
         stub = sinon.stub(jQuery, 'ajax', function(options){
           return options.error();
@@ -80,7 +80,7 @@ describe('$.spire.requests.accounts.create', function(){
           }
       ;
 
-      $.spire.requests.accounts.create(properties, callback);
+      spire.requests.accounts.create(properties, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting for account creation'

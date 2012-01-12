@@ -1,13 +1,13 @@
-describe('$.spire.requests.description.get', function(){
+describe('spire.requests.description.get', function(){
   it('should exist', function(){
-    expect($.spire.requests.description.get).toBeDefined();
+    expect(spire.requests.description.get).toBeDefined();
   });
 
   it('should get the description successfully', function(){
     var callback = sinon.spy()
     ;
 
-    $.spire.requests.description.get(callback);
+    spire.requests.description.get(callback);
 
     waitsFor(function(){ return callback.called; }
     , 'waiting on the description request'
@@ -40,7 +40,7 @@ describe('$.spire.requests.description.get', function(){
     ;
 
     beforeEach(function(){
-      $.spire.resources = null;
+      spire.resources = null;
 
       stub = sinon.stub(jQuery, 'ajax', function(options){
         return options.error();
@@ -55,7 +55,7 @@ describe('$.spire.requests.description.get', function(){
       var callback = sinon.spy()
       ;
 
-      $.spire.requests.description.get(callback);
+      spire.requests.description.get(callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting on the description request'
@@ -70,4 +70,4 @@ describe('$.spire.requests.description.get', function(){
       });
     });
   }); // describe('when there are errors', ...
-}); // describe('$.spire.requests.description.get', ...
+}); // describe('spire.requests.description.get', ...

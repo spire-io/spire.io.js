@@ -1,4 +1,4 @@
-describe('$.spire.requests.sessions.create', function(){
+describe('spire.requests.sessions.create', function(){
   var account
   ;
 
@@ -10,7 +10,7 @@ describe('$.spire.requests.sessions.create', function(){
   });
 
   it('should exist', function(){
-    expect($.spire.requests.sessions.create).toBeDefined();
+    expect(spire.requests.sessions.create).toBeDefined();
   });
 
   it('should create a session successfully', function(){
@@ -18,7 +18,7 @@ describe('$.spire.requests.sessions.create', function(){
       , options = { key: account.key }
     ;
 
-    $.spire.requests.sessions.create(options, callback);
+    spire.requests.sessions.create(options, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'waiting for session creation'
@@ -64,7 +64,7 @@ describe('$.spire.requests.sessions.create', function(){
         , options = { key: account.key }
       ;
 
-      $.spire.requests.sessions.create(options, callback);
+      spire.requests.sessions.create(options, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting for session creation'

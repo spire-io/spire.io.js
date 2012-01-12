@@ -1,4 +1,4 @@
-describe('$.spire.accounts.authenticate(account, callback)', function(){
+describe('spire.accounts.authenticate(account, callback)', function(){
   var account
   ;
 
@@ -11,7 +11,7 @@ describe('$.spire.accounts.authenticate(account, callback)', function(){
 
 
   it('should exist', function(){
-    expect($.spire.accounts.authenticate).toBeDefined();
+    expect(spire.accounts.authenticate).toBeDefined();
   });
 
   it('should authenticate an account', function(){
@@ -21,7 +21,7 @@ describe('$.spire.accounts.authenticate(account, callback)', function(){
         }
     ;
 
-    $.spire.accounts.authenticate(properties, callback);
+    spire.accounts.authenticate(properties, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'account authentication for ' + account.email
@@ -69,7 +69,7 @@ describe('$.spire.accounts.authenticate(account, callback)', function(){
           }
       ;
 
-      $.spire.accounts.authenticate(properties, callback);
+      spire.accounts.authenticate(properties, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'account authentication for ' + account.email

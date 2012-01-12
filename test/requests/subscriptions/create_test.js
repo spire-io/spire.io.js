@@ -1,4 +1,4 @@
-describe('$.spire.requests.subscriptions.create', function(){
+describe('spire.requests.subscriptions.create', function(){
   var channel
     , session
   ;
@@ -13,7 +13,7 @@ describe('$.spire.requests.subscriptions.create', function(){
   });
 
   it('should exist', function(){
-    expect($.spire.requests.subscriptions.create).toBeDefined();
+    expect(spire.requests.subscriptions.create).toBeDefined();
   });
 
   it('should create a subscription', function(){
@@ -24,7 +24,7 @@ describe('$.spire.requests.subscriptions.create', function(){
         }
     ;
 
-    $.spire.requests.subscriptions.create(options, callback);
+    spire.requests.subscriptions.create(options, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'waiting for the subscription creation request'
@@ -75,7 +75,7 @@ describe('$.spire.requests.subscriptions.create', function(){
           }
       ;
 
-      $.spire.requests.subscriptions.create(options, callback);
+      spire.requests.subscriptions.create(options, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting for the subscription creation request'

@@ -1,4 +1,4 @@
-describe('$.spire.requests.accounts.reset', function(){
+describe('spire.requests.accounts.reset', function(){
   var account
   ;
 
@@ -10,7 +10,7 @@ describe('$.spire.requests.accounts.reset', function(){
   });
 
   it('should exist', function(){
-    expect($.spire.requests.accounts.reset).toBeDefined();
+    expect(spire.requests.accounts.reset).toBeDefined();
   });
 
   it('should create an account', function(){
@@ -18,7 +18,7 @@ describe('$.spire.requests.accounts.reset', function(){
       , key = account.key
     ;
 
-    $.spire.requests.accounts.reset(account, callback);
+    spire.requests.accounts.reset(account, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'waiting for account reset'
@@ -47,7 +47,7 @@ describe('$.spire.requests.accounts.reset', function(){
         if (err) throw err;
         else account = session.resources.account;
 
-        $.spire.options.key = account.key;
+        spire.options.key = account.key;
 
         stub = sinon.stub(jQuery, 'ajax', function(options){
           return options.error();
@@ -64,7 +64,7 @@ describe('$.spire.requests.accounts.reset', function(){
         , key = account.key
       ;
 
-      $.spire.requests.accounts.reset(account, callback);
+      spire.requests.accounts.reset(account, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting for account reset'

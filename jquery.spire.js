@@ -648,10 +648,10 @@
         }
       , success: function(events, status, xhr){
           // set the last message key if there are messages
-          var messageCount = events.messaegs.length
+          var messageCount = events.messages.length
           if (messageCount > 0){
             subscription['last-message'] =
-              events.messages[messageCount].timestamp;
+              events.messages[messageCount - 1].timestamp;
           }
 
           callback(null, events);

@@ -1,4 +1,4 @@
-describe('$.spire.requests.accounts.update', function(){
+describe('spire.requests.accounts.update', function(){
   var account
   ;
 
@@ -10,7 +10,7 @@ describe('$.spire.requests.accounts.update', function(){
   });
 
   it('should exist', function(){
-    expect($.spire.requests.accounts.update).toBeDefined();
+    expect(spire.requests.accounts.update).toBeDefined();
   });
 
   it('should update an account', function(){
@@ -21,7 +21,7 @@ describe('$.spire.requests.accounts.update', function(){
     account.email = email;
     account.password = 'blahblah';
 
-    $.spire.requests.accounts.update(account, callback);
+    spire.requests.accounts.update(account, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'waiting for account creation'
@@ -68,7 +68,7 @@ describe('$.spire.requests.accounts.update', function(){
       account.email = email;
       account.password = 'blahblah';
 
-      $.spire.requests.accounts.update(account, callback);
+      spire.requests.accounts.update(account, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting for account creation'

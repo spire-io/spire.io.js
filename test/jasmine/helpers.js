@@ -29,9 +29,9 @@ helpers.account = function(callback){
   , 'waiting for test account ' + properties.email
   , 10000);
 
-  $.spire.accounts.create(properties, function(err, session){
+  spire.accounts.create(properties, function(err, session){
     if (err) throw err;
-    else $.spire.options.key = session.resources.account.key;
+    else spire.options.key = session.resources.account.key;
 
     done = true;
 
@@ -56,7 +56,7 @@ helpers.account = function(callback){
 helpers.channel = function(callback){
   helpers.account(function(err, session){
     if (err) throw err;
-    else $.spire.options.key = session.resources.account.key;
+    else spire.options.key = session.resources.account.key;
 
     var done
       , options = { session: session
@@ -68,7 +68,7 @@ helpers.channel = function(callback){
     , 'waiting for test channel creation'
     , 10000);
 
-    $.spire.requests.channels.create(options, function(err, channel){
+    spire.requests.channels.create(options, function(err, channel){
       done = true;
 
       runs(function(){ callback(err, channel, options.session); });
@@ -89,7 +89,7 @@ helpers.subscription = function(callback){
     , 'waiting for a test subscription creation'
     , 10000);
 
-    $.spire
+    spire
       .requests
       .subscriptions
       .create(options, function(err, subscription){

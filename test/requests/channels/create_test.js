@@ -1,4 +1,4 @@
-describe('$.spire.requests.channels.create', function(){
+describe('spire.requests.channels.create', function(){
   var session
   ;
 
@@ -7,12 +7,12 @@ describe('$.spire.requests.channels.create', function(){
       if (err) throw err;
       else session = data;
 
-      $.spire.options.key = data.resources.account.key;
+      spire.options.key = data.resources.account.key;
     });
   });
 
   it('should exist', function(){
-    expect($.spire.requests.channels.create).toBeDefined();
+    expect(spire.requests.channels.create).toBeDefined();
   });
 
   it('should create a channel', function(){
@@ -22,7 +22,7 @@ describe('$.spire.requests.channels.create', function(){
         }
     ;
 
-    $.spire.requests.channels.create(options, callback);
+    spire.requests.channels.create(options, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'waiting on the channel creation request'
@@ -51,7 +51,7 @@ describe('$.spire.requests.channels.create', function(){
         if (err) throw err;
         else session = data;
 
-        $.spire.options.key = data.resources.account.key;
+        spire.options.key = data.resources.account.key;
 
         stub = sinon.stub(jQuery, 'ajax', function(options){
           return options.error();
@@ -70,7 +70,7 @@ describe('$.spire.requests.channels.create', function(){
           }
       ;
 
-      $.spire.requests.channels.create(options, callback);
+      spire.requests.channels.create(options, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting on the channel creation request'

@@ -1,4 +1,4 @@
-describe('$.spire.accounts.update(account, [callback])', function(){
+describe('spire.accounts.update(account, [callback])', function(){
   var account
   ;
 
@@ -10,7 +10,7 @@ describe('$.spire.accounts.update(account, [callback])', function(){
   });
 
   it('should exist', function(){
-    expect($.spire.accounts.update).toBeDefined();
+    expect(spire.accounts.update).toBeDefined();
   });
 
   it('should update an account', function(){
@@ -21,7 +21,7 @@ describe('$.spire.accounts.update(account, [callback])', function(){
     account.email = email;
     account.password = 'abc123-you-will-never-guess-me';
 
-    $.spire.accounts.update(account, callback);
+    spire.accounts.update(account, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'account update for ' + account.email
@@ -64,7 +64,7 @@ describe('$.spire.accounts.update(account, [callback])', function(){
       var callback = sinon.spy()
       ;
 
-      $.spire.accounts.update(account, callback);
+      spire.accounts.update(account, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting for account update'

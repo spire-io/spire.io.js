@@ -1,4 +1,4 @@
-describe('$.spire.requests.messages.create', function(){
+describe('spire.requests.messages.create', function(){
   var channel
   ;
 
@@ -10,7 +10,7 @@ describe('$.spire.requests.messages.create', function(){
   });
 
   it('should exist', function(){
-    expect($.spire.requests.messages.create).toBeDefined();
+    expect(spire.requests.messages.create).toBeDefined();
   });
 
   it('should create a message', function(){
@@ -22,7 +22,7 @@ describe('$.spire.requests.messages.create', function(){
         }
     ;
 
-    $.spire.requests.messages.create(options, callback);
+    spire.requests.messages.create(options, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'waiting for a message to be created'
@@ -73,7 +73,7 @@ describe('$.spire.requests.messages.create', function(){
           }
       ;
 
-      $.spire.requests.messages.create(options, callback);
+      spire.requests.messages.create(options, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting for a message to be created'

@@ -1,4 +1,4 @@
-describe('$.spire.requests.subscriptions.get', function(){
+describe('spire.requests.subscriptions.get', function(){
   var subscription
   ;
 
@@ -10,7 +10,7 @@ describe('$.spire.requests.subscriptions.get', function(){
   });
 
   it('should exist', function(){
-    expect($.spire.requests.subscriptions.get).toBeDefined();
+    expect(spire.requests.subscriptions.get).toBeDefined();
   });
 
   it('should get a subscription', function(){
@@ -20,7 +20,7 @@ describe('$.spire.requests.subscriptions.get', function(){
         }
     ;
 
-    $.spire.requests.subscriptions.get(options, callback);
+    spire.requests.subscriptions.get(options, callback);
 
     waitsFor(function(){ return callback.called; }
     , 'waiting to get a test subscription'
@@ -66,7 +66,7 @@ describe('$.spire.requests.subscriptions.get', function(){
           }
       ;
 
-      $.spire.requests.subscriptions.get(options, callback);
+      spire.requests.subscriptions.get(options, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting to get a test subscription'

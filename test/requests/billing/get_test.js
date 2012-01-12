@@ -1,20 +1,20 @@
-describe('$.spire.requests.billing.get', function(){
+describe('spire.requests.billing.get', function(){
 
   beforeEach(function(){
   });
 
   it('should exist', function(){
-    expect($.spire.requests.billing.get).toBeDefined();
+    expect(spire.requests.billing.get).toBeDefined();
   });
 
   it('should get the billing options', function(){
     var callback = sinon.spy()
     ;
 
-    $.spire.requests.description.get(function(err, desc){
+    spire.requests.description.get(function(err, desc){
       if (err) throw err;
 
-      $.spire.requests.billing.get(callback);
+      spire.requests.billing.get(callback);
     });
 
     waitsFor(function(){ return callback.called; }
@@ -31,7 +31,9 @@ describe('$.spire.requests.billing.get', function(){
       expect(billing).toBeAResourceObject();
       expect(billing.plans instanceof Array).toBe(true);
 
-      $(billing.plans).each(function(i, plan){
+      for (var i = 0; i < billing.plans.length; i++) {
+        var plan = billing.plans[i];
+
         expect(plan.description).toBeDefined();
         expect(plan.id).toBeDefined();
         expect(plan.name).toBeDefined();
@@ -40,7 +42,7 @@ describe('$.spire.requests.billing.get', function(){
         expect(plan.features.queue).toBeDefined();
         expect(plan.features.queue.limit).toBeDefined();
         expect(plan.features.rps).toBeDefined();
-      });
+      }
     });
   });
 
@@ -63,14 +65,14 @@ describe('$.spire.requests.billing.get', function(){
       var callback = sinon.spy()
       ;
 
-      $.spire.requests.description.get(function(err, desc){
+      spire.requests.description.get(function(err, desc){
         if (err) throw err;
 
-        $.spire.requests.billing.get(callback);
+        spire.requests.billing.get(callback);
       });
 
       waitsFor(function(){ return callback.called; }
-      , 'waiting for `$.spire.requests.billing.get`'
+      , 'waiting for `spire.requests.billing.get`'
       , 10000);
 
 

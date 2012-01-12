@@ -1,4 +1,4 @@
-describe('$.spire.messages.subscribe(channel, callback)', function(){
+describe('spire.messages.subscribe(channel, callback)', function(){
   var account
   ;
 
@@ -14,15 +14,18 @@ describe('$.spire.messages.subscribe(channel, callback)', function(){
       , channel = helpers.randomChannelName()
     ;
 
-    $.spire.options.key = account.key;
+    spire.options.key = account.key;
 
-    $.spire.messages.subscribe(channel, callback);
+    spire.messages.subscribe(channel, callback);
 
-    $.each(['tonto', 'injun joe', 'hiawatha'], function(i, indian){
-      $.spire.messages.publish({ channel: channel
+    var indians = ['tonto', 'injun joe', 'hiawatha'];
+
+    for (var i = 0; i < indians.length; i++) {
+      var indian = indians[i];
+      spire.messages.publish({ channel: channel
       , content: indian + ' says how'
       });
-    });
+    }
 
     waitsFor(function(){ return callback.called; }
     , 'subscription to comeback with smoke signals...'
@@ -38,11 +41,13 @@ describe('$.spire.messages.subscribe(channel, callback)', function(){
       expect(messages).toBeDefined();
       expect(messages.length).toBeDefined();
 
-      $.each(messages, function(i, message){
+      for (var i = 0; i < messages; i++) {
+        var message = messages[i];
+
         expect(message.content).toBeDefined();
         expect(message.content.match('says how')).toBeTruthy();
         expect(message.timestamp).toBeDefined();
-      });
+      }
     });
   });
 
@@ -51,13 +56,13 @@ describe('$.spire.messages.subscribe(channel, callback)', function(){
       , channel = helpers.randomChannelName()
     ;
 
-    $.spire.options.key = account.key;
+    spire.options.key = account.key;
 
-    $.spire.messages.publish({ channel: channel
+    spire.messages.publish({ channel: channel
     , content: 'robocop says "My name is Murphy."'
     }, function(err, msg){
       if (err) throw err;
-      else $.spire.messages.subscribe(channel, callback);
+      else spire.messages.subscribe(channel, callback);
     });
 
     waitsFor(function(){ return callback.called; }
@@ -65,7 +70,7 @@ describe('$.spire.messages.subscribe(channel, callback)', function(){
     , 10000);
 
     runs(function(){
-      $.spire.messages.publish({ channel: channel
+      spire.messages.publish({ channel: channel
       , content: 'darthvader says "I am your father"'
       });
     });
@@ -114,12 +119,12 @@ describe('$.spire.messages.subscribe(channel, callback)', function(){
         , channel = helpers.randomChannelName()
       ;
 
-      $.spire.options.key = account.key;
+      spire.options.key = account.key;
 
-      $.spire.messages.subscribe(channel, callback);
+      spire.messages.subscribe(channel, callback);
 
       waitsFor(function(){ return callback.called; }
-      , '$.spire.messages.subscribe'
+      , 'spire.messages.subscribe'
       , 10000);
 
 
@@ -131,4 +136,4 @@ describe('$.spire.messages.subscribe(channel, callback)', function(){
       });
     });
   }); // describe('when there are errors in the subscription', ...
-}); // describe('$.spire.messages.subscribe(channel, callback)', ...
+}); // describe('spire.messages.subscribe(channel, callback)', ...

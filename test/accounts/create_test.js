@@ -1,6 +1,6 @@
-describe('$.spire.accounts.create(account, [callback])', function(){
+describe('spire.accounts.create(account, [callback])', function(){
   it('should exist', function(){
-    expect($.spire.accounts.create).toBeDefined();
+    expect(spire.accounts.create).toBeDefined();
   });
 
   it('should create an account', function(){
@@ -10,7 +10,7 @@ describe('$.spire.accounts.create(account, [callback])', function(){
         }
     ;
 
-    $.spire.accounts.create(properties, callback);
+    spire.accounts.create(properties, callback);
 
     waitsFor(function(){ return callback.called; }
     ,'account creation'
@@ -66,7 +66,7 @@ describe('$.spire.accounts.create(account, [callback])', function(){
           }
       ;
 
-      $.spire.accounts.create(properties, callback);
+      spire.accounts.create(properties, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'account creation'

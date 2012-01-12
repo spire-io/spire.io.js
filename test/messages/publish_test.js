@@ -1,6 +1,6 @@
-describe('$.spire.messages.publish(message, [callback])', function(){
+describe('spire.messages.publish(message, [callback])', function(){
   it('should exist', function(){
-    expect($.spire.messages.publish).toBeDefined();
+    expect(spire.messages.publish).toBeDefined();
   });
 
   describe('with a callback', function(){
@@ -21,9 +21,9 @@ describe('$.spire.messages.publish(message, [callback])', function(){
           }
       ;
 
-      $.spire.options.key = account.key;
+      spire.options.key = account.key;
 
-      $.spire.messages.publish(message, callback);
+      spire.messages.publish(message, callback);
 
       waitsFor(function(){ return callback.called; }
       , 'waiting for a message to be published'
@@ -68,9 +68,9 @@ describe('$.spire.messages.publish(message, [callback])', function(){
             }
         ;
 
-        $.spire.options.key = account.key;
+        spire.options.key = account.key;
 
-        $.spire.messages.publish(message, callback);
+        spire.messages.publish(message, callback);
 
         waitsFor(function(){ return callback.called; }
         , 'waiting for a message to be published'
@@ -104,9 +104,9 @@ describe('$.spire.messages.publish(message, [callback])', function(){
           }
       ;
 
-      $.spire.options.key = account.key;
+      spire.options.key = account.key;
 
-      expect(function(){ $.spire.messages.publish(message); }).not.toThrow();
+      expect(function(){ spire.messages.publish(message); }).not.toThrow();
     });
 
     describe('when there are errors in sending the message', function(){
@@ -136,10 +136,10 @@ describe('$.spire.messages.publish(message, [callback])', function(){
             }
         ;
 
-        $.spire.options.key = account.key;
+        spire.options.key = account.key;
 
-        expect(function(){ $.spire.messages.publish(message); }).toThrow();
+        expect(function(){ spire.messages.publish(message); }).toThrow();
       });
     }); // describe('when there are errors in sending the message', ...
   }); // describe('without a callback', ...
-}); // describe('$.spire.messages.publish', ...
+}); // describe('spire.messages.publish', ...

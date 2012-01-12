@@ -42,13 +42,13 @@ describe('spire.requests.description.get', function(){
     beforeEach(function(){
       spire.resources = null;
 
-      stub = sinon.stub(jQuery, 'ajax', function(options){
+      stub = sinon.stub(window, 'reqwest', function(options){
         return options.error();
       });
     });
 
     afterEach(function(){
-      jQuery.ajax.restore();
+      window.reqwest.restore();
     });
 
     it('should pass errors to the callback', function(){

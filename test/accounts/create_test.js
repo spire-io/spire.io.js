@@ -49,14 +49,14 @@ describe('spire.accounts.create(account, [callback])', function(){
         if (err) throw err;
         else account = session.resources.account;
 
-        stub = sinon.stub(jQuery, 'ajax', function(options){
+        stub = sinon.stub(window, 'reqwest', function(options){
           return options.error();
         });
       });
     });
 
     afterEach(function(){
-      jQuery.ajax.restore();
+      window.reqwest.restore();
     });
 
     it('should pass errors to the callback', function(){

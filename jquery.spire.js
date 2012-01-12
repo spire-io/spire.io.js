@@ -625,7 +625,9 @@
       data = { timeout: options.timeout || spire.options.timeout/1000 }
     ;
 
-    data['last-message'] = subscription['last-message'];
+    if (subscription['last-message']) {
+      data['last-message'] = subscription['last-message'];
+    }
 
     reqwest({ method: 'get'
       , url: subscription.url

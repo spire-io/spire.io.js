@@ -6,7 +6,7 @@
 // * [issues](http://github.com/spire-io/jquery.spire.js/issues)
 // * [contact spire.io](http://spire.io/contact.html)
 
-(function(){
+var spire = (function(){
   // # XHRError
   //
   // XHRError is a wrapper for the xhr errors triggered by jQuery, this makes
@@ -33,7 +33,7 @@
   //
   // * **spire.options.url**: The url of the spire.io API, defaults to
   // [http://api.spire.io](http://api.spire.io).
-  spire = { options: { url: 'http://api.spire.io'
+  var spire = { options: { url: 'http://api.spire.io'
     // * **spire.options.version**: The spire.io API version to use when making requests for resources, defaults to 1.0.
     , version: '1.0'
     // * **spire.options.timeout**: The timeout for long-polling in seconds, defaults to 30 seconds
@@ -59,19 +59,51 @@
   if (typeof reqwest === 'function') {
     spire.ajax = reqwest;
   } else {
-    // Hope we are in node land
+    // Hope we are in node land.
 
+    // This builds an ajax-like inteface around request.
     var request = require('request');
     spire.ajax = function (params) {
-      if (params.type === 'json') {
-        params.json = true;
+      params.headers = params.headers || {};
+      params.method = params.method.toLowerCase();
+
+      // Gotta munge the data ourselves.
+      if (params.data) {
+        if (params.method === 'put' || params.method === 'post') {
+          if (typeof params.data === 'string') {
+            params.body = params.data;
+          } else {
+            params.body = JSON.stringify(params.data);
+          }
+        } else {
+          var first = true;
+          for (var key in params.data) {
+            params.url += first ? '?' : '&';
+            params.url += key + '=' + params.data[key];
+            first = false;
+          }
+        }
       }
-      return request(params, function (err, req, body) {
+
+      var handler = function (err, req, body) {
         if (err) {
           return params.error(req, req.status, err);
         }
-        params.succes(body);
-      });
+
+        if (params.type === 'json') {
+          body = JSON.parse(body);
+        }
+
+        params.success(body);
+      };
+
+      if (params.type === 'json') {
+        if (!params.headers['Accept']) {
+          params.headers['Accept'] = "application/json";
+        }
+      }
+
+      return request(params, handler);
     };
   }
 
@@ -776,4 +808,10 @@
         }
     });
   };
+
+  return spire;
 })();
+
+if (typeof module === 'object' && module.exports) {
+  module.exports = spire;
+}

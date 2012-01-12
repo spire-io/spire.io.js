@@ -6,7 +6,7 @@
 // * [issues](http://github.com/spire-io/jquery.spire.js/issues)
 // * [contact spire.io](http://spire.io/contact.html)
 
-(function($){
+(function(){
 
   // # XHRError
   //
@@ -455,9 +455,9 @@
     }
 
     // If there isn't a cache make an XHR to get the description.
-    $.ajax({ type: 'GET'
+    reqwest({ method: 'GET'
       , url: spire.options.url
-      , dataType: 'json'
+      , type: 'json'
       , error: function(xhr, status, errorThrown){
           var error = new XHRError(xhr, status, errorThrown);
           callback(error);
@@ -477,13 +477,13 @@
   };
 
   spire.requests.sessions.get = function(session, callback){
-    $.ajax({ type: 'get'
+    reqwest({ method: 'get'
       , url: session.url
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Accept': spire.headers.mediaType('session')
         , 'Authorization': spire.headers.authorization(session)
         }
-      , dataType: 'json'
+      , type: 'json'
       , error: function(xhr, status, errorThrown){
           var error = new XHRError(xhr, status, errorThrown);
           callback(error);
@@ -507,14 +507,14 @@
 
     if (options.email && options.password) options.key = null;
 
-    $.ajax({ type: 'post'
+    reqwest({ method: 'post'
       , url: spire.resources.sessions.url
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('account')
         , 'Accept': spire.headers.mediaType('session')
         }
       , data: JSON.stringify(options)
-      , dataType: 'json'
+      , type: 'json'
       , error: function(xhr, status, errorThrown){
           var error = new XHRError(xhr, status, errorThrown);
           callback(error);
@@ -526,7 +526,7 @@
   };
 
   spire.requests.channels.get = function(channel, callback){
-    $.ajax({ type: 'get'
+    reqwest({ method: 'get'
       , url: channel.url
       , beforeSend: function(xhr){
           xhr.withCredentials = true;
@@ -534,7 +534,7 @@
       , headers: { 'Accept': spire.headers.mediaType('channel')
         , 'Authorization': spire.headers.authorization(channel)
         }
-      , dataType: 'json'
+      , type: 'json'
       , error: function(xhr, status, errorThrown){
           var error = new XHRError(xhr, status, errorThrown);
           callback(error, null);
@@ -550,7 +550,7 @@
       , name = options.name
     ;
 
-    $.ajax({ type: 'post'
+    reqwest({ method: 'post'
       , url: channels.url
       , beforeSend: function(xhr){
           xhr.withCredentials = true;
@@ -560,7 +560,7 @@
         , 'Authorization': spire.headers.authorization(channels)
         }
       , data: JSON.stringify({ name: name })
-      , dataType: 'json'
+      , type: 'json'
       , error: function(xhr, status, errorThrown){
           var error = new XHRError(xhr, status, errorThrown);
           callback(error);
@@ -593,7 +593,7 @@
       data.channels.push(options.channels[i].url);
     }
 
-    $.ajax({ type: 'post'
+    reqwest({ method: 'post'
       , url: subscriptions.url
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('subscription')
@@ -601,7 +601,7 @@
         , 'Authorization': spire.headers.authorization(subscriptions)
         }
       , data: JSON.stringify(data)
-      , dataType: 'json'
+      , type: 'json'
       , error: function(xhr, status, errorThrown){
           var error = new XHRError(xhr, status, errorThrown);
           callback(error);
@@ -627,7 +627,7 @@
 
     data['last-message'] = subscription['last-message'];
 
-    $.ajax({ type: 'get'
+    reqwest({ method: 'get'
       , url: subscription.url
       // , timeout: options.timeout + 10000
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
@@ -636,7 +636,7 @@
         , 'Authorization': spire.headers.authorization(subscription)
         }
       , data: data
-      , dataType: 'json'
+      , type: 'json'
       , error: function(xhr, status, errorThrown){
           // fake a returned events object
           if (errorThrown === 'timeout') {
@@ -665,7 +665,7 @@
       , content = options.content
     ;
 
-    $.ajax({ type: 'post'
+    reqwest({ method: 'post'
       , url: channel.url
       , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('message')
@@ -673,7 +673,7 @@
         , 'Authorization': spire.headers.authorization(channel)
         }
       , data: JSON.stringify({ content: content })
-      , dataType: 'json'
+      , type: 'json'
       , error: function(xhr, status, errorThrown){
           var error = new XHRError(xhr, status, errorThrown);
           callback(error);
@@ -685,13 +685,13 @@
   };
 
   spire.requests.accounts.create = function(account, callback){
-    $.ajax({ type: 'post'
+    reqwest({ method: 'post'
       , url: spire.resources.accounts.url
       , headers: { 'Content-Type': spire.headers.mediaType('account')
         , 'Accept': spire.headers.mediaType('session')
         }
       , data: JSON.stringify(account)
-      , dataType: 'json'
+      , type: 'json'
       , success: function(session, status, xhr){
           callback(null, session);
         }
@@ -703,14 +703,14 @@
   };
 
   spire.requests.accounts.update = function(account, callback){
-    $.ajax({ type: 'put'
+    reqwest({ method: 'put'
       , url: account.url
       , headers: { 'Content-Type': spire.headers.mediaType('account')
         , 'Accept': spire.headers.mediaType('account')
         , 'Authorization': spire.headers.authorization(account)
         }
       , data: JSON.stringify(account)
-      , dataType: 'json'
+      , type: 'json'
       , success: function(account, status, xhr){
           callback(null, account);
         }
@@ -722,13 +722,13 @@
   };
 
   spire.requests.accounts.reset = function(account, callback){
-    $.ajax({ type: 'post'
+    reqwest({ method: 'post'
       , url: account.url
       , headers: { 'Content-Type': spire.headers.mediaType('account')
         , 'Accept': spire.headers.mediaType('account')
         , 'Authorization': spire.headers.authorization(account)
         }
-      , dataType: 'json'
+      , type: 'json'
       , success: function(account, status, xhr){
           callback(null, account);
         }
@@ -740,12 +740,12 @@
   };
 
   spire.requests.billing.get = function(callback){
-    $.ajax({ type: 'GET'
+    reqwest({ method: 'GET'
       , url: spire.resources.billing.url
       , headers: { 'Content-Type': spire.headers.mediaType('billing')
         , 'Accept': spire.headers.mediaType('billing')
         }
-      , dataType: 'json'
+      , type: 'json'
       , error: function(xhr, status, errorThrown){
           var error = new XHRError(xhr, status, errorThrown);
 
@@ -756,4 +756,4 @@
         }
     });
   };
-})(jQuery);
+})();

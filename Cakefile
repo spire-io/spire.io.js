@@ -84,7 +84,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
       '  <script src="jasmine/sinon.js"></script>'
       '  <script src="jasmine/jasmine-sinon.js"></script>'
       ''
-      '  <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>'
+      '  <script src="https://raw.github.com/ded/reqwest/master/src/reqwest.js"></script>'
       '  <script src="jquery.spire.js"></script>'
       '  <script src="jasmine/helpers.js"></script>'
       '  ' + tests.join('\n  ')

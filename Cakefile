@@ -55,9 +55,9 @@ task 'test:server', 'launch a server for the browser tests', (o)->
     walk 'test', (files)-> testFiles = files
 
   tests = _.map testFiles, (file, index, collection)->
-    if file.match /test\/jasmine/
+    if file.match /test\/jasmine.*\.js$/
       collection[index] = null
-    else
+    else if file.match /\.js$/
       file = file.replace /(.*test\/)/, ''
       '<script src="' + file + '"></script>'
 

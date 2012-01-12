@@ -101,8 +101,8 @@ task 'test:server', 'launch a server for the browser tests', (o)->
       '    --files ' + _.compact(testFiles).join(', ')
       '  </p>'
       '  <script type="text/javascript">'
-      '    $.spire.options.url = "' + o['api-url'] + '";'
-      '    $.spire.options.key = "' + o['api-key'] + '";'
+      '    spire.options.url = "' + o['api-url'] + '";'
+      '    spire.options.key = "' + o['api-key'] + '";'
       '    var jasmineEnv = jasmine.getEnv();'
       '    jasmineEnv.reporter = new jasmine.TrivialReporter();'
       '    jasmineEnv.execute();'

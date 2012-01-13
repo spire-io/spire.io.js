@@ -43,14 +43,14 @@ task 'test:node', 'run the tests in nodeJS', (o)->
     process.stderr.write d
 
 task 'test:server', 'launch a server for the browser tests', (o)->
+  invoke "bundle"
   path = require 'path'
   fs = require 'fs'
   {exec} = require 'child_process'
   express = require 'express'
   app = express.createServer()
   testDir = path.join __dirname, 'test'
-  libSrc = path.join __dirname, 'spire.io.js'
-  reqwestSrc = path.join __dirname, 'reqwest.js'
+  libSrc = path.join __dirname, 'spire.io.bundle.js'
   sha = undefined
   link = undefined
   http = require 'http'
@@ -79,13 +79,9 @@ task 'test:server', 'launch a server for the browser tests', (o)->
     app.use express.logger 'dev'
     app.use express.static testDir
 
-  app.get '/spire.io.js', (req, res)->
+  app.get '/spire.io.bundle.js', (req, res)->
     res.header 'Content-Type', 'text/javascript'
     res.sendfile libSrc
-
-  app.get '/reqwest.js', (req, res)->
-    res.header 'Content-Type', 'text/javascript'
-    res.sendfile reqwestSrc
 
   app.get '/', (req, res)->
     index = [
@@ -100,8 +96,8 @@ task 'test:server', 'launch a server for the browser tests', (o)->
       '  <script src="jasmine/sinon.helpers.js"></script>'
       '  <script src="jasmine/jasmine-sinon.helpers.js"></script>'
       ''
-      '  <script src="reqwest.js"></script>'
-      '  <script src="spire.io.js"></script>'
+      '  <script src="spire.io.bundle.js"></script>'
+      '  <script src="jasmine/browser.helpers.js"></script>'
       '  <script src="jasmine/helpers.js"></script>'
       '  ' + tests.join('\n  ')
       '</head>'
@@ -144,14 +140,16 @@ task 'bundle', 'create the minified version of spire.io.js', (o)->
   fs = require 'fs'
   uglify = require 'uglify-js'
 
-  fs.readFile 'spire.io.js', 'utf8', (err, data)->
+  browserify = require 'browserify'
+
+  module = browserify(
+    require:
+      spire: "./spire.io.js"
+    ignore: 'request'
+  ).bundle()
+
+  fs.writeFile 'spire.io.bundle.js', module, (err)->
     throw err if err
-
-
-    out = uglify data
-
-    fs.writeFile 'spire.io.min.js', out, (err)->
-      throw err if err
 
 task 'docs', 'generate the inline documentation', ->
   fs = require 'fs'

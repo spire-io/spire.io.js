@@ -9,6 +9,8 @@
 , "dependencies": { "request": "2.9.3"
   }
 , "devDependencies": { "express": "2.5.0"
+  , "reqwest": "0.4.1"
+  , "browserify": "1.8.3"
   , "uglify-js": "1.1.1"
   , "docco": "0.3.0"
   , "gitio": "1.0.1"

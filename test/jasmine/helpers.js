@@ -1,6 +1,10 @@
 var helpers = {}
 ;
 
+if (typeof module === 'object' && module.exports) {
+  module.exports.helpers = helpers;
+}
+
 //`helpers.account(callback)` - async: makes an async call to the
 // spire.io API to create a test account and triggers the `callback`, the
 // `callback` will be triggered with two args `err`, and the authenticated

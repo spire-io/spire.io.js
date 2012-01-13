@@ -2891,7 +2891,6 @@ sinon.fakeServer = (function () {
 
 
 if (typeof module == "object" && typeof require == "function") {
-    module.exports = sinon;
-    console.log(sinon);
+    module.exports.sinon = sinon;
 }
 

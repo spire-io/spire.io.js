@@ -55,12 +55,9 @@ var spire = (function(){
     }
   };
 
-
   if (typeof reqwest === 'function') {
     spire.ajax = reqwest;
-  } else {
-    // Hope we are in node land.
-
+  } else if (typeof module === 'object' && typeof require === 'function') {
     // This builds an ajax-like inteface around request.
     var request = require('request');
     spire.ajax = function (params) {
@@ -109,8 +106,9 @@ var spire = (function(){
 
       return request(params, handler);
     };
+  } else {
+    throw "The Spire.JS library requires reqwest: https://github.com/ded/reqwest to run in a browser.";
   }
-
 
   // # spire.headers
   //

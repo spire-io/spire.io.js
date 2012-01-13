@@ -38,7 +38,8 @@ task 'test:server', 'launch a server for the browser tests', (o)->
   express = require 'express'
   app = express.createServer()
   testDir = path.join __dirname, 'test'
-  src = path.join __dirname, 'jquery.spire.js'
+  libSrc = path.join __dirname, 'jquery.spire.js'
+  reqwestSrc = path.join __dirname, 'reqwest.js'
   sha = undefined
   link = undefined
   http = require 'http'
@@ -56,6 +57,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
 
   tests = _.map testFiles, (file, index, collection)->
     if file.match /test\/jasmine.*\.js$/
+      console.log(file);
       collection[index] = null
     else if file.match /\.js$/
       file = file.replace /(.*test\/)/, ''
@@ -69,7 +71,11 @@ task 'test:server', 'launch a server for the browser tests', (o)->
 
   app.get '/jquery.spire.js', (req, res)->
     res.header 'Content-Type', 'text/javascript'
-    res.sendfile src
+    res.sendfile libSrc
+
+  app.get '/reqwest.js', (req, res)->
+    res.header 'Content-Type', 'text/javascript'
+    res.sendfile reqwestSrc
 
   app.get '/', (req, res)->
     index = [
@@ -84,7 +90,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
       '  <script src="jasmine/sinon.helpers.js"></script>'
       '  <script src="jasmine/jasmine-sinon.helpers.js"></script>'
       ''
-      '  <script src="https://raw.github.com/ded/reqwest/master/src/reqwest.js"></script>'
+      '  <script src="reqwest.js"></script>'
       '  <script src="jquery.spire.js"></script>'
       '  <script src="jasmine/helpers.js"></script>'
       '  ' + tests.join('\n  ')

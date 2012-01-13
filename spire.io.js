@@ -58,9 +58,9 @@
     }
   };
 
-  if (typeof reqwest === 'function') {
-    spire.ajax = reqwest;
-  } else if (typeof module === 'object' && typeof require === 'function') {
+  if (typeof window !== 'undefined') {
+    spire.ajax = require('reqwest');
+  } else {
     // This builds an ajax-like inteface around request.
     var request = require('request');
     spire.ajax = function (params) {
@@ -109,8 +109,6 @@
 
       return request(params, handler);
     };
-  } else {
-    throw "The Spire.JS library requires reqwest: https://github.com/ded/reqwest to run in a browser.";
   }
 
   // # spire.headers

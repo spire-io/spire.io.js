@@ -201,7 +201,13 @@
                   var options = { subscription: sub };
 
                   // Get events from the subscription
+                  var subscriptionCallCount = 0;
                   var get = function(){
+                    subscriptionCallCount++;
+                    if (spire.options._maxSubscriptionCallCount < subscriptionCallCount) {
+                      return;
+                    }
+
                     spire.requests.subscriptions.get(options, function(err, events){
                       if (err) return callback(err);
 
@@ -238,7 +244,12 @@
           var options = { subscription: sub };
 
           // Get events from the subscription
+          var subscriptionCallCount = 0;
           var get = function(){
+            subscriptionCallCount++;
+            if (spire.options._maxSubscriptionCallCount < subscriptionCallCount) {
+              return;
+            }
             spire.requests.subscriptions.get(options, function(err, events){
               if (err) return callback(err);
 

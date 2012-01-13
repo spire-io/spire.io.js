@@ -15,6 +15,7 @@ describe('spire.messages.subscribe(channel, callback)', function(){
     ;
 
     spire.options.key = account.key;
+    spire.options._maxSubscriptionCallCount = 1;
 
     spire.messages.subscribe(channel, callback);
 
@@ -57,6 +58,7 @@ describe('spire.messages.subscribe(channel, callback)', function(){
     ;
 
     spire.options.key = account.key;
+    spire.options._maxSubscriptionCallCount = 2;
 
     spire.messages.publish({ channel: channel
     , content: 'robocop says "My name is Murphy."'

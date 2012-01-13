@@ -1,11 +1,15 @@
 
 # Synopsis
 
-`$.spire` is a [jQuery](http://jquery.com/) plugin and wrapper library for the [spire.io API](http://www.spire.io/).
+`spire.io.js` is a javascript library for the [spire.io API](http://www.spire.io/).
 
-    $.spire.options.key = '<your account key>';
+This library can be used inside the browser, or as a NodeJS module.
 
-    $.spire.messages.subscribe('chat example', function(err, messages){
+Connect to the spire server and listen on a channel.
+
+    spire.options.key = '<your account key>';
+
+    spire.messages.subscribe('chat example', function(err, messages){
       $.each(messages, function(i, message){
         var p = $('<p>').text(message.content);
 
@@ -20,7 +24,7 @@ Construct a message to send, `message.content` can be a string or json object.
         }
     ;
 
-    $.spire.messages.publish(message, function(err, message){
+    spire.messages.publish(message, function(err, message){
       if (err) throw err; // you could do better ;)
 
       alert('message sent!');
@@ -28,7 +32,7 @@ Construct a message to send, `message.content` can be a string or json object.
 
 Or if you don't care that the message was sent
 
-    $.spire.messages.publish(message);
+    spire.messages.publish(message);
 
 
 ## What is spire.io?
@@ -46,9 +50,15 @@ Or if you don't care that the message was sent
 
 ## Tests
 
-CORs needs the html to on a server, to run the tests you need to run the test server and visit it's homepage. There is a helper in the Cakefile for this, run the test server via:
+The test suite can be run in NodeJS via:
+
+    cake test:node
+
+To run the test suite in the browser, you first need to start the test server with:
 
     cake test:server
+
+then connect to the server's homepage.
 
 If you don't know about cake and Cakefiles head on over to the CoffeeScript site (Don't worry this plugin isn't written in CoffeScript nor do you need it for anything other than running the development tasks)
 

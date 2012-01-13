@@ -49,7 +49,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
   express = require 'express'
   app = express.createServer()
   testDir = path.join __dirname, 'test'
-  libSrc = path.join __dirname, 'jquery.spire.js'
+  libSrc = path.join __dirname, 'spire.io.js'
   reqwestSrc = path.join __dirname, 'reqwest.js'
   sha = undefined
   link = undefined
@@ -68,7 +68,6 @@ task 'test:server', 'launch a server for the browser tests', (o)->
 
   tests = _.map testFiles, (file, index, collection)->
     if file.match /test\/jasmine.*\.js$/
-      console.log(file);
       collection[index] = null
     else if file.match /\.js$/
       file = file.replace /(.*test\/)/, ''
@@ -80,7 +79,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
     app.use express.logger 'dev'
     app.use express.static testDir
 
-  app.get '/jquery.spire.js', (req, res)->
+  app.get '/spire.io.js', (req, res)->
     res.header 'Content-Type', 'text/javascript'
     res.sendfile libSrc
 
@@ -92,7 +91,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
     index = [
       '<html>'
       '<head>'
-      '  <title>jquery.spire.js | specs</title>'
+      '  <title>spire.io.js | specs</title>'
       '  <link rel="shortcut icon"'
       '    type="image/png" href="jasmine/favicon.png" />'
       '  <link href="jasmine/jasmine.css" rel="stylesheet"/>'
@@ -102,7 +101,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
       '  <script src="jasmine/jasmine-sinon.helpers.js"></script>'
       ''
       '  <script src="reqwest.js"></script>'
-      '  <script src="jquery.spire.js"></script>'
+      '  <script src="spire.io.js"></script>'
       '  <script src="jasmine/helpers.js"></script>'
       '  ' + tests.join('\n  ')
       '</head>'
@@ -132,7 +131,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
 
   exec 'git rev-parse --verify HEAD', (err, stdout, stderr)->
     sha = stdout.replace('\n', '')
-    shorten = 'https://github.com/spire-io/jquery.spire.js/commit/' + sha
+    shorten = 'https://github.com/spire-io/spire.io.js/commit/' + sha
     gitio shorten, (err, res)->
       throw err if err
       link = res
@@ -141,17 +140,17 @@ task 'test:server', 'launch a server for the browser tests', (o)->
         process.stdout.write '  => http://' + o.host + ':' + o.port
         process.stdout.write '\n'
 
-task 'bundle', 'create the minified version of jquery.spire.js', (o)->
+task 'bundle', 'create the minified version of spire.io.js', (o)->
   fs = require 'fs'
   uglify = require 'uglify-js'
 
-  fs.readFile 'jquery.spire.js', 'utf8', (err, data)->
+  fs.readFile 'spire.io.js', 'utf8', (err, data)->
     throw err if err
 
 
     out = uglify data
 
-    fs.writeFile 'jquery.spire.min.js', out, (err)->
+    fs.writeFile 'spire.io.min.js', out, (err)->
       throw err if err
 
 task 'docs', 'generate the inline documentation', ->
@@ -159,12 +158,12 @@ task 'docs', 'generate the inline documentation', ->
   {spawn, exec} = require 'child_process'
   command = [
     'rm -r docs/*.html'
-    'node_modules/docco/bin/docco jquery.spire.js'
+    'node_modules/docco/bin/docco spire.io.js'
   ].join(' && ')
   exec command, (err) ->
     throw err if err
     # move to the index
-    fs.rename 'docs/jquery.spire.html', 'docs/index.html', (err)->
+    fs.rename 'docs/spire.io.html', 'docs/index.html', (err)->
 
 # Adapted from http://bit.ly/v02mG8
 task 'docs:pages', 'Update gh-pages branch', ->

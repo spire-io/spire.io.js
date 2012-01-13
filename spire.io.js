@@ -2,8 +2,8 @@
 
 // You can learn more about spire.io and it's services at http://spire.io, or find help with the following things:
 
-// * [source code](http://github.com/spire-io/jquery.spire.js)
-// * [issues](http://github.com/spire-io/jquery.spire.js/issues)
+// * [source code](http://github.com/spire-io/spire.io.js)
+// * [issues](http://github.com/spire-io/spire.io.js/issues)
 // * [contact spire.io](http://spire.io/contact.html)
 
 var spire = (function(){

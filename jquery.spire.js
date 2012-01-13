@@ -18,7 +18,7 @@ var spire = (function(){
     this.message = message || 'XHRError';
     this.xhr = xhr;
     this.textStatus = status;
-    this.status = (xhr) ? xhr.status : null;
+    this.status = (xhr) ? xhr.status || xhr.statusCode : null;
     this.jqueryErr = err;
   };
 
@@ -87,7 +87,11 @@ var spire = (function(){
 
       var handler = function (err, req, body) {
         if (err) {
-          return params.error(req, req.status, err);
+          return params.error(req, req.statusCode, err);
+        }
+
+        if (req.statusCode >= 400) {
+          return params.error(req, req.statusCode, req.statusCode);
         }
 
         if (params.type === 'json') {

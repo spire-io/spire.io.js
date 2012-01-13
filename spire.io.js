@@ -6,7 +6,11 @@
 // * [issues](http://github.com/spire-io/spire.io.js/issues)
 // * [contact spire.io](http://spire.io/contact.html)
 
-var spire = (function(){
+!function (name, definition) {
+  if (typeof define == 'function') define(definition)
+  else if (typeof module != 'undefined') module.exports = definition()
+  else this[name] = definition()
+}('spire', function () {
   // # XHRError
   //
   // XHRError is a wrapper for raw XHR errors, this makes it easier to pass an
@@ -811,8 +815,4 @@ var spire = (function(){
   };
 
   return spire;
-})();
-
-if (typeof module === 'object' && module.exports) {
-  module.exports = spire;
-}
+});

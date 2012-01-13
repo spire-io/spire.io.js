@@ -9,17 +9,16 @@
 var spire = (function(){
   // # XHRError
   //
-  // XHRError is a wrapper for the xhr errors triggered by jQuery, this makes
-  // it easier to pass an error to the callbacks of the async functions that
-  // still retain their extra contextual information passed into the
-  // `arguments` of `jQuery.ajax`'s `error` handler
+  // XHRError is a wrapper for raw XHR errors, this makes it easier to pass an
+  // error to the callbacks of the async functions that still retain their extra
+  // contextual information passed into the `arguments` of `ajax`'s `error`
+  // handler
   var XHRError = function(xhr, status, err, message){
     this.name = 'XHRError';
     this.message = message || 'XHRError';
     this.xhr = xhr;
     this.textStatus = status;
     this.status = (xhr) ? xhr.status || xhr.statusCode : null;
-    this.jqueryErr = err;
   };
 
   XHRError.prototype = new Error();

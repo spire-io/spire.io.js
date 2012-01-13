@@ -4,16 +4,15 @@
 <li><a href="http://spire.io/contact.html">contact spire.io</a></li>
 </ul>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(){</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h1>XHRError</h1>
 
-<p>XHRError is a wrapper for the xhr errors triggered by jQuery, this makes
-it easier to pass an error to the callbacks of the async functions that
-still retain their extra contextual information passed into the
-<code>arguments</code> of <code>jQuery.ajax</code>'s <code>error</code> handler</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">XHRError</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">message</span><span class="p">){</span>
+<p>XHRError is a wrapper for raw XHR errors, this makes it easier to pass an
+error to the callbacks of the async functions that still retain their extra
+contextual information passed into the <code>arguments</code> of <code>ajax</code>'s <code>error</code>
+handler</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">XHRError</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">message</span><span class="p">){</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s1">&#39;XHRError&#39;</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span> <span class="o">||</span> <span class="s1">&#39;XHRError&#39;</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">xhr</span> <span class="o">=</span> <span class="nx">xhr</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">textStatus</span> <span class="o">=</span> <span class="nx">status</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">)</span> <span class="o">?</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span> <span class="o">||</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">:</span> <span class="kc">null</span><span class="p">;</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">jqueryErr</span> <span class="o">=</span> <span class="nx">err</span><span class="p">;</span>
   <span class="p">};</span>
 
   <span class="nx">XHRError</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">();</span>

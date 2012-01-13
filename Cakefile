@@ -30,6 +30,17 @@ walk = (dir, callback)->
 
   walker(dir)
 
+task 'test:node', 'run the tests in nodeJS', (o)->
+  {spawn, exec} = require 'child_process'
+  path = require 'path'
+  jasminePath = path.join __dirname, '/node_modules/jasmine-node/bin/jasmine-node'
+  testPath = path.join __dirname, 'test/'
+
+  jasmine = spawn jasminePath, ['--test-dir', testPath]
+  jasmine.stdout.on 'data', (d) ->
+    process.stdout.write d
+  jasmine.stderr.on 'data', (d) ->
+    process.stderr.write d
 
 task 'test:server', 'launch a server for the browser tests', (o)->
   path = require 'path'

@@ -136,20 +136,32 @@ task 'test:server', 'launch a server for the browser tests', (o)->
         process.stdout.write '  => http://' + o.host + ':' + o.port
         process.stdout.write '\n'
 
-task 'bundle', 'create the minified version of spire.io.js', (o)->
+task 'bundle', 'create the bundled version of spire.io.js', (o)->
   fs = require 'fs'
-  uglify = require 'uglify-js'
 
   browserify = require 'browserify'
 
-  module = browserify(
+  bundle = browserify(
     require:
       spire: "./spire.io.js"
     ignore: 'request'
   ).bundle()
 
-  fs.writeFile 'spire.io.bundle.js', module, (err)->
+  fs.writeFile 'spire.io.bundle.js', bundle, (err)->
     throw err if err
+
+task 'bundle:min', 'create the bundled and minified version of spire.io.js', (o)->
+  invoke "bundle"
+  fs = require 'fs'
+  uglify = require 'uglify-js'
+
+  fs.readFile 'spire.io.bundle.js', 'utf8', (err, data)->
+    throw err if err
+
+    minified = uglify data
+
+    fs.writeFile 'spire.io.bundle.min.js', minified, (err)->
+      throw err if err
 
 task 'docs', 'generate the inline documentation', ->
   fs = require 'fs'

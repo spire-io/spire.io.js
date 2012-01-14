@@ -543,7 +543,6 @@
   spire.requests.sessions.get = function(session, callback){
     spire.ajax({ method: 'get'
       , url: session.url
-      , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Accept': spire.headers.mediaType('session')
         , 'Authorization': spire.headers.authorization(session)
         }
@@ -573,7 +572,6 @@
 
     spire.ajax({ method: 'post'
       , url: spire.resources.sessions.url
-      , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('account')
         , 'Accept': spire.headers.mediaType('session')
         }
@@ -592,9 +590,6 @@
   spire.requests.channels.get = function(channel, callback){
     spire.ajax({ method: 'get'
       , url: channel.url
-      , beforeSend: function(xhr){
-          xhr.withCredentials = true;
-        }
       , headers: { 'Accept': spire.headers.mediaType('channel')
         , 'Authorization': spire.headers.authorization(channel)
         }
@@ -616,9 +611,6 @@
 
     spire.ajax({ method: 'post'
       , url: channels.url
-      , beforeSend: function(xhr){
-          xhr.withCredentials = true;
-        }
       , headers: { 'Content-Type': spire.headers.mediaType('channel')
         , 'Accept': spire.headers.mediaType('channel')
         , 'Authorization': spire.headers.authorization(channels)
@@ -659,7 +651,6 @@
 
     spire.ajax({ method: 'post'
       , url: subscriptions.url
-      , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('subscription')
         , 'Accept': spire.headers.mediaType('subscription')
         , 'Authorization': spire.headers.authorization(subscriptions)
@@ -696,7 +687,6 @@
     spire.ajax({ method: 'get'
       , url: subscription.url
       // , timeout: options.timeout + 10000
-      , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('events')
         , 'Accept': spire.headers.mediaType('events')
         , 'Authorization': spire.headers.authorization(subscription)
@@ -733,7 +723,6 @@
 
     spire.ajax({ method: 'post'
       , url: channel.url
-      , beforeSend: function(xhr){ xhr.withCredentials = true; }
       , headers: { 'Content-Type': spire.headers.mediaType('message')
         , 'Accept': spire.headers.mediaType('message')
         , 'Authorization': spire.headers.authorization(channel)

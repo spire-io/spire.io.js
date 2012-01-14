@@ -142,8 +142,7 @@ task 'bundle', 'create the bundled version of spire.io.js', (o)->
   browserify = require 'browserify'
 
   bundle = browserify(
-    require:
-      spire: "./spire.io.js"
+    require: ["./spire.io.js"]
     ignore: 'request'
   ).bundle()
 

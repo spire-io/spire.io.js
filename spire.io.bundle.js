@@ -1562,5 +1562,3 @@ require.define("/node_modules/reqwest/reqwest.js", function (require, module, ex
 })
 
 });
-
-require.alias("./spire.io.js", "/node_modules/spire");

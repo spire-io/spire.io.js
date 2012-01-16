@@ -43,7 +43,6 @@ task 'test:node', 'run the tests in nodeJS', (o)->
     process.stderr.write d
 
 task 'test:server', 'launch a server for the browser tests', (o)->
-  invoke "bundle"
   path = require 'path'
   fs = require 'fs'
   {exec} = require 'child_process'
@@ -80,8 +79,9 @@ task 'test:server', 'launch a server for the browser tests', (o)->
     app.use express.static testDir
 
   app.get '/spire.io.bundle.js', (req, res)->
-    res.header 'Content-Type', 'text/javascript'
-    res.sendfile libSrc
+    TaskHelpers.makeBundle ->
+      res.header 'Content-Type', 'text/javascript'
+      res.sendfile libSrc
 
   app.get '/', (req, res)->
     index = [
@@ -137,30 +137,20 @@ task 'test:server', 'launch a server for the browser tests', (o)->
         process.stdout.write '\n'
 
 task 'bundle', 'create the bundled version of spire.io.js', (o)->
-  fs = require 'fs'
-
-  browserify = require 'browserify'
-
-  bundle = browserify(
-    require: ["./spire.io.js"]
-    ignore: 'request'
-  ).bundle()
-
-  fs.writeFile 'spire.io.bundle.js', bundle, (err)->
-    throw err if err
+  TaskHelpers.makeBundle()
 
 task 'bundle:min', 'create the bundled and minified version of spire.io.js', (o)->
-  invoke "bundle"
-  fs = require 'fs'
-  uglify = require 'uglify-js'
+  TaskHelpers.makeBundle ->
+    fs = require 'fs'
+    uglify = require 'uglify-js'
 
-  fs.readFile 'spire.io.bundle.js', 'utf8', (err, data)->
-    throw err if err
-
-    minified = uglify data
-
-    fs.writeFile 'spire.io.bundle.min.js', minified, (err)->
+    fs.readFile 'spire.io.bundle.js', 'utf8', (err, data)->
       throw err if err
+
+      minified = uglify data
+
+      fs.writeFile 'spire.io.bundle.min.js', minified, (err)->
+        throw err if err
 
 task 'docs', 'generate the inline documentation', ->
   fs = require 'fs'
@@ -213,3 +203,17 @@ task 'docs:pages', 'Update gh-pages branch', ->
           process.stderr.write stderr
           throw err if err
           commitDocs()
+
+TaskHelpers =
+  makeBundle: (callback) ->
+    browserify = require 'browserify'
+
+    bundle = browserify(
+      require: ["./spire.io.js"]
+      ignore: 'request'
+    ).bundle()
+
+    fs.writeFile 'spire.io.bundle.js', bundle, (err)->
+      throw err if err
+      callback() if callback
+

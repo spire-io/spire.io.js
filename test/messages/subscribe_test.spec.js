@@ -15,9 +15,12 @@ describe('spire.messages.subscribe(channel, callback)', function(){
     ;
 
     spire.options.key = account.key;
-    spire.options._maxSubscriptionCallCount = 1;
 
-    spire.messages.subscribe(channel, callback);
+    spire.messages.subscribe(
+      channel,
+      { _maxSubscriptionCallCount: 1 },
+      callback
+    );
 
     var indians = ['tonto', 'injun joe', 'hiawatha'];
 
@@ -59,13 +62,15 @@ describe('spire.messages.subscribe(channel, callback)', function(){
     ;
 
     spire.options.key = account.key;
-    spire.options._maxSubscriptionCallCount = 2;
 
     spire.messages.publish({ channel: channel
     , content: 'robocop says "My name is Murphy."'
     }, function(err, msg){
       if (err) throw err;
-      else spire.messages.subscribe(channel, callback);
+      else spire.messages.subscribe(
+        channel,
+        { _maxSubscriptionCallCount: 2 },
+        callback);
     });
 
     waitsFor(function(){ return callback.called; }

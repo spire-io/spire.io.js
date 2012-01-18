@@ -164,7 +164,15 @@
   //       });
   //     });
   //
-  spire.messages.subscribe = function(name, callback){
+  // You can also pass in a hash of options to the subscription.  Accepted
+  // options are 'limit', 'order_by', 'timeout', and 'delay'.
+  //
+  spire.messages.subscribe = function(name, subOptions, callback){
+    if (arguments.length === 2 && typeof subOptions === 'function') {
+      callback = subOptions;
+      subOptions = {};
+    }
+
     spire.connect(function(err, session){
       if (err) return callback(err);
 
@@ -178,8 +186,12 @@
       // Get events from the subscription
       var get = function (options) {
         subscriptionCallCount++;
-        if (spire.options._maxSubscriptionCallCount < subscriptionCallCount) {
+        if (subOptions._maxSubscriptionCallCount < subscriptionCallCount) {
           return;
+        }
+
+        for (var key in subOptions) {
+          options[key] = subOptions[key];
         }
 
         spire.requests.subscriptions.get(options, function(err, events){
@@ -239,9 +251,6 @@
           if (err) return callback(err);
 
           var options = { subscription: sub };
-
-          // Get events from the subscription
-          var subscriptionCallCount = 0;
 
           // Kick off long-polling
           get(options);

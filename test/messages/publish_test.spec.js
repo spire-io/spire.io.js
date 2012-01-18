@@ -51,14 +51,14 @@ describe('spire.messages.publish(message, [callback])', function(){
           if (err) throw err;
           else account = session.resources.account;
 
-          stub = sinon.stub(spire, 'ajax', function(options){
+          stub = sinon.stub(spire, 'shred', function(options){
             return options.error();
           });
         });
       });
 
       afterEach(function(){
-        spire.ajax.restore();
+        spire.shred.restore();
       });
 
       it('should pass errors to the callback', function(){
@@ -119,14 +119,14 @@ describe('spire.messages.publish(message, [callback])', function(){
           if (err) throw err;
           else account = session.resources.account;
 
-          stub = sinon.stub(spire, 'ajax', function(options){
+          stub = sinon.stub(spire, 'shred', function(options){
             return options.error();
           });
         });
       });
 
       afterEach(function(){
-        spire.ajax.restore();
+        spire.shred.restore();
       });
 
       it('should throw', function(){

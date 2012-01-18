@@ -1953,7 +1953,7 @@ sinon.fakeServer = (function () {
  * 1.3.x, which does not use xhr object's onreadystatehandler at all - instead,
  * it polls the object for completion with setInterval. Dispite the direct
  * motivation, there is nothing jQuery-specific in this file, so it can be used
- * in any environment where the ajax implementation depends on setInterval or
+ * in any environment where the shred implementation depends on setInterval or
  * setTimeout.
  *
  * @author Christian Johansen (christian@cjohansen.no)

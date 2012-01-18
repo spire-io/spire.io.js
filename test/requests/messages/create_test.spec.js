@@ -54,14 +54,14 @@ describe('spire.requests.messages.create', function(){
         if (err) throw err;
         else channel = chan;
 
-        stub = sinon.stub(spire, 'ajax', function(options){
+        stub = sinon.stub(spire, 'shred', function(options){
           return options.error();
         });
       });
     });
 
     afterEach(function(){
-      spire.ajax.restore();
+      spire.shred.restore();
     });
 
     it('should pass errors to the callback', function(){

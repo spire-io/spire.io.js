@@ -57,59 +57,9 @@
     , billing: {}
     }
   };
-
-  if (typeof window !== 'undefined') {
-    spire.ajax = require('reqwest');
-  } else {
-    // This builds an ajax-like inteface around request.
-    var request = require('request');
-    spire.ajax = function (params) {
-      params.headers = params.headers || {};
-      params.method = params.method.toLowerCase();
-
-      // Gotta munge the data ourselves.
-      if (params.data) {
-        if (params.method === 'put' || params.method === 'post') {
-          if (typeof params.data === 'string') {
-            params.body = params.data;
-          } else {
-            params.body = JSON.stringify(params.data);
-          }
-        } else {
-          var first = true;
-          for (var key in params.data) {
-            params.url += first ? '?' : '&';
-            params.url += key + '=' + params.data[key];
-            first = false;
-          }
-        }
-      }
-
-      var handler = function (err, req, body) {
-        if (err) {
-          return params.error(req, req.statusCode, err);
-        }
-
-        if (req.statusCode >= 400) {
-          return params.error(req, req.statusCode, req.statusCode);
-        }
-
-        if (params.type === 'json') {
-          body = JSON.parse(body);
-        }
-
-        params.success(body);
-      };
-
-      if (params.type === 'json') {
-        if (!params.headers['Accept']) {
-          params.headers['Accept'] = "application/json";
-        }
-      }
-
-      return request(params, handler);
-    };
-  }
+  
+  var Shred = require('shred');
+  spire.shred = new Shred();
 
   // # spire.headers
   //
@@ -519,41 +469,49 @@
     }
 
     // If there isn't a cache make an XHR to get the description.
-    spire.ajax({ method: 'GET'
-      , url: spire.options.url
-      , type: 'json'
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
-          callback(error);
-        }
+    spire.shred.get({
+      url: spire.options.url,
+      headers: {
+	    accept: "application/json"
+	  },
+	  on: {
+          error: function(response){
+            var error = new XHRError(response, response.status, response.status);
+            callback(error);
+      	  },
+          
         // ### UGH.
         //
         // XHR handlers always get executed on the `window`, I tried to
         // write a nice wrapper to help with testing but all it's methods
         // were getting called with `this` bound to the window.
-      , success: function(description, status, xhr){
-          spire.resources = description.resources;
-          spire.schema = description.schema;
+          success: function(response){
+            //console.log(response.body.data)
+            spire.resources = response.body.data.resources;
+            spire.schema = response.body.data.schema;
 
-          callback(null, description);
+            callback(null, response.body);
+          }
         }
     });
   };
 
   spire.requests.sessions.get = function(session, callback){
-    spire.ajax({ method: 'get'
-      , url: session.url
-      , headers: { 'Accept': spire.headers.mediaType('session')
-        , 'Authorization': spire.headers.authorization(session)
-        }
-      , type: 'json'
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
+    spire.shred.get({
+      url: session.url,
+      headers: {
+        'Accept': spire.headers.mediaType('session'),
+        'Authorization': spire.headers.authorization(session)
+      },
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
           callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
-      , success: function(session, status, xhr){
-          callback(null, session);
-        }
+      }
     });
 
   };
@@ -570,37 +528,41 @@
 
     if (options.email && options.password) options.key = null;
 
-    spire.ajax({ method: 'post'
-      , url: spire.resources.sessions.url
-      , headers: { 'Content-Type': spire.headers.mediaType('account')
-        , 'Accept': spire.headers.mediaType('session')
-        }
-      , data: JSON.stringify(options)
-      , type: 'json'
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
+    spire.shred.post({
+      url: spire.resources.sessions.url,
+      headers: {
+        'Content-Type': spire.headers.mediaType('account'),
+        'Accept': spire.headers.mediaType('session')
+      },
+      data: JSON.stringify(options),
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
           callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
-      , success: function(session, status, xhr){
-          callback(null, session);
-        }
+      }
     });
   };
 
   spire.requests.channels.get = function(channel, callback){
-    spire.ajax({ method: 'get'
-      , url: channel.url
-      , headers: { 'Accept': spire.headers.mediaType('channel')
-        , 'Authorization': spire.headers.authorization(channel)
+    spire.shred.get({
+      url: channel.url,
+      headers: {
+        'Authorization': spire.headers.authorization(channel),
+        'Accept': spire.headers.mediaType('channel')
+      },
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
+          callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
-      , type: 'json'
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
-          callback(error, null);
-        }
-      , success: function(channel, status, xhr){
-          callback(null, channel);
-        }
+      }
     });
   };
 
@@ -609,21 +571,23 @@
       , name = options.name
     ;
 
-    spire.ajax({ method: 'post'
-      , url: channels.url
-      , headers: { 'Content-Type': spire.headers.mediaType('channel')
-        , 'Accept': spire.headers.mediaType('channel')
-        , 'Authorization': spire.headers.authorization(channels)
-        }
-      , data: JSON.stringify({ name: name })
-      , type: 'json'
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
+    spire.shred.post({
+      url: channels.url,
+      headers: {
+        'Content-Type': spire.headers.mediaType('channel'),
+        'Accept': spire.headers.mediaType('channel'),
+        'Authorization': spire.headers.authorization(channels)
+      },
+      data: JSON.stringify({ name: name }),
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
           callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
-      , success: function(channel, status, xhr){
-          callback(null, channel);
-        }
+      }
     });
   };
 
@@ -648,22 +612,24 @@
     for (var i = 0; i < options.channels.length; i++) {
       data.channels.push(options.channels[i].url);
     }
-
-    spire.ajax({ method: 'post'
-      , url: subscriptions.url
-      , headers: { 'Content-Type': spire.headers.mediaType('subscription')
-        , 'Accept': spire.headers.mediaType('subscription')
-        , 'Authorization': spire.headers.authorization(subscriptions)
-        }
-      , data: JSON.stringify(data)
-      , type: 'json'
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
+    
+    spire.shred.post({
+      url: subscriptions.url,
+      headers: {
+        'Content-Type': spire.headers.mediaType('subscription'),
+        'Accept': spire.headers.mediaType('subscription'),
+        'Authorization': spire.headers.authorization(subscriptions)
+      },
+      data: JSON.stringify(data),
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
           callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
-      , success: function(subscription, status, xhr){
-          callback(null, subscription);
-        }
+      }
     });
   };
 
@@ -684,34 +650,33 @@
       data['last-message'] = subscription['last-message'];
     }
 
-    spire.ajax({ method: 'get'
-      , url: subscription.url
-      // , timeout: options.timeout + 10000
-      , headers: { 'Content-Type': spire.headers.mediaType('events')
-        , 'Accept': spire.headers.mediaType('events')
-        , 'Authorization': spire.headers.authorization(subscription)
-        }
-      , data: data
-      , type: 'json'
-      , error: function(xhr, status, errorThrown){
+    spire.shred.get({
+      url: subscription.url,
+      // timeout: options.timeout + 10000,
+      headers: {
+        'Content-Type': spire.headers.mediaType('events'),
+        'Accept': spire.headers.mediaType('events'), 
+        'Authorization': spire.headers.authorization(subscription)
+      },
+      data: data,
+      on: {
+        timeout: function(response) {
           // fake a returned events object
-          if (errorThrown === 'timeout') {
-            callback(null, { messages: [] });
-          } else {
-            var error = new XHRError(xhr, status, errorThrown);
-            callback(error);
-          }
-        }
-      , success: function(events, status, xhr){
-          // set the last message key if there are messages
-          var messageCount = events.messages.length
+          callback(null, { messages: [] });
+        },
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
+          callback(error);          
+      	},
+        success: function(response){
+          var messageCount = response.body.messages.length
           if (messageCount > 0){
             subscription['last-message'] =
-              events.messages[messageCount - 1].timestamp;
+              response.body.messages[messageCount - 1].timestamp;
           }
-
-          callback(null, events);
+          callback(null, response.body);
         }
+      }
     });
   };
 
@@ -720,95 +685,104 @@
     var channel = options.channel
       , content = options.content
     ;
-
-    spire.ajax({ method: 'post'
-      , url: channel.url
-      , headers: { 'Content-Type': spire.headers.mediaType('message')
-        , 'Accept': spire.headers.mediaType('message')
-        , 'Authorization': spire.headers.authorization(channel)
-        }
-      , data: JSON.stringify({ content: content })
-      , type: 'json'
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
+    
+    spire.shred.post({
+      url: channel.url,
+      headers: {
+        'Content-Type': spire.headers.mediaType('message'),
+        'Accept': spire.headers.mediaType('message'),
+        'Authorization': spire.headers.authorization(channel)
+      },
+      data: JSON.stringify({ content: content }),
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
           callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
-      , success: function(message, status, xhr){
-          callback(null, message);
-        }
+      }
     });
   };
 
   spire.requests.accounts.create = function(account, callback){
-    spire.ajax({ method: 'post'
-      , url: spire.resources.accounts.url
-      , headers: { 'Content-Type': spire.headers.mediaType('account')
-        , 'Accept': spire.headers.mediaType('session')
-        }
-      , data: JSON.stringify(account)
-      , type: 'json'
-      , success: function(session, status, xhr){
-          callback(null, session);
-        }
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
+    spire.shred.post({
+      url: spire.resources.accounts.url,
+      headers: {
+        'Content-Type': spire.headers.mediaType('account'),
+        'Accept': spire.headers.mediaType('session')
+      },
+      data: JSON.stringify(account),
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
           callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
+      }
     });
   };
 
   spire.requests.accounts.update = function(account, callback){
-    spire.ajax({ method: 'put'
-      , url: account.url
-      , headers: { 'Content-Type': spire.headers.mediaType('account')
-        , 'Accept': spire.headers.mediaType('account')
-        , 'Authorization': spire.headers.authorization(account)
-        }
-      , data: JSON.stringify(account)
-      , type: 'json'
-      , success: function(account, status, xhr){
-          callback(null, account);
-        }
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
+    spire.shred.put({
+      url: account.url,
+      headers: {
+        'Content-Type': spire.headers.mediaType('account'),
+        'Accept': spire.headers.mediaType('account'),
+        'Authorization': spire.headers.authorization(account)
+      },
+      data: JSON.stringify(account),
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
           callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
+      }
     });
   };
 
   spire.requests.accounts.reset = function(account, callback){
-    spire.ajax({ method: 'post'
-      , url: account.url
-      , headers: { 'Content-Type': spire.headers.mediaType('account')
-        , 'Accept': spire.headers.mediaType('account')
-        , 'Authorization': spire.headers.authorization(account)
-        }
-      , type: 'json'
-      , success: function(account, status, xhr){
-          callback(null, account);
-        }
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
+    spire.shred.post({
+      url: account.url,
+      headers: {
+        'Content-Type': spire.headers.mediaType('account'),
+        'Accept': spire.headers.mediaType('account'),
+        'Authorization': spire.headers.authorization(account)
+      },
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
           callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
+      }
     });
   };
 
   spire.requests.billing.get = function(callback){
-    spire.ajax({ method: 'GET'
-      , url: spire.resources.billing.url
-      , headers: { 'Content-Type': spire.headers.mediaType('billing')
-        , 'Accept': spire.headers.mediaType('billing')
-        }
-      , type: 'json'
-      , error: function(xhr, status, errorThrown){
-          var error = new XHRError(xhr, status, errorThrown);
-
+    spire.shred.get({
+      url: spire.resources.billing.url,
+      headers: {
+        'Content-Type': spire.headers.mediaType('billing'),
+        'Accept': spire.headers.mediaType('billing')
+      },
+      on: {
+        error: function(response){
+          var error = new XHRError(response, response.status, response.status);
           callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body);
         }
-      , success: function(billing, status, xhr){
-          callback(null, billing);
-        }
+      }
     });
   };
 

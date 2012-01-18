@@ -174,7 +174,7 @@ helpers.shred = {
   stub: function (shred, sinon, options) {
     this.forEachMethod(function (method) {
       sinon.stub(shred, method, function(options){
-        return options.on.error();
+        return options.on.error({status: 666});
       });
     });
   },

@@ -171,10 +171,10 @@ helpers.shred = {
       fn(method);
     }
   },
-  stub: function (shred, sinon) {
+  stub: function (shred, sinon, options) {
     this.forEachMethod(function (method) {
       sinon.stub(shred, method, function(options){
-        return options.error();
+        return options.on.error();
       });
     });
   },

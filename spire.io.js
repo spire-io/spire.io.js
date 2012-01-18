@@ -36,7 +36,7 @@
   //
   // * **spire.options.url**: The url of the spire.io API, defaults to
   // [http://api.spire.io](http://api.spire.io).
-  var spire = { options: { url: 'http://build.spire.io'
+  var spire = { options: { url: 'https://api.spire.io'
     // * **spire.options.version**: The spire.io API version to use when making requests for resources, defaults to 1.0.
     , version: '1.0'
     // * **spire.options.timeout**: The timeout for long-polling in seconds, defaults to 30 seconds

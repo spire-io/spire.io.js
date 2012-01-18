@@ -52,14 +52,12 @@ describe('spire.accounts.authenticate(account, callback)', function(){
         if (err) throw err;
         else account = session.resources.account;
 
-        stub = sinon.stub(spire, 'shred', function(options){
-          return options.error();
-        });
+        helpers.shred.stub(spire.shred, sinon);
       });
     });
 
     afterEach(function(){
-      spire.shred.restore();
+      helpers.shred.restore(spire.shred);
     });
 
     it('should pass errors to the callback', function(){

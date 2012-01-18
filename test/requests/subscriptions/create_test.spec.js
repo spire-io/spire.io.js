@@ -57,14 +57,12 @@ describe('spire.requests.subscriptions.create', function(){
         channel = c;
         session = s;
 
-        stub = sinon.stub(spire, 'shred', function(options){
-          return options.error();
-        });
+        helpers.shred.stub(spire.shred, sinon);
       });
     });
 
     afterEach(function(){
-      spire.shred.restore();
+      helpers.shred.restore(spire.shred);
     });
 
     it('should pass errors to the callback', function(){

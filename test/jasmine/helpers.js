@@ -162,3 +162,25 @@ beforeEach(function(){
     }
   });
 });
+
+helpers.shred = {
+  methods: ['get', 'put', 'post', 'delete'],
+  forEachMethod: function(fn) {
+    for (var i = 0; i < this.methods.length; i++){
+      var method = this.methods[i];
+      fn(method);
+    }
+  },
+  stub: function (shred, sinon) {
+    this.forEachMethod(function (method) {
+      sinon.stub(shred, method, function(options){
+        return options.error();
+      });
+    });
+  },
+  restore: function (shred) {
+    this.forEachMethod(function (method) {
+      shred[method].restore();
+    });
+  }
+};

@@ -53,14 +53,12 @@ describe('spire.requests.channels.create', function(){
 
         spire.options.key = data.resources.account.key;
 
-        stub = sinon.stub(spire, 'shred', function(options){
-          return options.error();
-        });
+        helpers.shred.stub(spire.shred, sinon);
       });
     });
 
     afterEach(function(){
-      spire.shred.restore();
+      helpers.shred.restore(spire.shred);
     });
 
     it('should pass errors to the callback', function(){

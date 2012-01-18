@@ -209,8 +209,8 @@ TaskHelpers =
     browserify = require 'browserify'
 
     bundle = browserify(
-      require: ["./spire.io.js"]
-      ignore: 'request'
+      require: ["./spire.io.js", {'http': 'http-browserify'}]
+      ignore: ['zlib']
     ).bundle()
 
     fs.writeFile 'spire.io.bundle.js', bundle, (err)->

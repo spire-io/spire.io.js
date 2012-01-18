@@ -46,6 +46,7 @@ describe('spire.messages.subscribe(channel, callback)', function(){
         var message = messages[i];
 
         expect(message.content).toBeDefined();
+        expect(message.content).match(indians[i]).toBeTruth();
         expect(message.content.match('says how')).toBeTruthy();
         expect(message.timestamp).toBeDefined();
       }

@@ -18,7 +18,7 @@ describe('spire.messages.subscribe(channel, callback)', function(){
 
     spire.messages.subscribe(
       channel,
-      { _maxSubscriptionCallCount: 1 },
+      { maxCallCount: 1 },
       callback
     );
 
@@ -69,7 +69,7 @@ describe('spire.messages.subscribe(channel, callback)', function(){
       if (err) throw err;
       else spire.messages.subscribe(
         channel,
-        { _maxSubscriptionCallCount: 2 },
+        { maxCallCount: 2 },
         callback);
     });
 

@@ -186,7 +186,7 @@
       // Get events from the subscription
       var get = function (options) {
         subscriptionCallCount++;
-        if (subOptions._maxSubscriptionCallCount < subscriptionCallCount) {
+        if (subOptions.maxCallCount < subscriptionCallCount) {
           return;
         }
 

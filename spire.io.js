@@ -36,7 +36,7 @@
   //
   // * **spire.options.url**: The url of the spire.io API, defaults to
   // [http://api.spire.io](http://api.spire.io).
-  var spire = { options: { url: 'http://api.spire.io'
+  var spire = { options: { url: 'http://build.spire.io'
     // * **spire.options.version**: The spire.io API version to use when making requests for resources, defaults to 1.0.
     , version: '1.0'
     // * **spire.options.timeout**: The timeout for long-polling in seconds, defaults to 30 seconds
@@ -486,11 +486,10 @@
         // write a nice wrapper to help with testing but all it's methods
         // were getting called with `this` bound to the window.
           success: function(response){
-            //console.log(response.body.data)
             spire.resources = response.body.data.resources;
             spire.schema = response.body.data.schema;
 
-            callback(null, response.body);
+            callback(null, response.body.data);
           }
         }
     });
@@ -509,7 +508,7 @@
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -534,14 +533,14 @@
         'Content-Type': spire.headers.mediaType('account'),
         'Accept': spire.headers.mediaType('session')
       },
-      data: JSON.stringify(options),
+      content: options,
       on: {
         error: function(response){
           var error = new XHRError(response, response.status, response.status);
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -560,7 +559,7 @@
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -578,14 +577,14 @@
         'Accept': spire.headers.mediaType('channel'),
         'Authorization': spire.headers.authorization(channels)
       },
-      data: JSON.stringify({ name: name }),
+      content: { name: name },
       on: {
         error: function(response){
           var error = new XHRError(response, response.status, response.status);
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -620,14 +619,14 @@
         'Accept': spire.headers.mediaType('subscription'),
         'Authorization': spire.headers.authorization(subscriptions)
       },
-      data: JSON.stringify(data),
+      content: data,
       on: {
         error: function(response){
           var error = new XHRError(response, response.status, response.status);
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -658,7 +657,7 @@
         'Accept': spire.headers.mediaType('events'), 
         'Authorization': spire.headers.authorization(subscription)
       },
-      data: data,
+      content: data,
       on: {
         timeout: function(response) {
           // fake a returned events object
@@ -669,12 +668,12 @@
           callback(error);          
       	},
         success: function(response){
-          var messageCount = response.body.messages.length
+          var messageCount = response.body.data.messages.length
           if (messageCount > 0){
             subscription['last-message'] =
-              response.body.messages[messageCount - 1].timestamp;
+              response.body.data.messages[messageCount - 1].timestamp;
           }
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -693,14 +692,14 @@
         'Accept': spire.headers.mediaType('message'),
         'Authorization': spire.headers.authorization(channel)
       },
-      data: JSON.stringify({ content: content }),
+      content: { content: content },
       on: {
         error: function(response){
           var error = new XHRError(response, response.status, response.status);
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -713,14 +712,14 @@
         'Content-Type': spire.headers.mediaType('account'),
         'Accept': spire.headers.mediaType('session')
       },
-      data: JSON.stringify(account),
+      content: account,
       on: {
         error: function(response){
           var error = new XHRError(response, response.status, response.status);
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -734,14 +733,14 @@
         'Accept': spire.headers.mediaType('account'),
         'Authorization': spire.headers.authorization(account)
       },
-      data: JSON.stringify(account),
+      content: account,
       on: {
         error: function(response){
           var error = new XHRError(response, response.status, response.status);
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -761,7 +760,7 @@
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });
@@ -780,7 +779,7 @@
           callback(error);
       	},
         success: function(response){
-          callback(null, response.body);
+          callback(null, response.body.data);
         }
       }
     });

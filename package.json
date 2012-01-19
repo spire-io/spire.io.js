@@ -7,7 +7,7 @@
 , "bugs": { "url": "https://github.com/spire-io/jquery.spire.js/issues/" }
 , "directories": { "docs": "./docs" }
 , "dependencies": {
-    "shred": "0.6.6"
+    "shred": "0.6.7"
   }
 , "devDependencies": { "express": "2.5.0"
   , "browserify": "1.8.3"

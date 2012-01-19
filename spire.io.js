@@ -649,7 +649,7 @@
         'Accept': spire.headers.mediaType('events'), 
         'Authorization': spire.headers.authorization(subscription)
       },
-      content: data,
+      query: data,
       on: {
         timeout: function(response) {
           // fake a returned events object

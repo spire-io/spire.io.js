@@ -114,7 +114,15 @@
   //       });
   //     });
   //
-  spire.messages.subscribe = function(name, callback){
+  // You can also pass in a hash of options to the subscription.  Accepted
+  // options are 'limit', 'order_by', 'timeout', and 'delay'.
+  //
+  spire.messages.subscribe = function(name, subOptions, callback){
+    if (arguments.length === 2 && typeof subOptions === 'function') {
+      callback = subOptions;
+      subOptions = {};
+    }
+
     spire.connect(function(err, session){
       if (err) return callback(err);
 
@@ -122,6 +130,31 @@
           , name: name
           }
       ;
+
+      var subscriptionCallCount = 0;
+
+      // Get events from the subscription
+      var get = function (options) {
+        subscriptionCallCount++;
+        if (subOptions.maxCallCount < subscriptionCallCount) {
+          return;
+        }
+
+        for (var key in subOptions) {
+          options[key] = subOptions[key];
+        }
+
+        spire.requests.subscriptions.get(options, function(err, events){
+          if (err) return callback(err);
+
+          if (events.messages.length > 0){
+            callback(null, events.messages);
+          }
+
+          // Do it all over again
+          get(options);
+        });
+      }
 
       spire.requests.channels.create(options, function(err, channel){
         if (err) {
@@ -142,34 +175,13 @@
                     }
                 ;
 
-
                 spire.requests.subscriptions.create(options, function(err, sub){
                   if (err) return callback(err);
 
                   var options = { subscription: sub };
 
-                  // Get events from the subscription
-                  var subscriptionCallCount = 0;
-                  var get = function(){
-                    subscriptionCallCount++;
-                    if (spire.options._maxSubscriptionCallCount < subscriptionCallCount) {
-                      return;
-                    }
-
-                    spire.requests.subscriptions.get(options, function(err, events){
-                      if (err) return callback(err);
-
-                      if (events.messages.length > 0){
-                        callback(null, events.messages);
-                      }
-
-                      // Do it all over again
-                      get();
-                    });
-                  }
-
                   // Kick off long-polling
-                  get();
+                  get(options);
                 });
 
               });
@@ -185,33 +197,13 @@
             }
         ;
 
-
         spire.requests.subscriptions.create(options, function(err, sub){
           if (err) return callback(err);
 
           var options = { subscription: sub };
 
-          // Get events from the subscription
-          var subscriptionCallCount = 0;
-          var get = function(){
-            subscriptionCallCount++;
-            if (spire.options._maxSubscriptionCallCount < subscriptionCallCount) {
-              return;
-            }
-            spire.requests.subscriptions.get(options, function(err, events){
-              if (err) return callback(err);
-
-              if (events.messages.length > 0){
-                callback(null, events.messages);
-              }
-
-              // Do it all over again
-              get();
-            });
-          }
-
           // Kick off long-polling
-          get();
+          get(options);
         });
       });
     });

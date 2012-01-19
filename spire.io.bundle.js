@@ -358,22 +358,22 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
   else if (typeof module != 'undefined') module.exports = definition()
   else this[name] = definition()
 }('spire', function () {
-  // # XHRError
+  // # ResponseError
   //
-  // XHRError is a wrapper for raw XHR errors, this makes it easier to pass an
+  // ResponseError is a wrapper for request errors, this makes it easier to pass an
   // error to the callbacks of the async functions that still retain their extra
-  // contextual information passed into the `arguments` of `ajax`'s `error`
+  // contextual information passed into the `arguments` of `requests`'s `error`
   // handler
-  var XHRError = function(xhr, status, err, message){
-    this.name = 'XHRError';
-    this.message = message || 'XHRError';
-    this.xhr = xhr;
-    this.textStatus = status;
-    this.status = (xhr) ? xhr.status || xhr.statusCode : null;
+  var ResponseError = function (response) {
+    this.name = 'ResponseError';
+    this.message = 'ResponseError';
+    this.response = response;
+    this.textStatus = response.status;
+    this.status = response.status;
   };
 
-  XHRError.prototype = new Error();
-  XHRError.prototype.constructor = XHRError;
+  ResponseError.prototype = new Error();
+  ResponseError.prototype.constructor = ResponseError;
 
   // # spire
   //
@@ -788,8 +788,6 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
 
   // # spire.requests
   //
-  // Requests are raw and assume nothing besides the spire.io API url set in
-  // `spire.options.url`.
 
   // ## spire.requests.description.get
   //
@@ -815,15 +813,10 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
 	  },
 	  on: {
           error: function(response){
-            var error = new XHRError(response, response.status, response.status);
+            var error = new ResponseError(response);
             callback(error);
       	  },
-          
-        // ### UGH.
-        //
-        // XHR handlers always get executed on the `window`, I tried to
-        // write a nice wrapper to help with testing but all it's methods
-        // were getting called with `this` bound to the window.
+
           success: function(response){
             spire.resources = response.body.data.resources;
             spire.schema = response.body.data.schema;
@@ -843,7 +836,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       },
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){
@@ -875,7 +868,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       content: options,
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){
@@ -894,7 +887,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       },
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){
@@ -919,7 +912,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       content: { name: name },
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){
@@ -961,7 +954,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       content: data,
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){
@@ -1003,7 +996,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
           callback(null, { messages: [] });
         },
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);          
       	},
         success: function(response){
@@ -1034,7 +1027,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       content: { content: content },
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){
@@ -1054,7 +1047,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       content: account,
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){
@@ -1075,7 +1068,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       content: account,
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){
@@ -1095,7 +1088,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       },
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){
@@ -1114,7 +1107,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       },
       on: {
         error: function(response){
-          var error = new XHRError(response, response.status, response.status);
+          var error = new ResponseError(response);
           callback(error);
       	},
         success: function(response){

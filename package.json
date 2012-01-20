@@ -11,7 +11,7 @@
   }
 , "devDependencies": { "express": "2.5.0"
   , "browserify": "1.8.3"
-  , "http-browserify": "https://github.com/spire-io/http-browserify/tarball/master"
+  , "http-browserify": "0.0.2"
   , "uglify-js": "1.1.1"
   , "docco": "0.3.0"
   , "gitio": "1.0.1"

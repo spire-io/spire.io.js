@@ -1,12 +1,12 @@
 { "name": "jquery.spire.js"
-, "version": "0.1.0"
+, "version": "0.1.1"
 , "repository": { "type": "git"
   , "url": "https://github.com/isaacs/npm"
   }
 , "bugs": { "url": "https://github.com/spire-io/jquery.spire.js/issues/" }
 , "directories": { "docs": "./docs" }
 , "dependencies": {
-    "shred": "0.6.8"
+    "shred": "0.7.0"
   }
 , "devDependencies": { "express": "2.5.0"
   , "browserify": "1.8.3"

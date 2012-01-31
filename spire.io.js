@@ -531,6 +531,53 @@
     });
   };
 
+  spire.requests.channels.getAll = function(options, callback){
+    var channels = options.session.resources.channels;
+
+    spire.shred.get({
+      url: channels.url,
+      headers: {
+        'Authorization': spire.headers.authorization(channels),
+        'Accept': spire.headers.mediaType('channels')
+      },
+      on: {
+        error: function(response){
+          var error = new ResponseError(response);
+          callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body.data);
+        }
+      }
+    });
+  };
+
+  spire.requests.channels.getByName = function(options, callback){
+    var channels = options.session.resources.channels
+      , name = options.name
+    ;
+
+    spire.shred.get({
+      url: channels.url,
+      headers: {
+        'Authorization': spire.headers.authorization(channels),
+        'Accept': spire.headers.mediaType('channels')
+      },
+      query: {
+        name: name
+      },
+      on: {
+        error: function(response){
+          var error = new ResponseError(response);
+          callback(error);
+      	},
+        success: function(response){
+          callback(null, response.body.data);
+        }
+      }
+    });
+  };
+
   spire.requests.channels.get = function(channel, callback){
     spire.shred.get({
       url: channel.url,

@@ -471,10 +471,9 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
     spire.connect(function(err, session){
       if (err) return callback(err);
 
-      var options = { session: session
-          , name: name
-          }
-      ;
+      var options = {
+        name: name
+      };
 
       var subscriptionCallCount = 0;
 
@@ -514,11 +513,10 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
               ;
 
               spire.requests.channels.get(channel, function(err, channel){
-                var options = { channels: [ channel ]
-                    , events: [ 'messages' ]
-                    , session: session
-                    }
-                ;
+                var options = {
+                  channels: [ channel ],
+                  events: [ 'messages' ]
+                };
 
                 spire.requests.subscriptions.create(options, function(err, sub){
                   if (err) return callback(err);
@@ -538,7 +536,6 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
 
         var options = { channels: [ channel ]
             , events: [ 'messages' ]
-            , session: session
             }
         ;
 
@@ -593,17 +590,15 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
     spire.connect(function(err, session){
       if (err) return callback(err);
 
-      var options = { session: session
-          , name: message.channel
-          }
-      ;
+      var options = {
+          name: message.channel
+      };
 
       // Create the channel before sending a message to it.
       spire.requests.channels.create(options, function(err, channel){
-        var options = { session: session
-            , name: message.channel
-            }
-        ;
+        var options = {
+          name: message.channel
+        };
 
         if (err) {
           if (err.status === 409) {
@@ -877,7 +872,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
   };
 
   spire.requests.channels.getAll = function(options, callback){
-    var channels = options.session.resources.channels;
+    var channels = spire.session.resources.channels;
 
     spire.shred.get({
       url: channels.url,
@@ -898,7 +893,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
   };
 
   spire.requests.channels.getByName = function(options, callback){
-    var channels = options.session.resources.channels
+    var channels = spire.session.resources.channels
       , name = options.name
     ;
 
@@ -943,11 +938,11 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
   };
 
   spire.requests.channels.create = function(options, callback){
-    var channels = options.session.resources.channels
+    var channels = spire.session.resources.channels
       , name = options.name
     ;
 
-    var channel = options
+    var channel = spire
       .session
       .resources
       .channels
@@ -973,14 +968,8 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
           callback(error);
       	},
         success: function(response){
-          if (spire.session) {
-            spire
-              .session
-              .resources
-              .channels
-              .resources[options.name] = response.body.data
-            ;
-          }
+          spire.session.resources.channels
+            .resources[options.name] = response.body.data;
           callback(null, response.body.data);
         }
       }
@@ -997,7 +986,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
 
   */
   spire.requests.subscriptions.create = function(options, callback){
-    var subscriptions = options.session.resources.subscriptions
+    var subscriptions = spire.session.resources.subscriptions
       , data = { events: options.events
         , channels: []
         }
@@ -1116,6 +1105,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
           callback(error);
       	},
         success: function(response){
+          spire.session = response.body.data;
           callback(null, response.body.data);
         }
       }
@@ -1137,6 +1127,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
           callback(error);
       	},
         success: function(response){
+          spire.session = response.body.data;
           callback(null, response.body.data);
         }
       }
@@ -1157,6 +1148,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
           callback(error);
       	},
         success: function(response){
+          spire.session = response.body.data;
           callback(null, response.body.data);
         }
       }

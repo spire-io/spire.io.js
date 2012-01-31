@@ -50,9 +50,9 @@ Or if you don't care that the message was sent
 
 ## Working with this library
 
-* [source code](https://github.com/spire-io/jquery.spire.js)
-* [inline documentation](http://spire-io.github.com/jquery.spire.js/) (via [docco](http://jashkenas.github.com/docco/))
-* [issues](https://github.com/spire-io/jquery.spire.js/issues)
+* [source code](https://github.com/spire-io/spire.io.js)
+* [inline documentation](http://spire-io.github.com/spire.io.js/) (via [docco](http://jashkenas.github.com/docco/))
+* [issues](https://github.com/spire-io/spire.io.js/issues)
 * [contact spire.io](http://spire.io/contact.html)
 
 # Development

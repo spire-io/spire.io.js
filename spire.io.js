@@ -555,6 +555,18 @@
       , name = options.name
     ;
 
+    var channel = options
+      .session
+      .resources
+      .channels
+      .resources[name]
+    ;
+
+    if (channel) {
+      callback(null, channel);
+      return;
+    }
+
     spire.shred.post({
       url: channels.url,
       headers: {
@@ -569,6 +581,14 @@
           callback(error);
       	},
         success: function(response){
+          if (spire.session) {
+            spire
+              .session
+              .resources
+              .channels
+              .resources[options.name] = response.body.data
+            ;
+          }
           callback(null, response.body.data);
         }
       }

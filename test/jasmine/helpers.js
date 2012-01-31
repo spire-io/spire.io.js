@@ -57,14 +57,19 @@ helpers.account = function(callback){
 // jasmine test suite so it can be used in a `beforeEach` call without the
 // need to worry about async setup. Your `it` blocks will simply wait for the
 // `helpers.channel()` function to do it's work before running.
-helpers.channel = function(callback){
+helpers.channel = function(name, callback){
+  if (typeof name === 'function') {
+    // No name passed in, only a callback.
+    callback = name;
+    name = null;
+  }
   helpers.account(function(err, session){
     if (err) throw err;
     else spire.options.key = session.resources.account.key;
 
     var done
       , options = { session: session
-        , name: helpers.randomChannelName()
+        , name: name || helpers.randomChannelName()
         }
     ;
 

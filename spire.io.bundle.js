@@ -368,12 +368,10 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
     this.name = 'ResponseError';
     this.message = 'ResponseError';
     this.response = response;
-    this.textStatus = response.status;
     this.status = response.status;
   };
 
   ResponseError.prototype = new Error();
-  ResponseError.prototype.constructor = ResponseError;
 
   // # spire
   //

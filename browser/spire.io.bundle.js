@@ -2254,7 +2254,7 @@ var Logger = function(options) {
 
   // Write to stderr or a file
   if (logger.options.file){
-    logger.stream = fs.createWriteStream(logger.options.file);
+    logger.stream = fs.createWriteStream(logger.options.file, {"flags": "a"});
   } else {
       if(process.title === "node")
 	  logger.stream = process.stderr;
@@ -3063,23 +3063,14 @@ var createRequest = function(request) {
     port: request.port,
     method: request.method,
     path: request.path+request.query,
-    headers: request.getHeaders()
+    headers: request.getHeaders(),
+    // Node's HTTP/S modules will ignore this, but we are using the
+    // browserify-http module in the browser for both HTTP and HTTPS, and this
+    // is how you differentiate the two.
+    scheme: request.scheme
   };
 
-  // Choose which Node.js standard library to use. **Warning:** Shred has not
-  // been tested much with `https`.
-  var http;
-
-  if (typeof HTTPS.request !== 'function') {
-    // If HTTPS has no 'request' method, go with HTTP.  This means we are in the
-    // browser.
-    http = HTTP;
-    // Also tell the request what scheme to use
-    reqParams.scheme = request.scheme;
-  } else {
-    // Choose based on the url schema.
-    http = request.scheme == "http" ? HTTP : HTTPS;
-  }
+  var http = request.scheme == "http" ? HTTP : HTTPS;
 
   // Set up the real request using the selected library. The request won't be
   // sent until we call `.end()`.
@@ -4276,3 +4267,5 @@ Response.prototype.write = function (res) {
 });
 
 require.alias("http-browserify", "/node_modules/http");
+
+require.alias("http-browserify", "/node_modules/https");

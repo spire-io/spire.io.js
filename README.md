@@ -8,15 +8,17 @@ This library can be used inside the browser, or as a NodeJS module.
 Browser usage:
 Add `spire.io.bundle.js` or `spire.io.bundle.min.js` to your script tags, and then
 
-    var spire = require('./spire.io.js');
+    var Spire = require('./spire.io.js');
 
 NodeJS usage:
 
-    var spire = require('./spire.io.js');
+    var Spire = require('./spire.io.js');
 
 Connect to the spire server and listen on a channel.
 
-    spire.options.key = '<your account key>';
+    var spire = new Spire({
+      key: '<your account key>'
+    });
 
     spire.messages.subscribe('chat example', function(err, messages){
       $.each(messages, function(i, message){

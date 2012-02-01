@@ -1,14 +1,37 @@
-{ "name": "jquery.spire.js"
-, "version": "0.1.1"
-, "repository": { "type": "git"
-  , "url": "https://github.com/isaacs/npm"
+{ "name": "spire.io.js"
+, "version": "0.2.0"
+, "description": "A JS client for spire.io messaging API.  Runs in node and the browser."
+, "keywords": ["messaging", "spire", "spire.io", "browser"]
+, "homepage": "https://github.com/spire-io/spire.io.js"
+, "repository":
+  { "type": "git"
+  , "url": "https://github.com/spire-io/spire.io.js"
   }
-, "bugs": { "url": "https://github.com/spire-io/jquery.spire.js/issues/" }
-, "directories": { "docs": "./docs" }
-, "dependencies": {
-    "shred": "0.7.0"
+, "bugs":
+  { "url": "https://github.com/spire-io/spire.io.js/issues"
   }
-, "devDependencies": { "express": "2.5.0"
+, "contributors":
+  [ { "name:" "Nicolas LaCasse"
+    , "email": "nlacasse@spire.io"
+    }
+  , { "name": "Jason Campbell"
+    , "email": "jason@spire.io"
+    }
+  , { "name": "Vicent Piquer Suria"
+    , "email": "vsuria@spire.io"
+    }
+  ]
+, "main" : "./lib/spire.io.js"
+, "directories":
+  { "docs" : "./docs"
+  , "lib" : "./lib"
+  , "test" : "./test"
+  }
+, "dependencies":
+  { "shred": "0.7.0"
+  }
+, "devDependencies":
+  { "express": "2.5.0"
   , "browserify": "1.8.3"
   , "http-browserify": "0.0.2"
   , "uglify-js": "1.1.1"

@@ -372,7 +372,8 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
   ResponseError.prototype = new Error();
 
   // # Spire
-  var Spire = function () {
+  var Spire = function (opts) {
+    opts = opts || {};
     // Set up the spire object with default `options` for `url`, `version`,
     // and `timeout` as well as stub out some objects to make method definitions
     // obvious.
@@ -380,12 +381,14 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
     // * **spire.options.url**: The url of the spire.io API, defaults to
     // [http://api.spire.io](http://api.spire.io).
     this.options = {
-      url: 'https://api.spire.io',
+      url: opts.url || 'https://api.spire.io',
       // * **spire.options.version**: The spire.io API version to use when making requests for resources, defaults to 1.0.
-      version: '1.0',
+      version: opts.version || '1.0',
       // * **spire.options.timeout**: The timeout for long-polling in seconds, defaults to 30 seconds
-      timeout: 1000 * 30
+      timeout: opts.timeout || 1000 * 30,
+      key: opts.key || null
     };
+
     this.cache = {};
     this.isConnecting = false;
     this.headers = {};

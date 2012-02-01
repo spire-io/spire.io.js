@@ -28,7 +28,7 @@ describe('spire.messages.subscribe(channel, callback)', function(){
       var indian = indians[i];
       spire.messages.publish({ channel: channel
       , content: indian + ' says how'
-      });
+      }, function () {});
     }
 
     waitsFor(function(){ return callback.called; }
@@ -80,7 +80,7 @@ describe('spire.messages.subscribe(channel, callback)', function(){
     runs(function(){
       spire.messages.publish({ channel: channel
       , content: 'darthvader says "I am your father"'
-      });
+      }, function () {});
     });
 
     waitsFor(function(){ return callback.callCount >= 2; }

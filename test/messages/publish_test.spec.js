@@ -106,36 +106,5 @@ describe('spire.messages.publish(message, [callback])', function(){
 
       expect(function(){ spire.messages.publish(message); }).not.toThrow();
     });
-
-    describe('when there are errors in sending the message', function(){
-      var stub
-        , account
-      ;
-
-      beforeEach(function(){
-        helpers.account(function(err, session){
-          if (err) throw err;
-          else account = session.resources.account;
-
-          helpers.shred.stub(spire.shred, sinon);
-        });
-      });
-
-      afterEach(function(){
-        helpers.shred.restore(spire.shred);
-      });
-
-      it('should throw', function(){
-        var callback = sinon.spy()
-          , message = { channel: helpers.randomChannelName()
-            , content: 'Godzilla attacks!'
-            }
-        ;
-
-        spire.options.key = account.key;
-
-        expect(function(){ spire.messages.publish(message); }).toThrow();
-      });
-    }); // describe('when there are errors in sending the message', ...
   }); // describe('without a callback', ...
 }); // describe('spire.messages.publish', ...

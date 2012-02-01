@@ -97,7 +97,6 @@ task 'test:server', 'launch a server for the browser tests', (o)->
       '  <script src="jasmine/jasmine-sinon.helpers.js"></script>'
       ''
       '  <script src="spire.io.bundle.js"></script>'
-      '  <script src="jasmine/browser.helpers.js"></script>'
       '  <script src="jasmine/helpers.js"></script>'
       '  ' + tests.join('\n  ')
       '</head>'
@@ -113,6 +112,8 @@ task 'test:server', 'launch a server for the browser tests', (o)->
       '    --files ' + _.compact(testFiles).join(', ')
       '  </p>'
       '  <script type="text/javascript">'
+      '    var Spire = require("./spire.io.js");'
+      '    var spire = new Spire();'
       '    spire.options.url = "' + o['api-url'] + '";'
       '    spire.options.key = "' + o['api-key'] + '";'
       '    var jasmineEnv = jasmine.getEnv();'

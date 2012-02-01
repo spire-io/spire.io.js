@@ -471,10 +471,6 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
     spire.connect(function(err, session){
       if (err) return callback(err);
 
-      var options = {
-        name: name
-      };
-
       var subscriptionCallCount = 0;
 
       // Get events from the subscription
@@ -500,52 +496,35 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
         });
       }
 
+      var options = {
+        name: name
+      };
+
       spire.requests.channels.create(options, function(err, channel){
         if (err) {
           if (err.status === 409) {
-            return spire.requests.sessions.get(session, function(err, session){
-              if (err) callback(err);
-
-              var channel = session
-                  .resources
-                  .channels
-                  .resources[name]
-              ;
-
-              spire.requests.channels.get(channel, function(err, channel){
-                var options = {
-                  channels: [ channel ],
-                  events: [ 'messages' ]
-                };
-
-                spire.requests.subscriptions.create(options, function(err, sub){
-                  if (err) return callback(err);
-
-                  var options = { subscription: sub };
-
-                  // Kick off long-polling
-                  get(options);
-                });
-
-              });
-            });
+            // do nothing, the channel already exists
           } else {
             return callback(err);
           }
-        };
+        }
 
-        var options = { channels: [ channel ]
-            , events: [ 'messages' ]
-            }
-        ;
-
-        spire.requests.subscriptions.create(options, function(err, sub){
+        spire.requests.channels.getByName(options, function(err, channels){
           if (err) return callback(err);
 
-          var options = { subscription: sub };
+          var subscriptionOptions = {
+            channels: [ channels[options.name] ],
+            events: [ 'messages' ]
+          };
 
-          // Kick off long-polling
-          get(options);
+          spire.requests.subscriptions.create(subscriptionOptions, function(err, sub){
+            if (err) return callback(err);
+
+            var options = { subscription: sub };
+
+            // Kick off long-polling
+            get(options);
+          });
         });
       });
     });
@@ -980,8 +959,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
 
   {
     channels: [ channel ],
-    events: [ 'messages' ],
-    session: sessionObj
+    events: [ 'messages' ]
   }
 
   */

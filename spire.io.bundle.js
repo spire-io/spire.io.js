@@ -496,11 +496,11 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
         });
       }
 
-      var options = {
+      var channelOptions = {
         name: name
       };
 
-      spire.requests.channels.create(options, function(err, channel){
+      spire.requests.channels.create(channelOptions, function(err, channel){
         if (err) {
           if (err.status === 409) {
             // do nothing, the channel already exists
@@ -509,21 +509,19 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
           }
         }
 
-        spire.requests.channels.getByName(options, function(err, channels){
+        spire.requests.channels.getByName(channelOptions, function(err, channels){
           if (err) return callback(err);
 
-          var subscriptionOptions = {
-            channels: [ channels[options.name] ],
+          var subCreateOptions = {
+            channels: [ channels[channelOptions.name] ],
             events: [ 'messages' ]
           };
 
-          spire.requests.subscriptions.create(subscriptionOptions, function(err, sub){
+          spire.requests.subscriptions.create(subCreateOptions, function(err, sub){
             if (err) return callback(err);
 
-            var options = { subscription: sub };
-
             // Kick off long-polling
-            get(options);
+            get({ subscription: sub });
           });
         });
       });
@@ -569,12 +567,12 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
     spire.connect(function(err, session){
       if (err) return callback(err);
 
-      var options = {
+      var channelOptions = {
         name: message.channel
       };
 
       // Create the channel before sending a message to it.
-      spire.requests.channels.create(options, function(err, channel){
+      spire.requests.channels.create(channelOptions, function(err, channel){
         if (err) {
           if (err.status === 409) {
             // do nothing, the channel already exists
@@ -583,11 +581,11 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
           }
         }
 
-        spire.requests.channels.getByName(options, function(err, channels){
+        spire.requests.channels.getByName(channelOptions, function(err, channels){
           if (err) return callback(err);
 
           var createOptions = {
-              channel: channels[options.name]
+              channel: channels[channelOptions.name]
             , content: message.content
           };
 

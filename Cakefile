@@ -209,7 +209,11 @@ TaskHelpers =
     browserify = require 'browserify'
 
     bundle = browserify(
-      require: ["./lib/spire.io.js", {'http': 'http-browserify'}]
+      require: [
+        "./lib/spire.io.js",
+        {'http': 'http-browserify'},
+        {'https': 'http-browserify'}
+      ]
       ignore: ['zlib']
     ).bundle()
 

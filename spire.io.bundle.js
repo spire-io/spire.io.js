@@ -570,60 +570,33 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
       if (err) return callback(err);
 
       var options = {
-          name: message.channel
+        name: message.channel
       };
 
       // Create the channel before sending a message to it.
       spire.requests.channels.create(options, function(err, channel){
-        var options = {
-          name: message.channel
-        };
-
         if (err) {
           if (err.status === 409) {
-            return spire.requests.sessions.get(session, function(err, session){
-              if (err) {
-                if (callback) return callback(err, null);
-                else throw err;
-              }
-
-              var channel = session
-                  .resources
-                  .channels
-                  .resources[message.channel]
-              ;
-
-              spire.requests.channels.get(channel, function(err, channel){
-                var options = { channel: channel
-                    , content: message.content
-                    }
-                ;
-
-                // Finally send the message.
-                spire.requests.messages.create(options, function(err, message){
-                  if (err) return callback(err);
-
-                  if (callback) callback(null, message);
-                });
-              })
-            });
+            // do nothing, the channel already exists
           } else {
-            return callback(err, null);
+            return callback(err);
           }
-
-          return;
         }
 
-        var options = { channel: channel
-            , content: message.content
-            }
-        ;
-
-        // Finally send the message.
-        spire.requests.messages.create(options, function(err, message){
+        spire.requests.channels.getByName(options, function(err, channels){
           if (err) return callback(err);
 
-          if (callback) callback(null, message);
+          var createOptions = {
+              channel: channels[options.name]
+            , content: message.content
+          };
+
+          // Finally send the message.
+          spire.requests.messages.create(createOptions, function(err, message){
+            if (err) return callback(err);
+
+            if (callback) callback(null, message);
+          });
         });
       });
     });

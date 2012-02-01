@@ -49,7 +49,7 @@ task 'test:server', 'launch a server for the browser tests', (o)->
   express = require 'express'
   app = express.createServer()
   testDir = path.join __dirname, 'test'
-  libSrc = path.join __dirname, 'spire.io.bundle.js'
+  libSrc = path.join __dirname, 'browser/spire.io.bundle.js'
   sha = undefined
   link = undefined
   http = require 'http'
@@ -144,12 +144,12 @@ task 'bundle:min', 'create the bundled and minified version of spire.io.js', (o)
     fs = require 'fs'
     uglify = require 'uglify-js'
 
-    fs.readFile 'spire.io.bundle.js', 'utf8', (err, data)->
+    fs.readFile 'browser/spire.io.bundle.js', 'utf8', (err, data)->
       throw err if err
 
       minified = uglify data
 
-      fs.writeFile 'spire.io.bundle.min.js', minified, (err)->
+      fs.writeFile 'browser/spire.io.bundle.min.js', minified, (err)->
         throw err if err
 
 task 'docs', 'generate the inline documentation', ->
@@ -157,7 +157,7 @@ task 'docs', 'generate the inline documentation', ->
   {spawn, exec} = require 'child_process'
   command = [
     'rm -r docs/*.html'
-    'node_modules/docco/bin/docco spire.io.js'
+    'node_modules/docco/bin/docco lib/spire.io.js'
   ].join(' && ')
   exec command, (err) ->
     throw err if err
@@ -209,11 +209,11 @@ TaskHelpers =
     browserify = require 'browserify'
 
     bundle = browserify(
-      require: ["./spire.io.js", {'http': 'http-browserify'}]
+      require: ["./lib/spire.io.js", {'http': 'http-browserify'}]
       ignore: ['zlib']
     ).bundle()
 
-    fs.writeFile 'spire.io.bundle.js', bundle, (err)->
+    fs.writeFile 'browser/spire.io.bundle.js', bundle, (err)->
       throw err if err
       callback() if callback
 

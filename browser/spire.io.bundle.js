@@ -340,10 +340,6 @@ exports.extname = function(path) {
 
 });
 
-require.define("/package.json", function (require, module, exports, __dirname, __filename) {
-    module.exports = {}
-});
-
 require.define("/spire.io.js", function (require, module, exports, __dirname, __filename) {
     // spire.io.js is a library designed to help you get your client-side web applications up and running with the high level services provided by the spire.io API. This plugin also exposes a methodology for directly interfacing with the spire.io REST interface.
 

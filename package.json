@@ -11,7 +11,7 @@
   { "url": "https://github.com/spire-io/spire.io.js/issues"
   }
 , "contributors":
-  [ { "name:" "Nicolas LaCasse"
+  [ { "name": "Nicolas LaCasse"
     , "email": "nlacasse@spire.io"
     }
   , { "name": "Jason Campbell"

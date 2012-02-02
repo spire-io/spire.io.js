@@ -279,25 +279,15 @@ not 'channel' resource objects.</p>             </td>             <td class="cod
 <span class="cm">*/</span>
 <span class="nx">Subscriptions</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
   <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
-  <span class="kd">var</span> <span class="nx">subscription</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">subscription</span>
-    <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">timeout</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">timeout</span> <span class="o">||</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">timeout</span><span class="o">/</span><span class="mi">1000</span> <span class="p">}</span>
-  <span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">subscription</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">subscription</span><span class="p">;</span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">order_by</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">data</span><span class="p">[</span><span class="s1">&#39;order-by&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">order_by</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">limit</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">data</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">limit</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">delay</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">data</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">delay</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="nx">subscription</span><span class="p">[</span><span class="s1">&#39;last-message&#39;</span><span class="p">])</span> <span class="p">{</span>
-    <span class="nx">data</span><span class="p">[</span><span class="s1">&#39;last-message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">subscription</span><span class="p">[</span><span class="s1">&#39;last-message&#39;</span><span class="p">];</span>
-  <span class="p">}</span>
+  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">timeout</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">timeout</span> <span class="o">||</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">timeout</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="s2">&quot;order-by&quot;</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">order_by</span> <span class="o">||</span> <span class="s1">&#39;desc&#39;</span><span class="p">,</span>
+    <span class="nx">limit</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">limit</span> <span class="o">||</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span>
+    <span class="nx">delay</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">delay</span> <span class="o">||</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;last-message&quot;</span><span class="o">:</span> <span class="nx">subscription</span><span class="p">[</span><span class="s2">&quot;last-message&quot;</span><span class="p">]</span> <span class="o">||</span> <span class="nx">options</span><span class="p">.</span><span class="nx">last_message</span> <span class="o">||</span> <span class="mi">0</span>
+  <span class="p">};</span>
 
   <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
     <span class="nx">url</span><span class="o">:</span> <span class="nx">subscription</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>timeout: options.timeout + 10000,</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>

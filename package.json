@@ -1,5 +1,5 @@
 { "name": "spire.io.js"
-, "version": "0.2.6"
+, "version": "0.2.7"
 , "description": "A JS client for spire.io messaging API.  Runs in node and the browser."
 , "keywords": ["messaging", "spire", "spire.io", "browser"]
 , "homepage": "https://github.com/spire-io/spire.io.js"
@@ -28,12 +28,12 @@
   , "test" : "./test"
   }
 , "dependencies":
-  { "shred": "0.7.1"
+  { "shred": "0.7.2"
   }
 , "devDependencies":
   { "express": "2.5.0"
   , "browserify": "1.8.3"
-  , "http-browserify": "0.0.2"
+  , "http-browserify": "0.0.3"
   , "uglify-js": "1.1.1"
   , "docco": "0.3.0"
   , "gitio": "1.0.1"

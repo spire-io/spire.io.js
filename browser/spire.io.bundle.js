@@ -3642,10 +3642,10 @@ Subscriptions.prototype.get = function(options, callback){
 
   var data = {
     timeout: options.timeout || spire.options.timeout/1000,
-    "order-by": options.order_by || 'desc',
+    "order-by": options['order_by'] || options.order_by || 'desc',
     limit: options.limit || '10',
     delay: options.delay || 0,
-    "last-message": subscription["last-message"] || options.last_message || 0
+    "last-message": subscription["last-message"] || options["last-message"] || options.last_message || 0
   };
 
   spire.shred.get({
@@ -3664,13 +3664,13 @@ Subscriptions.prototype.get = function(options, callback){
       },
       error: function(response){
         var error = new ResponseError(response);
-        callback(error);          
+        callback(error);
       },
       success: function(response){
         var messageCount = response.body.data.messages.length
         if (messageCount > 0){
-          subscription['last-message'] =
-            response.body.data.messages[0].timestamp;
+          var last = data['order-by'] === 'asc' ? 0 : messageCount - 1;
+          subscription['last-message'] = response.body.data.messages[last].timestamp;
         }
         callback(null, response.body.data);
       }
@@ -3862,7 +3862,7 @@ Messages.prototype.subscribe = function(name, subOptions, callback){
       for (var key in subOptions) {
         options[key] = subOptions[key];
       }
-
+      
       spire.requests.subscriptions.get(options, function(err, events){
         if (err) return callback(err);
 

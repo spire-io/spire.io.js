@@ -1,0 +1,85 @@
+<!DOCTYPE html>  <html> <head>   <title>accounts.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               accounts.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>spire.accounts</h1>
+
+<p>Provides a high level interface for accounts. This is what the spire.io
+website uses for logging in, registration, and account updates.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Accounts</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Accounts</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>spire.accounts.create</h2>
+
+<p>Wrapper for creating an account, makes a call for the API description
+then creates the account. It requires an account object (with at least an
+<code>email</code> and a <code>password</code>) and a <code>callback</code>. The <code>callback</code> will be called
+with the arguments: <code>error</code> and <code>session</code>. The <code>session</code> is a session
+resource.</p>
+
+<pre><code>var account = { email: 'jxson@jxson.cc'
+    , password: 'topsecret'
+    }
+;
+
+spire.accounts.create(account, function(err, session){
+  // seriously, do something useful with this error...
+  if (err) throw err;
+
+  console.log(session);
+});
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Accounts</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">description</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">description</span><span class="p">){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">accounts</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h2>spire.accounts.update</h2>
+
+<p>Wrapper for updating an account, it requires an authenticated <code>account</code>
+resource and a <code>callback</code>. The callback will be triggered with the
+arguments: an <code>error</code> object and an <code>account</code> resource object.</p>
+
+<pre><code>account.email = 'something-else@test.com';
+
+spire.accounts.update(account, function(err, account){
+  if (err) throw err;
+
+  console.log(account);
+});
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Accounts</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">description</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">description</span><span class="p">){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">accounts</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h2>spire.accounts.authenticate</h2>
+
+<p>Creates a session for a given account, expects an <code>account</code> object with
+<code>password</code> and <code>email</code> properties and a <code>callback</code>. The callback gets
+called with the arguments <code>error</code>, <code>session</code></p>
+
+<pre><code>var account = { email: 'jxson@jxson.cc'
+    , password: 'totally-secure'
+    }
+;
+
+spire.accounts.authenticate(account, function(err, session){
+  if (err) return callback(err);
+
+  console.log(session);
+});
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Accounts</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">authenticate</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">description</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">description</span><span class="p">){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">key</span>
+        <span class="p">,</span> <span class="nx">email</span><span class="o">:</span> <span class="nx">account</span><span class="p">.</span><span class="nx">email</span>
+        <span class="p">,</span> <span class="nx">password</span><span class="o">:</span> <span class="nx">account</span><span class="p">.</span><span class="nx">password</span>
+        <span class="p">}</span>
+    <span class="p">;</span>
+
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">sessions</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

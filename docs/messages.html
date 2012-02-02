@@ -1,0 +1,144 @@
+<!DOCTYPE html>  <html> <head>   <title>messages.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               messages.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>spire.messages</h1>
+
+<p>Provides a high level interface for message publishing and subscribing.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Messages</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">queue</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Messages</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>spire.messages.subscribe</h2>
+
+<p>Subscribe to a channel with the <code>name</code>, when new messages come in trigger
+the <code>callback</code> every time. This method uses long-polling to get the
+events from a subscription resource and wraps up all the complexities of
+interfacing with the REST API (discovery, session creation, channel
+creation, subscription creation, and event listening for the
+subscription).</p>
+
+<p>The callback is triggered with two arguments, an <code>error</code> object and a
+<code>messages</code> array</p>
+
+<pre><code>spire.messages.subscribe('chat example', function(err, messages){
+  $.each(messages, function(i, message){
+    var el = $('&lt;div class="message"&gt;').text(message);
+
+    $('.messages').append(el);
+  });
+});
+</code></pre>
+
+<p>You can also pass in a hash of options to the subscription.  Accepted
+options are 'limit', 'order_by', 'timeout', and 'delay'.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Messages</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscribe</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">subOptions</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">subOptions</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">callback</span> <span class="o">=</span> <span class="nx">subOptions</span><span class="p">;</span>
+    <span class="nx">subOptions</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="p">}</span>
+
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">session</span><span class="p">){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">subscriptionCallCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Get events from the subscription</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">subscriptionCallCount</span><span class="o">++</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">subOptions</span><span class="p">.</span><span class="nx">maxCallCount</span> <span class="o">&lt;</span> <span class="nx">subscriptionCallCount</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">subOptions</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">subOptions</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+      <span class="p">}</span>
+
+      <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">events</span><span class="p">){</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">events</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+          <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">events</span><span class="p">.</span><span class="nx">messages</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Do it all over again</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">get</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">channelOptions</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nx">name</span><span class="o">:</span> <span class="nx">name</span>
+    <span class="p">};</span>
+
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">channels</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">channelOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">channel</span><span class="p">){</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">409</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>do nothing, the channel already exists</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">channels</span><span class="p">.</span><span class="nx">getByName</span><span class="p">(</span><span class="nx">channelOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">channels</span><span class="p">){</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+        <span class="kd">var</span> <span class="nx">subCreateOptions</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="nx">channels</span><span class="o">:</span> <span class="p">[</span> <span class="nx">channels</span><span class="p">[</span><span class="nx">channelOptions</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="p">],</span>
+          <span class="nx">events</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;messages&#39;</span> <span class="p">]</span>
+        <span class="p">};</span>
+
+        <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">subCreateOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">sub</span><span class="p">){</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Kick off long-polling</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="nx">get</span><span class="p">({</span> <span class="nx">subscription</span><span class="o">:</span> <span class="nx">sub</span> <span class="p">});</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h2>spire.messages.publish</h2>
+
+<p>Publish a message. This method takes the <code>options</code> <code>channel</code>,
+which is the name of the channel to publish the message to and <code>content</code>
+which is the content of the message you want to publish. It can also take
+an optional callback which gets called with an <code>error</code> and a <code>message</code>
+object.</p>
+
+<pre><code>  // Fire and forget
+  var options = { channel: 'chat example', content: 'herow' };
+
+  spire.messages.publish(options);
+</code></pre>
+
+<p>Or:</p>
+
+<pre><code>  // Do something specific to sending this message
+  spire.messages.publish(options, function(err, message){
+     // you should probably do something useful though
+    if (err) throw err;
+
+    $('form').hide();
+  });
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Messages</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">publish</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>If the <code>spire</code> is busy connecting, queue the message and return.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">if</span> <span class="p">(</span><span class="nx">spire</span><span class="p">.</span><span class="nx">isConnecting</span><span class="p">){</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">queue</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">message</span>
+    <span class="p">,</span> <span class="nx">callback</span><span class="o">:</span> <span class="nx">callback</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nx">callback</span> <span class="o">=</span> <span class="nx">callback</span> <span class="o">||</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Connect; discover and create a session.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">spire</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">session</span><span class="p">){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">channelOptions</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nx">name</span><span class="o">:</span> <span class="nx">message</span><span class="p">.</span><span class="nx">channel</span>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Create the channel before sending a message to it.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">channels</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">channelOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">channel</span><span class="p">){</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">409</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>do nothing, the channel already exists</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">channels</span><span class="p">.</span><span class="nx">getByName</span><span class="p">(</span><span class="nx">channelOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">channels</span><span class="p">){</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+        <span class="kd">var</span> <span class="nx">createOptions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">channel</span><span class="o">:</span> <span class="nx">channels</span><span class="p">[</span><span class="nx">channelOptions</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span>
+          <span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="nx">message</span><span class="p">.</span><span class="nx">content</span>
+        <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Finally send the message.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">createOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">message</span><span class="p">){</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+          <span class="k">if</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">message</span><span class="p">);</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

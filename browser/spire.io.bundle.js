@@ -2074,6 +2074,66 @@ var HTTP = require("http")
   , Content = require("./content")
 ;
 
+// TODO: When http-browserify supports HTTP.STATUS_CODES, (see
+// https://github.com/substack/http-browserify/pull/6)
+// replace the big object with the following line
+// var STATUS_CODES = HTTP.STATUS_CODES;
+
+var STATUS_CODES = {
+  '100': 'Continue',
+  '101': 'Switching Protocols',
+  '102': 'Processing',
+  '200': 'OK',
+  '201': 'Created',
+  '202': 'Accepted',
+  '203': 'Non-Authoritative Information',
+  '204': 'No Content',
+  '205': 'Reset Content',
+  '206': 'Partial Content',
+  '207': 'Multi-Status',
+  '300': 'Multiple Choices',
+  '301': 'Moved Permanently',
+  '302': 'Moved Temporarily',
+  '303': 'See Other',
+  '304': 'Not Modified',
+  '305': 'Use Proxy',
+  '307': 'Temporary Redirect',
+  '400': 'Bad Request',
+  '401': 'Unauthorized',
+  '402': 'Payment Required',
+  '403': 'Forbidden',
+  '404': 'Not Found',
+  '405': 'Method Not Allowed',
+  '406': 'Not Acceptable',
+  '407': 'Proxy Authentication Required',
+  '408': 'Request Time-out',
+  '409': 'Conflict',
+  '410': 'Gone',
+  '411': 'Length Required',
+  '412': 'Precondition Failed',
+  '413': 'Request Entity Too Large',
+  '414': 'Request-URI Too Large',
+  '415': 'Unsupported Media Type',
+  '416': 'Requested Range Not Satisfiable',
+  '417': 'Expectation Failed',
+  '418': 'I\'m a teapot',
+  '422': 'Unprocessable Entity',
+  '423': 'Locked',
+  '424': 'Failed Dependency',
+  '425': 'Unordered Collection',
+  '426': 'Upgrade Required',
+  '500': 'Internal Server Error',
+  '501': 'Not Implemented',
+  '502': 'Bad Gateway',
+  '503': 'Service Unavailable',
+  '504': 'Gateway Time-out',
+  '505': 'HTTP Version not supported',
+  '506': 'Variant Also Negotiates',
+  '507': 'Insufficient Storage',
+  '509': 'Bandwidth Limit Exceeded',
+  '510': 'Not Extended'
+};
+
 // The Shred object itself constructs the `Request` object. You should rarely
 // need to do this directly.
 
@@ -2397,13 +2457,16 @@ var createRequest = function(request) {
       // finally to the more general `response` handler. In the last case, we
       // need to first make sure we're not dealing with a a redirect.
       var emit = function(event) {
-        if (request.emitter.listeners(response.status).length>0) {
-          request.emitter.emit(response.status,response);
+        var emitter = request.emitter;
+        var textStatus = STATUS_CODES[response.status] ? STATUS_CODES[response.status].toLowerCase() : null;
+        if (emitter.listeners(response.status).length > 0 || emitter.listeners(textStatus).length > 0) {
+          emitter.emit(response.status, response);
+          emitter.emit(textStatus, response);
         } else {
-          if (request.emitter.listeners(event).length>0) {
-            request.emitter.emit(event,response);
+          if (emitter.listeners(event).length>0) {
+            emitter.emit(event, response);
           } else if (!response.isRedirect) {
-            request.emitter.emit("response",response);
+            emitter.emit("response", response);
             console.warn("Request has no event listener for status code " + response.status);
           }
         }
@@ -4205,6 +4268,7 @@ var Request = module.exports = function (xhr, params) {
     
     if (params.headers) {
         Object.keys(params.headers).forEach(function (key) {
+            if (!self.isSafeRequestHeader(key)) return;
             var value = params.headers[key];
             if (Array.isArray(value)) {
                 value.forEach(function (v) {
@@ -4246,6 +4310,36 @@ Request.prototype.write = function (s) {
 Request.prototype.end = function (s) {
     if (s !== undefined) this.write(s);
     this.xhr.send(this.body);
+};
+
+// Taken from http://dxr.mozilla.org/mozilla/mozilla-central/content/base/src/nsXMLHttpRequest.cpp.html
+Request.unsafeHeaders = [
+    "accept-charset",
+    "accept-encoding",
+    "access-control-request-headers",
+    "access-control-request-method",
+    "connection",
+    "content-length",
+    "cookie",
+    "cookie2",
+    "content-transfer-encoding",
+    "date",
+    "expect",
+    "host",
+    "keep-alive",
+    "origin",
+    "referer",
+    "te",
+    "trailer",
+    "transfer-encoding",
+    "upgrade",
+    "user-agent",
+    "via"
+];
+
+Request.prototype.isSafeRequestHeader = function (headerName) {
+    if (!headerName) return false;
+    return (Request.unsafeHeaders.indexOf(headerName.toLowerCase()) === -1)
 };
 
 });

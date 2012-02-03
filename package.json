@@ -28,7 +28,7 @@
   , "test" : "./test"
   }
 , "dependencies":
-  { "shred": "0.7.2"
+  { "shred": "0.7.3"
   }
 , "devDependencies":
   { "express": "2.5.0"

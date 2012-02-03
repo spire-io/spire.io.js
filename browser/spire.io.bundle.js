@@ -3623,18 +3623,6 @@ Channels.prototype.create = function(options, callback){
     , name = options.name
   ;
 
-  var channel = spire
-    .session
-    .resources
-    .channels
-    .resources[name]
-  ;
-
-  if (channel) {
-    callback(null, channel);
-    return;
-  }
-
   spire.shred.post({
     url: channels.url,
     headers: {
@@ -3649,8 +3637,6 @@ Channels.prototype.create = function(options, callback){
         callback(error);
       },
       success: function(response){
-        spire.session.resources.channels
-          .resources[options.name] = response.body.data;
         callback(null, response.body.data);
       }
     }

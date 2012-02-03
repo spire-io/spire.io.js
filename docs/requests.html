@@ -11,6 +11,8 @@ handler</p>             </td>             <td class="code">               <div c
 <span class="p">};</span>
 
 <span class="nx">ResponseError</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h1>Requests</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Requests</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">agent</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">agent</span><span class="p">;</span>
+
   <span class="k">this</span><span class="p">.</span><span class="nx">description</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Description</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">sessions</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sessions</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Channels</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
@@ -39,21 +41,21 @@ resource object.</p>             </td>             <td class="code">            
   <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>If there isn't a cache make an XHR to get the description.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
     <span class="nx">url</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
     <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
-    <span class="nx">accept</span><span class="o">:</span> <span class="s2">&quot;application/json&quot;</span>
-  <span class="p">},</span>
-  <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
-        <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
-          <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
-          <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
-        <span class="p">},</span>
+      <span class="nx">accept</span><span class="o">:</span> <span class="s2">&quot;application/json&quot;</span>
+    <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
 
-        <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
-          <span class="nx">spire</span><span class="p">.</span><span class="nx">resources</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">resources</span><span class="p">;</span>
-          <span class="nx">spire</span><span class="p">.</span><span class="nx">schema</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">schema</span><span class="p">;</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">spire</span><span class="p">.</span><span class="nx">resources</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">resources</span><span class="p">;</span>
+        <span class="nx">spire</span><span class="p">.</span><span class="nx">schema</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">schema</span><span class="p">;</span>
 
-          <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
-        <span class="p">}</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
       <span class="p">}</span>
+    <span class="p">}</span>
   <span class="p">});</span>
 <span class="p">};</span>
 

@@ -21,12 +21,15 @@ obvious.</p>
 <li><strong>spire.options.timeout</strong>: The timeout for long-polling in seconds, defaults to 30 seconds</li>
 </ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">timeout</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">timeout</span> <span class="o">||</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">30</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <ul>
 <li><strong>spire.options.key</strong>: The account key.</li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">key</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">key</span> <span class="o">||</span> <span class="kc">null</span>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">key</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">key</span> <span class="o">||</span> <span class="kc">null</span><span class="p">,</span>
   <span class="p">};</span>
 
   <span class="k">this</span><span class="p">.</span><span class="nx">isConnecting</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 
-  <span class="k">this</span><span class="p">.</span><span class="nx">shred</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Shred</span><span class="p">();</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">shred</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Shred</span><span class="p">({</span>
+    <span class="nx">agent</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">agent</span>
+  <span class="p">});</span>
+
   <span class="k">this</span><span class="p">.</span><span class="nx">requests</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Requests</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Messages</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Headers</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>

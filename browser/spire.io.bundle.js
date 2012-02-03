@@ -371,12 +371,15 @@ var Spire = function (opts) {
     // * **spire.options.timeout**: The timeout for long-polling in seconds, defaults to 30 seconds
     timeout: opts.timeout || 1000 * 30,
     // * **spire.options.key**: The account key.
-    key: opts.key || null
+    key: opts.key || null,
   };
 
   this.isConnecting = false;
 
-  this.shred = new Shred();
+  this.shred = new Shred({
+    agent: opts.agent
+  });
+
   this.requests = new Requests(this);
   this.messages = new Messages(this);
   this.headers = new Headers(this);
@@ -455,6 +458,7 @@ var _ = require("underscore")
 
 var Shred = function(options) {
   options = (options||{});
+  this.agent = options.agent;
   this.defaults = options.defaults||{};
   this.log = options.logger||(new Ax({ level: "info" }));
   this._sharedCookieJar = new CookieJar();
@@ -472,6 +476,7 @@ Shred.prototype = {
   request: function(options) {
     options.logger = this.log;
     options.cookieJar = ( 'cookieJar' in options ) ? options.cookieJar : this._sharedCookieJar; // let them set cookieJar = null
+    options.agent = options.agent || this.agent;
     return new Shred.Request(_.defaults(options,this.defaults));
   }
 };
@@ -2360,6 +2365,8 @@ var processOptions = function(request,options) {
   // We'll use `request.emitter` to manage the `on` event handlers.
   request.emitter = (new Emitter);
 
+  request.agent = options.agent;
+
   // Set up the handlers ...
   if (options.on) {
     _(options.on).each(function(value,key) {
@@ -2433,7 +2440,10 @@ var createRequest = function(request) {
     // Node's HTTP/S modules will ignore this, but we are using the
     // browserify-http module in the browser for both HTTP and HTTPS, and this
     // is how you differentiate the two.
-    scheme: request.scheme
+    scheme: request.schemea,
+    // Use a provided agent.  'Undefined' is the default, which uses a global
+    // agent.
+    agent: request.agent
   };
 
   var http = request.scheme == "http" ? HTTP : HTTPS;
@@ -3422,6 +3432,8 @@ ResponseError.prototype = new Error();
 
 // # Requests
 var Requests = function (spire) {
+  this.agent = spire.agent;
+
   this.description = new Description(spire);
   this.sessions = new Sessions(spire);
   this.channels = new Channels(spire);
@@ -3458,21 +3470,21 @@ Description.prototype.get = function (callback) {
   spire.shred.get({
     url: spire.options.url,
     headers: {
-    accept: "application/json"
-  },
-  on: {
-        error: function(response){
-          var error = new ResponseError(response);
-          callback(error);
-        },
+      accept: "application/json"
+    },
+    on: {
+      error: function(response){
+        var error = new ResponseError(response);
+        callback(error);
+      },
 
-        success: function(response){
-          spire.resources = response.body.data.resources;
-          spire.schema = response.body.data.schema;
+      success: function(response){
+        spire.resources = response.body.data.resources;
+        spire.schema = response.body.data.schema;
 
-          callback(null, response.body.data);
-        }
+        callback(null, response.body.data);
       }
+    }
   });
 };
 

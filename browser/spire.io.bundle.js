@@ -3120,6 +3120,16 @@ Object.defineProperties(Response.prototype, {
 // Add in the [getters for accessing the normalized headers](./headers.js).
 HeaderMixins.getters(Response);
 HeaderMixins.privateSetters(Response);
+
+// Work around Mozilla bug #608735 [https://bugzil.la/608735], which causes
+// getAllResponseHeaders() to return {} if the response is a CORS request.
+// xhr.getHeader still works correctly.
+var getHeader = Response.prototype.getHeader;
+Response.prototype.getHeader = function (name) {
+  return (getHeader.call(this,name) ||
+    (typeof this._raw.getHeader === 'function' && this._raw.getHeader(name)));
+};
+
 module.exports = Response;
 
 });
@@ -4277,7 +4287,7 @@ var Request = module.exports = function (xhr, params) {
         });
     }
     
-    var res = new Response;
+    var res = new Response(xhr);
     res.on('ready', function () {
         self.emit('response', res);
     });
@@ -4345,7 +4355,8 @@ Request.prototype.isSafeRequestHeader = function (headerName) {
 require.define("/node_modules/http-browserify/lib/response.js", function (require, module, exports, __dirname, __filename) {
     var EventEmitter = require('events').EventEmitter;
 
-var Response = module.exports = function (res) {
+var Response = module.exports = function (xhr) {
+    this.xhr = xhr;
     this.offset = 0;
 };
 
@@ -4356,8 +4367,8 @@ var capable = {
     status2 : true
 };
 
-function parseHeaders (res) {
-    var lines = res.getAllResponseHeaders().split(/\r?\n/);
+function parseHeaders (xhr) {
+    var lines = xhr.getAllResponseHeaders().split(/\r?\n/);
     var headers = {};
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
@@ -4388,14 +4399,20 @@ function parseHeaders (res) {
 }
 
 Response.prototype.getHeader = function (key) {
-    return this.headers[key.toLowerCase()];
+    var header = this.headers[key.toLowerCase()];
+
+    // Work around Mozilla bug #608735 [https://bugzil.la/608735], which causes
+    // getAllResponseHeaders() to return {} if the response is a CORS request.
+    // xhr.getHeader still works correctly.
+    return header || this.xhr.getResponseHeader(key);
 };
 
-Response.prototype.handle = function (res) {
-    if (res.readyState === 2 && capable.status2) {
+Response.prototype.handle = function () {
+    var xhr = this.xhr;
+    if (xhr.readyState === 2 && capable.status2) {
         try {
-            this.statusCode = res.status;
-            this.headers = parseHeaders(res);
+            this.statusCode = xhr.status;
+            this.headers = parseHeaders(xhr);
         }
         catch (err) {
             capable.status2 = false;
@@ -4405,41 +4422,42 @@ Response.prototype.handle = function (res) {
             this.emit('ready');
         }
     }
-    else if (capable.streaming && res.readyState === 3) {
+    else if (capable.streaming && xhr.readyState === 3) {
         try {
             if (!this.statusCode) {
-                this.statusCode = res.status;
-                this.headers = parseHeaders(res);
+                this.statusCode = xhr.status;
+                this.headers = parseHeaders(xhr);
                 this.emit('ready');
             }
         }
         catch (err) {}
         
         try {
-            this.write(res);
+            this.write();
         }
         catch (err) {
             capable.streaming = false;
         }
     }
-    else if (res.readyState === 4) {
+    else if (xhr.readyState === 4) {
         if (!this.statusCode) {
-            this.statusCode = res.status;
+            this.statusCode = xhr.status;
             this.emit('ready');
         }
-        this.write(res);
+        this.write();
         
-        if (res.error) {
-            this.emit('error', res.responseText);
+        if (xhr.error) {
+            this.emit('error', xhr.responseText);
         }
         else this.emit('end');
     }
 };
 
-Response.prototype.write = function (res) {
-    if (res.responseText.length > this.offset) {
-        this.emit('data', res.responseText.slice(this.offset));
-        this.offset = res.responseText.length;
+Response.prototype.write = function () {
+    var xhr = this.xhr;
+    if (xhr.responseText.length > this.offset) {
+        this.emit('data', xhr.responseText.slice(this.offset));
+        this.offset = xhr.responseText.length;
     }
 };
 

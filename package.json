@@ -28,7 +28,8 @@
   , "test" : "./test"
   }
 , "dependencies":
-  { "shred": "0.7.5"
+  { "shred": "0.7.5",
+    "async": "0.1.15"
   }
 , "devDependencies":
   { "express": "2.5.0"

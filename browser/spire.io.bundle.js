@@ -449,9 +449,7 @@ var _ = require("underscore")
 // has `info`, `warn`, `debug`, and `error` methods that take a string.
   , Ax = require("ax")
   , CookieJarLib = require( "cookiejar" )
-  , CookieAccessInfo = CookieJarLib.CookieAccessInfo
   , CookieJar = CookieJarLib.CookieJar
-  , Cookie = CookieJarLib.Cookie
 ;
 
 // Shred takes some options, including a logger and request defaults.
@@ -496,11 +494,11 @@ module.exports = Shred;
 
 });
 
-require.define("/node_modules/underscore/package.json", function (require, module, exports, __dirname, __filename) {
+require.define("/node_modules/shred/node_modules/underscore/package.json", function (require, module, exports, __dirname, __filename) {
     module.exports = {"main":"underscore.js"}
 });
 
-require.define("/node_modules/underscore/underscore.js", function (require, module, exports, __dirname, __filename) {
+require.define("/node_modules/shred/node_modules/underscore/underscore.js", function (require, module, exports, __dirname, __filename) {
     //     Underscore.js 1.3.0
 //     (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
 //     Underscore is freely distributable under the MIT license.
@@ -2973,6 +2971,8 @@ require.define("/node_modules/shred/lib/shred/response.js", function (require, m
 var _ = require("underscore")
   , Content = require("./content")
   , HeaderMixins = require("./mixins/headers")
+  , CookieJarLib = require( "cookiejar" )
+  , Cookie = CookieJarLib.Cookie
 ;
 
 // Browser doesn't have zlib.
@@ -2989,7 +2989,7 @@ try {
 // and then use the callback to let the request know when it's ready.
 var Response = function(raw, request, callback) { 
   var response = this;
-  this._raw = raw; 
+  this._raw = raw;
 
   // The `._setHeaders` method is "private"; you can't otherwise set headers on
   // the response.
@@ -2997,16 +2997,34 @@ var Response = function(raw, request, callback) {
   
   // store any cookies
   if (request.cookieJar && this.getHeader('set-cookie')) {
-    var cookies = this.getHeader('set-cookie');
-    for (var cookieIndex = 0; cookieIndex < cookies.length; ++cookieIndex) {
-        if (!cookies[cookieIndex].match(/domain\=/i)) {
-            cookies[cookieIndex] += '; domain=' + request.host;
+    var cookieStrings = this.getHeader('set-cookie');
+    var cookieObjs = []
+      , cookie;
+
+    for (var i = 0; i < cookieStrings.length; i++) {
+      var cookieString = cookieStrings[i];
+      if (!cookieString) {
+        continue;
+      }
+
+      if (!cookieString.match(/domain\=/i)) {
+        cookieString += '; domain=' + request.host;
+      }
+
+      if (!cookieString.match(/path\=/i)) {
+        cookieString += '; path=' + request.path;
+      }
+
+      try {
+        cookie = new Cookie(cookieStr);
+        if (cookie) {
+          cookieObjs.push(cookie);
         }
-        
-        if (!cookies[cookieIndex].match(/path\=/i)) {
-            cookies[cookieIndex] += '; path=' + request.path;
-        }
+      } catch (e) {
+        console.warn("Tried to set bad cookie: " + cookieString);
+      }
     }
+
     request.cookieJar.setCookies(cookies);
   }
 
@@ -3653,6 +3671,59 @@ Channels.prototype.create = function(options, callback){
   });
 };
 
+Channels.CHANNEL_CREATION_RETRY_LIMIT = 5;
+
+Channels.prototype.getOrCreate = function (options, callback) {
+  var spire = this.spire;
+  var channels = this;
+
+  var creationCount = 0;
+
+  var channelName = options.name;
+
+  var channelOptions = {
+    name: channelName
+  };
+
+  var getChannel = function () {
+    channels.getByName(channelOptions, function(err, channels){
+      if (err && err.status !== 404) {
+        return callback(err);
+      }
+
+      if (channels && channels[channelName]) {
+        return callback(null, channels[channelName]);
+      }
+
+      // Else create the channel
+      createChannel();
+    });
+  };
+
+  var createChannel = function () {
+    spire.requests.channels.create(channelOptions, function(err, channel){
+      creationCount++;
+      if (err && err.status !== 409) {
+        return callback(err);
+      }
+
+      if (channel) {
+        return callback(null, channel);
+      }
+
+      if (creationCount >= Messages.CHANNEL_CREATION_RETRY_LIMIT) {
+        return callback(new Error("Error getting or creating channel"));
+      }
+
+      // Else get the channel
+      getChannel();
+    });
+  };
+
+  // Kick it off
+  getChannel();
+};
+
 var Subscriptions = function (spire) {
   this.spire = spire;
 };
@@ -3911,8 +3982,10 @@ module.exports = Messages;
 // You can also pass in a hash of options to the subscription.  Accepted
 // options are 'limit', 'order_by', 'timeout', and 'delay'.
 //
-Messages.prototype.subscribe = function(name, subOptions, callback){
+Messages.prototype.subscribe = function(channelName, subOptions, callback){
   var spire = this.spire;
+  var messages = this;
+
   if (arguments.length === 2 && typeof subOptions === 'function') {
     callback = subOptions;
     subOptions = {};
@@ -3944,35 +4017,23 @@ Messages.prototype.subscribe = function(name, subOptions, callback){
         // Do it all over again
         get(options);
       });
-    }
-
-    var channelOptions = {
-      name: name
     };
 
-    spire.requests.channels.create(channelOptions, function(err, channel){
+    spire.requests.channels.getOrCreate({ name: channelName }, function (err, channel) {
       if (err) {
-        if (err.status === 409) {
-          // do nothing, the channel already exists
-        } else {
-          return callback(err);
-        }
+        return callback(err);
       }
 
-      spire.requests.channels.getByName(channelOptions, function(err, channels){
+      var subCreateOptions = {
+        channels: [ channel ],
+        events: [ 'messages' ]
+      };
+
+      spire.requests.subscriptions.create(subCreateOptions, function(err, sub){
         if (err) return callback(err);
 
-        var subCreateOptions = {
-          channels: [ channels[channelOptions.name] ],
-          events: [ 'messages' ]
-        };
-
-        spire.requests.subscriptions.create(subCreateOptions, function(err, sub){
-          if (err) return callback(err);
-
-          // Kick off long-polling
-          get({ subscription: sub });
-        });
+        // Kick off long-polling
+        get({ subscription: sub });
       });
     });
   });
@@ -4004,6 +4065,7 @@ Messages.prototype.subscribe = function(name, subOptions, callback){
 //       });
 //
 Messages.prototype.publish = function(message, callback){
+  var messages = this;
   var spire = this.spire;
   // If the `spire` is busy connecting, queue the message and return.
   if (spire.isConnecting){
@@ -4014,44 +4076,33 @@ Messages.prototype.publish = function(message, callback){
     return;
   }
 
+  var channelName = message.channel;
+
   callback = callback || function () {};
 
   // Connect; discover and create a session.
   spire.connect(function(err, session){
     if (err) return callback(err);
 
-    var channelOptions = {
-      name: message.channel
-    };
-
-    // Create the channel before sending a message to it.
-    spire.requests.channels.create(channelOptions, function(err, channel){
+    spire.requests.channels.getOrCreate({ name: channelName }, function (err, channel) {
       if (err) {
-        if (err.status === 409) {
-          // do nothing, the channel already exists
-        } else {
-          return callback(err);
-        }
+        return callback(err);
       }
 
-      spire.requests.channels.getByName(channelOptions, function(err, channels){
+      var createOptions = {
+        channel: channel,
+        content: message.content
+      };
+
+      spire.requests.messages.create(createOptions, function(err, message){
         if (err) return callback(err);
 
-        var createOptions = {
-            channel: channels[channelOptions.name]
-          , content: message.content
-        };
-
-        // Finally send the message.
-        spire.requests.messages.create(createOptions, function(err, message){
-          if (err) return callback(err);
-
-          if (callback) callback(null, message);
-        });
+        callback(null, message);
       });
     });
   });
 };
+
 
 });
 

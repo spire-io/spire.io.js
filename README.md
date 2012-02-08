@@ -30,10 +30,10 @@ Connect to the spire server and listen on a channel.
 
 Construct a message to send, `message.content` can be a string or json object.
 
-    var message = { channel: 'chat example'
-        , content: 'herow'
-        }
-    ;
+    var message = {
+      channel: 'chat example',
+      content: 'herow'
+    };
 
     spire.messages.publish(message, function(err, message){
       if (err) throw err; // you could do better ;)

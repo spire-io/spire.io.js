@@ -47,6 +47,30 @@ describe('Channels', function () {
       expect(this.channel).toBeTruthy();
       expect(this.channel).toBeAResourceObject();
     });
+
+    describe('Creating a channel with the same name', function () {
+      beforeEach(function () {
+        var finished = false;
+
+        runs(function () {
+          var that = this;
+          this.spire.channel('foo', function (err, channel) {
+            finished = true;
+            that.channel2 = channel;
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 'channel get or create', 10000);
+      });
+
+      it('should be the same channel as before', function () {
+        console.log(this.channel);
+        console.log(this.channel2);
+        expect(this.channel2.key).toEqual(this.channel.key);
+      });
+    }); // Creating a channel with the same name
   }); // Create a channel
 
 }); // Channels

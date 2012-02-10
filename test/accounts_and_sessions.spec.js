@@ -1,3 +1,5 @@
+var noop = function () {};
+
 describe('Accounts and Session', function () {
   describe('Registration and Authentication', function () {
     describe('Registration with a valid email and password', function () {
@@ -164,6 +166,22 @@ describe('Accounts and Session', function () {
           expect(this.spire.session.resources.account).toBeFalsy();
         });
       }); // Log in using the account key
+
+      describe('Reset your account key', function () {
+        it('should invalidate existing sessions', noop);
+        it('should invalidate the original account key', noop);
+        it('should allow you to log in with the new account key', noop);
+      }); // Reset your account key
+
+      describe('Close a session', function () {
+        it('should invalidate the session tht was closed', noop);
+      }); // Close a session
+
+      describe('Delete your account', function () {
+        it('should invalidate existing sessions', noop);
+        it('should invalidate the original account key', noop);
+        it('should invalidate email and password', noop);
+      }); // Delete your account
     }); // Registration with valid email and password
   }); // Registration and authentication
 }); // Accounts and sessions

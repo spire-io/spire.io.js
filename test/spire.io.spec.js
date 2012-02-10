@@ -25,6 +25,10 @@ describe('Accounts and Session', function () {
         expect(this.spire.session).toBeAResourceObject();
       });
 
+      it('should have a session with account resource', function () {
+        expect(this.spire.session.resources.account).toBeTruthy();
+        expect(this.spire.session.resources.account).toBeAResourceObject();
+      });
     }); // Registration with valid email and password
   }); // Registration and authentication
 }); // Accounts and sessions

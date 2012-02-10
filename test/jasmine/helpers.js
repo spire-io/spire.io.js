@@ -65,7 +65,6 @@ beforeEach(function(){
       return !!capability && typeof capability === 'string'
     },
     toBeAResourceObject: function(){
-      console.log(this.actual.constructor.name);
       return this.actual && this.actual.constructor && this.actual.constructor.name === 'Resource';
     },
   });

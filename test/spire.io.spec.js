@@ -52,6 +52,37 @@ describe('Accounts and Session', function () {
           });
         });
       }); // Registration with the same email
+
+      describe('Log in with the given email and password', function () {
+        beforeEach(function () {
+          this.spire = createSpire();
+
+          var finished = false;
+          runs(function () {
+            this.spire.login({
+              email: this.email,
+              password: 'foobarbaz'
+            }, function (err) {
+              finished = true;
+            });
+          });
+
+          waitsFor(function () {
+            return finished;
+          }, 'spire.register', 10000);
+        });
+
+      }) // Log in the with given email and password
+
+      it('should have a session', function () {
+        expect(this.spire.session).toBeTruthy();
+        expect(this.spire.session).toBeAResourceObject();
+      });
+
+      it('should have a session with account resource', function () {
+        expect(this.spire.session.resources.account).toBeTruthy();
+        expect(this.spire.session.resources.account).toBeAResourceObject();
+      });
     }); // Registration with valid email and password
   }); // Registration and authentication
 }); // Accounts and sessions

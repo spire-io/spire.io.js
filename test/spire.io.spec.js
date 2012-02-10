@@ -4,6 +4,7 @@ describe('Accounts and Session', function () {
       beforeEach(function () {
         this.email = helpers.randomEmail();
         this.spire = createSpire();
+        this.key = null;
         var finished = false;
         runs(function () {
           this.spire.register({
@@ -17,6 +18,11 @@ describe('Accounts and Session', function () {
         waitsFor(function () {
           return finished;
         }, 'spire.register', 10000);
+
+        // Save the key for later
+        runs(function () {
+          this.key = this.spire.key;
+        });
       });
 
       it('should have a session', function () {
@@ -129,11 +135,35 @@ describe('Accounts and Session', function () {
             });
 
           }); // Log in with the new password
-
-            
-
         }); // Change your password
       }); // Log in the with given email and password
+
+      describe('Log in using the account key', function () {
+        beforeEach(function () {
+          var key = this.key;
+          this.spire = createSpire();
+          finished = false;
+
+          runs(function () {
+            this.spire.start(key, function (e) {
+              finished = true;
+            });
+          });
+
+          waitsFor(function () {
+            return finished;
+          }, 'log in using account key', 10000);
+        });
+
+        it('should have a session', function () {
+          expect(this.spire.session).toBeTruthy();
+          expect(this.spire.session).toBeAResourceObject();
+        });
+
+        it('should have a session without an account resource', function () {
+          expect(this.spire.session.resources.account).toBeFalsy();
+        });
+      }); // Log in using the account key
     }); // Registration with valid email and password
   }); // Registration and authentication
 }); // Accounts and sessions

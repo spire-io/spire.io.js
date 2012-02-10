@@ -349,157 +349,1278 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
 // * [issues](http://github.com/spire-io/spire.io.js/issues)
 // * [contact spire.io](http://spire.io/contact.html)
 
-var Shred = require('shred');
-var Requests = require('./spire/requests');
-var Messages = require('./spire/messages');
-var Headers = require('./spire/headers');
-var Accounts = require('./spire/accounts');
+var async = require('async')
+  , API = require('./spire/api')
+  ;
+
+var CREATION_RETRY_LIMIT = 5;
 
 // # Spire
+// Creates a new instance of Spire client
+//
+// @constructor
+// @param opts Options for Spire
+// @param opts.url Spire url do use (defaults to 'https://api.spire.io')
+// @param opts.version Version of Spire api to use (defaults to '1.0')
+// @param opts.timeout Timeout for requests (defaults to 30 seconds)
 var Spire = function (opts) {
-  opts = opts || {};
-  // Set up the spire object with default `options` for `url`, `version`,
-  // and `timeout` as well as stub out some objects to make method definitions
-  // obvious.
-  //
-  // * **spire.options.url**: The url of the spire.io API, defaults to
-  // [http://api.spire.io](http://api.spire.io).
-  this.options = {
-    url: opts.url || 'https://api.spire.io',
-    // * **spire.options.version**: The spire.io API version to use when making requests for resources, defaults to 1.0.
-    version: opts.version || '1.0',
-    // * **spire.options.timeout**: The timeout for long-polling in seconds, defaults to 30 seconds
-    timeout: opts.timeout || 1000 * 30,
-    // * **spire.options.key**: The account key.
-    key: opts.key || null,
-  };
+  this.api = new API(this, opts);
 
-  this.isConnecting = false;
-
-  this.shred = new Shred({
-    agent: opts.agent
-  });
-
-  this.requests = new Requests(this);
-  this.messages = new Messages(this);
-  this.headers = new Headers(this);
-  this.accounts = new Accounts(this);
+  this.session = null;
 };
 
 module.exports = Spire;
 
-// # spire.connect
+// ## Spire.prototype.key
+// Returns the account key
+Spire.prototype.key = function () {
+  this._ensureSession();
+  return this.session.resources.account.key;
+};
+
+// ## Spire.prototype.discover
+// Discovers urls from Spire API
 //
-// provides a single point of connection that builds up the needed objects
-// for discovery and sharing a session between requests.
-// the callback is triggered with an error and a session
-Spire.prototype.connect = function (callback) {
+// @param cb {function(err, discovered)} Callback
+Spire.prototype.discover = function (cb) {
+  this.api.discover(cb);
+};
+
+// ## Spire.prototype.start
+// Starts the Spire session with the given account key.
+//
+// @param key {string} The acccount key
+// @param cb {function(err)} Callback
+Spire.prototype.start = function (key, cb) {
   var spire = this;
-  spire.isConnecting = true;
-
-  spire.requests.description.get(function(err, description){
-    if (err) return callback(err);
-
-    var options = { key: spire.options.key };
-
-    var sessionBack = function(err, session){
-      if (err) return callback(err);
-
-      spire.isConnecting = false;
-      // save it for later.
+  this.discover(function () {
+    spire.api.createSession(key, function (err, session) {
+      if (err) return cb(err);
       spire.session = session;
-
-      // publish any messages in the queue
-      if (spire.messages.queue.length > 0){
-        var args;
-        while (args = spire.messages.queue.pop()) {
-          // try it again, its possible this loop might get fired in
-          // parallel effecting the queue so make sure that the args are
-          // defined before calling the publish function
-          if (args) spire.messages.publish(args.message, args.callback);
-        }
-      }
-
-      return callback(null, session);
-    };
-
-    if (spire.session) {
-      sessionBack(null, spire.session);
-    } else {
-      spire.requests.sessions.create(options, sessionBack);
-    }
+      cb(null);
+    });
   });
 };
 
-});
-
-require.define("/node_modules/shred/package.json", function (require, module, exports, __dirname, __filename) {
-    module.exports = {"main":"./lib/shred.js"}
-});
-
-require.define("/node_modules/shred/lib/shred.js", function (require, module, exports, __dirname, __filename) {
-    // Shred is an HTTP client library intended to simplify the use of Node's
-// built-in HTTP library. In particular, we wanted to make it easier to interact
-// with HTTP-based APIs.
-// 
-// See the [examples](./examples.html) for more details.
-
-var _ = require("underscore")
-// Ax is a nice logging library we wrote. You can use any logger, providing it
-// has `info`, `warn`, `debug`, and `error` methods that take a string.
-  , Ax = require("ax")
-  , CookieJarLib = require( "cookiejar" )
-  , CookieJar = CookieJarLib.CookieJar
-;
-
-// Shred takes some options, including a logger and request defaults.
-
-var Shred = function(options) {
-  options = (options||{});
-  this.agent = options.agent;
-  this.defaults = options.defaults||{};
-  this.log = options.logger||(new Ax({ level: "info" }));
-  this._sharedCookieJar = new CookieJar();
+// ## Spire.prototype.login
+// Starts the Spire session with the given username and password
+//
+// @param email {string}
+// @param password {string}
+// @param cb {function(err)} Callback
+Spire.prototype.login = function (email, password, cb) {
+  var spire = this;
+  this.discover(function () {
+    spire.api.login(email, password, function (err, session) {
+      if (err) return cb(err);
+      spire.session = session;
+      cb(null);
+    });
+  });
 };
 
-// Most of the real work is done in the request and reponse classes.
- 
-Shred.Request = require("./shred/request");
-Shred.Response = require("./shred/response");
+// ## Spire.prototype.register
+// Register for a new spire account, and authenticates as the newly created account
+//
+// @param user {object} User info
+// @param user.email {string}
+// @param user.password {string}
+// @param user.password_confirmation {string} (optional)
+// @param cb {function (err)}
+Spire.prototype.register = function (user, cb) {
+  var spire = this;
+  this.discover(function () {
+    spire.api.createAccount(user, function (err, session) {
+      if (err) return cb(err);
+      spire.session = session;
+      cb(null);
+    });
+  });
+};
 
-// The `request` method kicks off a new request, instantiating a new `Request`
-// object and passing along whatever default options we were given.
+// ## Spire.prototype.passwordResetRequest
+// Request a password reset for email
+//
+// @param email {string}
+// @param cb {function (err)}
+Spire.prototype.passwordResetRequest = function (email, cb) {
+  var spire = this;
+  this.discover(function () {
+    spire.api.passwordResetRequest(email, cb);
+  });
+};
 
-Shred.prototype = {
-  request: function(options) {
-    options.logger = this.log;
-    options.cookieJar = ( 'cookieJar' in options ) ? options.cookieJar : this._sharedCookieJar; // let them set cookieJar = null
-    options.agent = options.agent || this.agent;
-    return new Shred.Request(_.defaults(options,this.defaults));
+// ## Spire.prototype.channel
+// Gets a channel (creates if necessary)
+//
+// @param name {string} Channel name to get or create
+// @param cb {function(err, channel)} Callback
+Spire.prototype.channel = function (name, cb) {
+  this._ensureSession(cb);
+  if (this.session._channels[name]) {
+    return cb(this.session._channels[name]);
   }
+  this.findOrCreateChannel(name, cb);
 };
 
-// Define a bunch of convenience methods so that you don't have to include
-// a `method` property in your request options.
 
-"get put post delete".split(" ").forEach(function(method) {
-  Shred.prototype[method] = function(options) {
-    options.method = method;
-    return this.request(options);
+// ## Spire.prototype.channels
+// Gets all channels for an account
+//
+// @param cb {function (err, channels)} Callback
+Spire.prototype.channels = function (cb) {
+  this._ensureSession(cb);
+  this.spire.session.channels(cb);
+};
+
+Spire.prototype.channels$ = function (cb) {
+  this._ensureSession(cb);
+  this.spire.session.channels$(cb);
+};
+
+Spire.prototype.findOrCreateChannel = function (name, cb) {
+  this._ensureSession(cb);
+  var spire = this;
+  var creationCount = 0;
+
+  var createChannel = function () {
+    creationCount++;
+    spire.session.createChannel(name, function (err, channel) {
+      if (!err) return cb(null, channel);
+      if (err.status !== 409) return cb(err);
+      if (creationCount >= CREATION_RETRY_LIMIT) {
+        return cb(new Error("Could not create channel: " + name));
+      }
+      getChannel();
+    });
+  };
+
+  var getChannel = function () {
+    spire.session.channels$(function (err, channels) {
+      if (!err && channels[name]) return cb(null, channels[name]);
+      if (err && err.status !== 409) return cb(err);
+      if (creationCount >= CREATION_RETRY_LIMIT) {
+        return cb(new Error("Could not create channel: " + name));
+      }
+      createChannel();
+    });
+  };
+
+  createChannel();
+};
+
+// ## Spire.prototype.subscribe
+// Create a new subscription for the given channels
+//
+// @param name {string} Subscription name
+// @param channels {array} Channel names for the subscription to listen // on
+// @param cb {function (err, subscription)} Callback
+Spire.prototype.subscribe = function (name, channels, cb) {
+  this._ensureSession(cb);
+  var spire = this;
+  async.forEach(
+    channels,
+    function (channel, innerCB) {
+      spire.findOrCreateChannel(name, innerCB);
+    },
+    function (err) {
+      if (err) return cb(err);
+      spire.findOrCreateSubscription(name, channels, cb);
+    }
+  );
+};
+
+Spire.prototype.findOrCreateSubscription = function (name, channelNames, cb) {
+  this._ensureSession(cb);
+  var spire = this;
+  var creationCount = 0;
+
+  var createSubscription = function () {
+    creationCount++;
+    spire.session.createSubscription(name, channelNames, function (err, sub) {
+      if (!err) return cb(null, sub);
+      if (err.status !== 409) return cb(err);
+      if (creationCount >= CREATION_RETRY_LIMIT) {
+        return cb(new Error("Could not create subscription: " + name));
+      }
+      getSubscription();
+    });
+  };
+
+  var getSubscription = function () {
+    spire.session.subscriptions$(function (err, subscriptions) {
+      if (!err && subscriptions[name]) return cb(null, subscriptions[name]);
+      if (err && err.status !== 409) return cb(err);
+      if (creationCount >= CREATION_RETRY_LIMIT) {
+        return cb(new Error("Could not create subscription: " + name));
+      }
+      createChannel();
+    });
+  };
+
+  createChannel();
+};
+
+// ## Spire.prototype.subscriptions
+// Get the subscriptions for an account
+//
+// @param cb {function (err, subscriptions)} Callback
+Spire.prototype.subscriptions = function (cb) {
+  this._ensureSession(cb);
+  this.session.subscriptions(cb);
+};
+
+// ## Spire.prototype._hasSession
+// Whether or not we have a Spire session.  Can run sync and async.
+//
+// @private
+// @param cb {function(err, bool)} Callback (optional)
+Spire.prototype._hasSession = function (cb) {
+  var res = !!this.session;
+  if (cb) return cb(res);
+  return res;
+};
+
+// ## Spire.prototype._ensureSession
+// Throws (or passes) error if we don't have a session.
+//
+// @private
+// @param cb {function(err)} Callback (optional)
+Spire.prototype._ensureSession = function (cb) {
+  if (this._hasSession()) return;
+  var err = new Error('No session!');
+  if (cb) return cb(err);
+  throw err;
+};
+
+});
+
+require.define("/node_modules/async/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {"main":"./index"}
+});
+
+require.define("/node_modules/async/index.js", function (require, module, exports, __dirname, __filename) {
+    // This file is just added for convenience so this repository can be
+// directly checked out into a project's deps folder
+module.exports = require('./lib/async');
+
+});
+
+require.define("/node_modules/async/lib/async.js", function (require, module, exports, __dirname, __filename) {
+    /*global setTimeout: false, console: false */
+(function () {
+
+    var async = {};
+
+    // global on the server, window in the browser
+    var root = this,
+        previous_async = root.async;
+
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = async;
+    }
+    else {
+        root.async = async;
+    }
+
+    async.noConflict = function () {
+        root.async = previous_async;
+        return async;
+    };
+
+    //// cross-browser compatiblity functions ////
+
+    var _forEach = function (arr, iterator) {
+        if (arr.forEach) {
+            return arr.forEach(iterator);
+        }
+        for (var i = 0; i < arr.length; i += 1) {
+            iterator(arr[i], i, arr);
+        }
+    };
+
+    var _map = function (arr, iterator) {
+        if (arr.map) {
+            return arr.map(iterator);
+        }
+        var results = [];
+        _forEach(arr, function (x, i, a) {
+            results.push(iterator(x, i, a));
+        });
+        return results;
+    };
+
+    var _reduce = function (arr, iterator, memo) {
+        if (arr.reduce) {
+            return arr.reduce(iterator, memo);
+        }
+        _forEach(arr, function (x, i, a) {
+            memo = iterator(memo, x, i, a);
+        });
+        return memo;
+    };
+
+    var _keys = function (obj) {
+        if (Object.keys) {
+            return Object.keys(obj);
+        }
+        var keys = [];
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    };
+
+    var _indexOf = function (arr, item) {
+        if (arr.indexOf) {
+            return arr.indexOf(item);
+        }
+        for (var i = 0; i < arr.length; i += 1) {
+            if (arr[i] === item) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
+    //// exported async module functions ////
+
+    //// nextTick implementation with browser-compatible fallback ////
+    if (typeof process === 'undefined' || !(process.nextTick)) {
+        async.nextTick = function (fn) {
+            setTimeout(fn, 0);
+        };
+    }
+    else {
+        async.nextTick = process.nextTick;
+    }
+
+    async.forEach = function (arr, iterator, callback) {
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        _forEach(arr, function (x) {
+            iterator(x, function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    completed += 1;
+                    if (completed === arr.length) {
+                        callback();
+                    }
+                }
+            });
+        });
+    };
+
+    async.forEachSeries = function (arr, iterator, callback) {
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        var iterate = function () {
+            iterator(arr[completed], function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    completed += 1;
+                    if (completed === arr.length) {
+                        callback();
+                    }
+                    else {
+                        iterate();
+                    }
+                }
+            });
+        };
+        iterate();
+    };
+    
+    async.forEachLimit = function (arr, limit, iterator, callback) {
+        if (!arr.length || limit <= 0) {
+            return callback(); 
+        }
+        var completed = 0;
+        var started = 0;
+        var running = 0;
+        
+        (function replenish () {
+          if (completed === arr.length) {
+              return callback();
+          }
+          
+          while (running < limit && started < arr.length) {
+            iterator(arr[started], function (err) {
+              if (err) {
+                  callback(err);
+                  callback = function () {};
+              }
+              else {
+                  completed += 1;
+                  running -= 1;
+                  if (completed === arr.length) {
+                      callback();
+                  }
+                  else {
+                      replenish();
+                  }
+              }
+            });
+            started += 1;
+            running += 1;
+          }
+        })();
+    };
+
+
+    var doParallel = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.forEach].concat(args));
+        };
+    };
+    var doSeries = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.forEachSeries].concat(args));
+        };
+    };
+
+
+    var _asyncMap = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (err, v) {
+                results[x.index] = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, results);
+        });
+    };
+    async.map = doParallel(_asyncMap);
+    async.mapSeries = doSeries(_asyncMap);
+
+
+    // reduce only has a series version, as doing reduce in parallel won't
+    // work in many situations.
+    async.reduce = function (arr, memo, iterator, callback) {
+        async.forEachSeries(arr, function (x, callback) {
+            iterator(memo, x, function (err, v) {
+                memo = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, memo);
+        });
+    };
+    // inject alias
+    async.inject = async.reduce;
+    // foldl alias
+    async.foldl = async.reduce;
+
+    async.reduceRight = function (arr, memo, iterator, callback) {
+        var reversed = _map(arr, function (x) {
+            return x;
+        }).reverse();
+        async.reduce(reversed, memo, iterator, callback);
+    };
+    // foldr alias
+    async.foldr = async.reduceRight;
+
+    var _filter = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.filter = doParallel(_filter);
+    async.filterSeries = doSeries(_filter);
+    // select alias
+    async.select = async.filter;
+    async.selectSeries = async.filterSeries;
+
+    var _reject = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (!v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.reject = doParallel(_reject);
+    async.rejectSeries = doSeries(_reject);
+
+    var _detect = function (eachfn, arr, iterator, main_callback) {
+        eachfn(arr, function (x, callback) {
+            iterator(x, function (result) {
+                if (result) {
+                    main_callback(x);
+                    main_callback = function () {};
+                }
+                else {
+                    callback();
+                }
+            });
+        }, function (err) {
+            main_callback();
+        });
+    };
+    async.detect = doParallel(_detect);
+    async.detectSeries = doSeries(_detect);
+
+    async.some = function (arr, iterator, main_callback) {
+        async.forEach(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (v) {
+                    main_callback(true);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(false);
+        });
+    };
+    // any alias
+    async.any = async.some;
+
+    async.every = function (arr, iterator, main_callback) {
+        async.forEach(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (!v) {
+                    main_callback(false);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(true);
+        });
+    };
+    // all alias
+    async.all = async.every;
+
+    async.sortBy = function (arr, iterator, callback) {
+        async.map(arr, function (x, callback) {
+            iterator(x, function (err, criteria) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, {value: x, criteria: criteria});
+                }
+            });
+        }, function (err, results) {
+            if (err) {
+                return callback(err);
+            }
+            else {
+                var fn = function (left, right) {
+                    var a = left.criteria, b = right.criteria;
+                    return a < b ? -1 : a > b ? 1 : 0;
+                };
+                callback(null, _map(results.sort(fn), function (x) {
+                    return x.value;
+                }));
+            }
+        });
+    };
+
+    async.auto = function (tasks, callback) {
+        callback = callback || function () {};
+        var keys = _keys(tasks);
+        if (!keys.length) {
+            return callback(null);
+        }
+
+        var results = {};
+
+        var listeners = [];
+        var addListener = function (fn) {
+            listeners.unshift(fn);
+        };
+        var removeListener = function (fn) {
+            for (var i = 0; i < listeners.length; i += 1) {
+                if (listeners[i] === fn) {
+                    listeners.splice(i, 1);
+                    return;
+                }
+            }
+        };
+        var taskComplete = function () {
+            _forEach(listeners, function (fn) {
+                fn();
+            });
+        };
+
+        addListener(function () {
+            if (_keys(results).length === keys.length) {
+                callback(null, results);
+            }
+        });
+
+        _forEach(keys, function (k) {
+            var task = (tasks[k] instanceof Function) ? [tasks[k]]: tasks[k];
+            var taskCallback = function (err) {
+                if (err) {
+                    callback(err);
+                    // stop subsequent errors hitting callback multiple times
+                    callback = function () {};
+                }
+                else {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    taskComplete();
+                }
+            };
+            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
+            var ready = function () {
+                return _reduce(requires, function (a, x) {
+                    return (a && results.hasOwnProperty(x));
+                }, true);
+            };
+            if (ready()) {
+                task[task.length - 1](taskCallback, results);
+            }
+            else {
+                var listener = function () {
+                    if (ready()) {
+                        removeListener(listener);
+                        task[task.length - 1](taskCallback, results);
+                    }
+                };
+                addListener(listener);
+            }
+        });
+    };
+
+    async.waterfall = function (tasks, callback) {
+        if (!tasks.length) {
+            return callback();
+        }
+        callback = callback || function () {};
+        var wrapIterator = function (iterator) {
+            return function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    var next = iterator.next();
+                    if (next) {
+                        args.push(wrapIterator(next));
+                    }
+                    else {
+                        args.push(callback);
+                    }
+                    async.nextTick(function () {
+                        iterator.apply(null, args);
+                    });
+                }
+            };
+        };
+        wrapIterator(async.iterator(tasks))();
+    };
+
+    async.parallel = function (tasks, callback) {
+        callback = callback || function () {};
+        if (tasks.constructor === Array) {
+            async.map(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            async.forEach(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.series = function (tasks, callback) {
+        callback = callback || function () {};
+        if (tasks.constructor === Array) {
+            async.mapSeries(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            async.forEachSeries(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.iterator = function (tasks) {
+        var makeCallback = function (index) {
+            var fn = function () {
+                if (tasks.length) {
+                    tasks[index].apply(null, arguments);
+                }
+                return fn.next();
+            };
+            fn.next = function () {
+                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
+            };
+            return fn;
+        };
+        return makeCallback(0);
+    };
+
+    async.apply = function (fn) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        return function () {
+            return fn.apply(
+                null, args.concat(Array.prototype.slice.call(arguments))
+            );
+        };
+    };
+
+    var _concat = function (eachfn, arr, fn, callback) {
+        var r = [];
+        eachfn(arr, function (x, cb) {
+            fn(x, function (err, y) {
+                r = r.concat(y || []);
+                cb(err);
+            });
+        }, function (err) {
+            callback(err, r);
+        });
+    };
+    async.concat = doParallel(_concat);
+    async.concatSeries = doSeries(_concat);
+
+    async.whilst = function (test, iterator, callback) {
+        if (test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.whilst(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.until = function (test, iterator, callback) {
+        if (!test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.until(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.queue = function (worker, concurrency) {
+        var workers = 0;
+        var q = {
+            tasks: [],
+            concurrency: concurrency,
+            saturated: null,
+            empty: null,
+            drain: null,
+            push: function (data, callback) {
+                q.tasks.push({data: data, callback: callback});
+                if(q.saturated && q.tasks.length == concurrency) q.saturated();
+                async.nextTick(q.process);
+            },
+            process: function () {
+                if (workers < q.concurrency && q.tasks.length) {
+                    var task = q.tasks.shift();
+                    if(q.empty && q.tasks.length == 0) q.empty();
+                    workers += 1;
+                    worker(task.data, function () {
+                        workers -= 1;
+                        if (task.callback) {
+                            task.callback.apply(task, arguments);
+                        }
+                        if(q.drain && q.tasks.length + workers == 0) q.drain();
+                        q.process();
+                    });
+                }
+            },
+            length: function () {
+                return q.tasks.length;
+            },
+            running: function () {
+                return workers;
+            }
+        };
+        return q;
+    };
+
+    var _console_fn = function (name) {
+        return function (fn) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            fn.apply(null, args.concat([function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (typeof console !== 'undefined') {
+                    if (err) {
+                        if (console.error) {
+                            console.error(err);
+                        }
+                    }
+                    else if (console[name]) {
+                        _forEach(args, function (x) {
+                            console[name](x);
+                        });
+                    }
+                }
+            }]));
+        };
+    };
+    async.log = _console_fn('log');
+    async.dir = _console_fn('dir');
+    /*async.info = _console_fn('info');
+    async.warn = _console_fn('warn');
+    async.error = _console_fn('error');*/
+
+    async.memoize = function (fn, hasher) {
+        var memo = {};
+        var queues = {};
+        hasher = hasher || function (x) {
+            return x;
+        };
+        var memoized = function () {
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            var key = hasher.apply(null, args);
+            if (key in memo) {
+                callback.apply(null, memo[key]);
+            }
+            else if (key in queues) {
+                queues[key].push(callback);
+            }
+            else {
+                queues[key] = [callback];
+                fn.apply(null, args.concat([function () {
+                    memo[key] = arguments;
+                    var q = queues[key];
+                    delete queues[key];
+                    for (var i = 0, l = q.length; i < l; i++) {
+                      q[i].apply(null, arguments);
+                    }
+                }]));
+            }
+        };
+        memoized.unmemoized = fn;
+        return memoized;
+    };
+
+    async.unmemoize = function (fn) {
+      return function () {
+        return (fn.unmemoized || fn).apply(null, arguments);
+      }
+    };
+
+}());
+
+});
+
+require.define("/spire/api.js", function (require, module, exports, __dirname, __filename) {
+    var Resource = require('./api/resource')
+  , Account = require('./api/account')
+  , Billing = require('./api/billing')
+  , Channel = require('./api/channel')
+  , Session = require('./api/session')
+  , Subscription = require('./api/subscription')
+  ;
+
+var API = function (spire, opts) {
+  this.spire = spire;
+
+  opts |= {};
+  this.url = opts.url || 'https://api.spire.io';
+  this.version = opts.version || '1.0';
+  this.timeout = opts.timout || 30 * 1000;
+
+  this.description = null;
+  this.schema = null;
+};
+
+module.exports = API;
+
+Resource.defineRequest(API.prototype, 'discover', function () {
+  return {
+    method: 'get',
+    url: this.url,
+    headers: {
+      accept: "application/json"
+    }
   };
 });
 
+Resource.defineRequest(API.prototype, 'create_session', function (key) {
+  var spire = this.spire;
+  return {
+    method: 'post',
+    url: this.description.resources.sessions.url,
+    headers: {
+      'Content-Type': this.mediaType('account'),
+      'Accept': this.mediaType('session')
+    },
+    content: {key: key}
+  }
+});
 
-module.exports = Shred;
+Resource.defineRequest(API.prototype, 'login', function (email, password) {
+  var spire = this.spire;
+  return {
+    method: 'post',
+    url: spire.resources.sessions.url,
+    headers: {
+      'Content-Type': spire.headers.mediaType('account'),
+      'Accept': spire.headers.mediaType('session')
+    },
+    content: {
+      email: email,
+      password: password
+    }
+  }
+});
+
+Resource.defineRequest(API.prototype, 'create_account', function (account) {
+  return {
+    method: 'post',
+    url: this.description.resources.accounts.url,
+    headers: {
+      'Content-Type': this.mediaType('account'),
+      'Accept': this.mediaType('session')
+    },
+    content: account,
+  };
+});
+
+Resource.defineRequest(API.prototype, 'password_reset', function (email) {
+  return {
+    method: 'post',
+    url: this.description.resources.accounts.url,
+    content: "",
+    query: { email: email }
+  };
+});
+
+Resource.defineRequest(API.prototype, 'billing', function () {
+  return {
+    method: 'get',
+    url: this.description.resources.billing.url,
+    content: "",
+    query: { email: email },
+    headers: {
+      'Accept': 'application/json'
+    }
+  };
+});
+
+API.prototype.request = Resource.prototype.request;
+
+API.prototype.discover = function (cb) {
+  var api = this;
+
+  if (this.description) {
+    return cb(null, this.description);
+  }
+
+  this.request('discover', function (err, description) {
+    if (err) return cb(err);
+    api.description = description;
+    api.schema = description.schema[api.version];
+    cb(null, description);
+  });
+};
+
+API.prototype.createSession = function (key, cb) {
+  var api = this;
+  this.request('create_session', key, function (err, sessionData) {
+    if (err) return cb(err);
+    session = new Session(api.spire, sessionData);
+    cb(null, session);
+  });
+};
+
+API.prototype.login = function (email, password, cb) {
+  var api = this;
+  this.request('login', email, password, function (err, sessionData) {
+    if (err) return cb(err);
+    session = new Session(api.spire, sessionData);
+    cb(null, session);
+  });
+};
+
+API.prototype.createAccount = function (info, cb) {
+  var api = this;
+  this.request('create_account', info, function (err, sessionData) {
+    if (err) return cb(err);
+    session = new Session(api.spire, sessionData);
+    cb(null, session);
+  });
+};
+
+API.prototype.passwordResetRequest = function (cb) {
+  this.request('password_reset_request', cb);
+};
+
+API.prototype.billing = function (cb) {
+  var api = this;
+  this.request('billing', function (err, billingData) {
+    if (err) return cb(err);
+    var billing = new Billing(api.spire, billingData);
+    cb(null, billing);
+  });
+};
+
+// ## API.prototype.mediaType
+//
+// Generate either a 'content-type' or 'authorization' header, requires a
+// string with the name of the resource so it can extract the media type
+// from the API's schema.
+//
+//     spire.api.mediaType('channel');
+//     //=> 'application/vnd.spire-io.channel+json;version=1.0'
+API.prototype.mediaType = function(resourceName){
+  return this.schema[resourceName].mediaType;
+};
+
+// ## API.prototype.authorization
+//
+// Generate the authorization header for a resource with a capability.
+// Requires a resource object with a `capability` key.
+//
+//     authorization = spire.headers.authorization(subscription);
+//     //=> 'Capability 5iyTrZrcGw/X4LxhXJRIEn4HwFKSFB+iulVKkUjqxFq30cFBqEm'
+//
+API.prototype.authorization = function(resource){
+  return ['Capability', resource.capability].join(' ');
+};
 
 });
 
-require.define("/node_modules/shred/node_modules/underscore/package.json", function (require, module, exports, __dirname, __filename) {
+require.define("/spire/api/resource.js", function (require, module, exports, __dirname, __filename) {
+    var _ = require('underscore')
+  , Shred = require('shred')
+  , shred = new Shred()
+  , ResponseError = require('./response_error')
+  ;
+
+function Resource (spire, data) {
+  this.spire = spire;
+  this.data = data;
+};
+
+module.exports = Resource;
+
+Resource.prototype.resourceName = function () {
+  return this.constructor.name.toLowerCase();
+};
+
+Resource.defineRequest = function (obj, name, fn) {
+  obj['_req_' + name] = function () {
+    var args = Array.prototype.slice.call(arguments);
+    var callback = args.pop();
+
+    var req = fn.apply(this, args)
+
+    shred.request(req)
+      .on('error', function (res) {
+        var error = new ResponseError(res);
+        callback(error);
+      })
+      .on('success', function (res) {
+        callback(null, res.body.data);
+      });
+  };
+};
+
+Resource.prototype.request = function () {
+  var args = Array.prototype.slice.call(arguments);
+  var reqName = args.shift();
+  var cb = args[args.length - 1];
+  if (typeof this['_req_' + reqName] !== 'function') {
+    return cb(new Error("No request defined for " + reqName));
+  }
+  this['_req_' + reqName].apply(this, args);
+};
+
+Resource.defineRequest(Resource.prototype, 'get', function () {
+  return {
+    method: 'get',
+    url: this.url(),
+    headers: {
+      'Authorization': this.authorization(),
+      'Accept': this.mediaType(),
+      'Content-Type': this.mediaType()
+    }
+  };
+});
+
+Resource.defineRequest(Resource.prototype, 'update', function (data) {
+  return {
+    method: 'get',
+    url: this.url(),
+    content: data,
+    headers: {
+      'Authorization': this.authorization(),
+      'Accept': this.mediaType(),
+      'Content-Type': this.mediaType()
+    }
+  };
+});
+  
+Resource.defineRequest(Resource.prototype, 'delete', function () {
+  return {
+    method: 'get',
+    url: this.url(),
+    headers: {
+      'Authorization': this.authorization(),
+      'Accept': this.mediaType(),
+      'Content-Type': this.mediaType()
+    }
+  };
+});
+
+Resource.prototype.get = function (cb) {
+  var resource = this;
+  this.request('get', function (err, data) {
+    if (err) return cb(err);
+    resource.data = data;
+    cb(null, resource);
+  });
+};
+
+Resource.prototype.update = function (data, cb) {
+  var resource = this;
+  this.request('update', data, function (err, data) {
+    if (err) return cb(err);
+    resource.data = data;
+    cb(null, resource);
+  });
+};
+
+Resource.prototype.delete = function (data, cb) {
+  var resource = this;
+  this.request('delete', data, function (err, data) {
+    if (err) return cb(err);
+    delete resource.data;
+    cb(null, resource);
+  });
+};
+
+Resource.prototype.url = function () {
+  return this.data.url;
+};
+
+Resource.prototype.capability = function () {
+  return this.data.capability;
+};
+
+Resource.prototype.authorization = function (cap) {
+  cap = cap || this.capability();
+  return "Capability: " + this.capability();
+};
+
+Resource.prototype.key = function () {
+  return this.data.key;
+};
+
+Resource.prototype.schema = function (name) {
+  return this.spire.schema[name || this.resourceName];
+};
+
+Resource.prototype.mediaType = function (name) {
+  return this.schema(name).mediaType;
+};
+
+});
+
+require.define("/node_modules/underscore/package.json", function (require, module, exports, __dirname, __filename) {
     module.exports = {"main":"underscore.js"}
 });
 
-require.define("/node_modules/shred/node_modules/underscore/underscore.js", function (require, module, exports, __dirname, __filename) {
-    //     Underscore.js 1.3.0
+require.define("/node_modules/underscore/underscore.js", function (require, module, exports, __dirname, __filename) {
+    //     Underscore.js 1.3.1
 //     (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
 //     Underscore is freely distributable under the MIT license.
 //     Portions of Underscore are inspired or borrowed from Prototype,
@@ -563,7 +1684,7 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
   }
 
   // Current version.
-  _.VERSION = '1.3.0';
+  _.VERSION = '1.3.1';
 
   // Collection Functions
   // --------------------
@@ -581,7 +1702,7 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
       }
     } else {
       for (var key in obj) {
-        if (hasOwnProperty.call(obj, key)) {
+        if (_.has(obj, key)) {
           if (iterator.call(context, obj[key], key, obj) === breaker) return;
         }
       }
@@ -590,7 +1711,7 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
 
   // Return the results of applying the iterator to each element.
   // Delegates to **ECMAScript 5**'s native `map` if available.
-  _.map = function(obj, iterator, context) {
+  _.map = _.collect = function(obj, iterator, context) {
     var results = [];
     if (obj == null) return results;
     if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
@@ -1007,7 +2128,7 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
     hasher || (hasher = _.identity);
     return function() {
       var key = hasher.apply(this, arguments);
-      return hasOwnProperty.call(memo, key) ? memo[key] : (memo[key] = func.apply(this, arguments));
+      return _.has(memo, key) ? memo[key] : (memo[key] = func.apply(this, arguments));
     };
   };
 
@@ -1113,7 +2234,7 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
   _.keys = nativeKeys || function(obj) {
     if (obj !== Object(obj)) throw new TypeError('Invalid object');
     var keys = [];
-    for (var key in obj) if (hasOwnProperty.call(obj, key)) keys[keys.length] = key;
+    for (var key in obj) if (_.has(obj, key)) keys[keys.length] = key;
     return keys;
   };
 
@@ -1136,7 +2257,7 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
   _.extend = function(obj) {
     each(slice.call(arguments, 1), function(source) {
       for (var prop in source) {
-        if (source[prop] !== void 0) obj[prop] = source[prop];
+        obj[prop] = source[prop];
       }
     });
     return obj;
@@ -1234,17 +2355,17 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
       if ('constructor' in a != 'constructor' in b || a.constructor != b.constructor) return false;
       // Deep compare objects.
       for (var key in a) {
-        if (hasOwnProperty.call(a, key)) {
+        if (_.has(a, key)) {
           // Count the expected number of properties.
           size++;
           // Deep compare each member.
-          if (!(result = hasOwnProperty.call(b, key) && eq(a[key], b[key], stack))) break;
+          if (!(result = _.has(b, key) && eq(a[key], b[key], stack))) break;
         }
       }
       // Ensure that both objects contain the same number of properties.
       if (result) {
         for (key in b) {
-          if (hasOwnProperty.call(b, key) && !(size--)) break;
+          if (_.has(b, key) && !(size--)) break;
         }
         result = !size;
       }
@@ -1263,7 +2384,7 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
   // An "empty" object has no enumerable own-properties.
   _.isEmpty = function(obj) {
     if (_.isArray(obj) || _.isString(obj)) return obj.length === 0;
-    for (var key in obj) if (hasOwnProperty.call(obj, key)) return false;
+    for (var key in obj) if (_.has(obj, key)) return false;
     return true;
   };
 
@@ -1289,7 +2410,7 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
   };
   if (!_.isArguments(arguments)) {
     _.isArguments = function(obj) {
-      return !!(obj && hasOwnProperty.call(obj, 'callee'));
+      return !!(obj && _.has(obj, 'callee'));
     };
   }
 
@@ -1337,6 +2458,11 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
   // Is a given variable undefined?
   _.isUndefined = function(obj) {
     return obj === void 0;
+  };
+
+  // Has own property?
+  _.has = function(obj, key) {
+    return hasOwnProperty.call(obj, key);
   };
 
   // Utility Functions
@@ -1393,6 +2519,12 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
   // guaranteed not to match.
   var noMatch = /.^/;
 
+  // Within an interpolation, evaluation, or escaping, remove HTML escaping
+  // that had been previously added.
+  var unescape = function(code) {
+    return code.replace(/\\\\/g, '\\').replace(/\\'/g, "'");
+  };
+
   // JavaScript micro-templating, similar to John Resig's implementation.
   // Underscore templating handles arbitrary delimiters, preserves whitespace,
   // and correctly escapes quotes within interpolated code.
@@ -1403,15 +2535,13 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
       str.replace(/\\/g, '\\\\')
          .replace(/'/g, "\\'")
          .replace(c.escape || noMatch, function(match, code) {
-           return "',_.escape(" + code.replace(/\\'/g, "'") + "),'";
+           return "',_.escape(" + unescape(code) + "),'";
          })
          .replace(c.interpolate || noMatch, function(match, code) {
-           return "'," + code.replace(/\\'/g, "'") + ",'";
+           return "'," + unescape(code) + ",'";
          })
          .replace(c.evaluate || noMatch, function(match, code) {
-           return "');" + code.replace(/\\'/g, "'")
-                              .replace(/[\r\n\t]/g, ' ')
-                              .replace(/\\\\/g, '\\') + ";__p.push('";
+           return "');" + unescape(code).replace(/[\r\n\t]/g, ' ') + ";__p.push('";
          })
          .replace(/\r/g, '\\r')
          .replace(/\n/g, '\\n')
@@ -1489,6 +2619,69 @@ require.define("/node_modules/shred/node_modules/underscore/underscore.js", func
   };
 
 }).call(this);
+
+});
+
+require.define("/node_modules/shred/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {"main":"./lib/shred.js"}
+});
+
+require.define("/node_modules/shred/lib/shred.js", function (require, module, exports, __dirname, __filename) {
+    // Shred is an HTTP client library intended to simplify the use of Node's
+// built-in HTTP library. In particular, we wanted to make it easier to interact
+// with HTTP-based APIs.
+// 
+// See the [examples](./examples.html) for more details.
+
+var _ = require("underscore")
+// Ax is a nice logging library we wrote. You can use any logger, providing it
+// has `info`, `warn`, `debug`, and `error` methods that take a string.
+  , Ax = require("ax")
+  , CookieJarLib = require( "cookiejar" )
+  , CookieAccessInfo = CookieJarLib.CookieAccessInfo
+  , CookieJar = CookieJarLib.CookieJar
+  , Cookie = CookieJarLib.Cookie
+;
+
+// Shred takes some options, including a logger and request defaults.
+
+var Shred = function(options) {
+  options = (options||{});
+  this.agent = options.agent;
+  this.defaults = options.defaults||{};
+  this.log = options.logger||(new Ax({ level: "info" }));
+  this._sharedCookieJar = new CookieJar();
+};
+
+// Most of the real work is done in the request and reponse classes.
+ 
+Shred.Request = require("./shred/request");
+Shred.Response = require("./shred/response");
+
+// The `request` method kicks off a new request, instantiating a new `Request`
+// object and passing along whatever default options we were given.
+
+Shred.prototype = {
+  request: function(options) {
+    options.logger = this.log;
+    options.cookieJar = ( 'cookieJar' in options ) ? options.cookieJar : this._sharedCookieJar; // let them set cookieJar = null
+    options.agent = options.agent || this.agent;
+    return new Shred.Request(_.defaults(options,this.defaults));
+  }
+};
+
+// Define a bunch of convenience methods so that you don't have to include
+// a `method` property in your request options.
+
+"get put post delete".split(" ").forEach(function(method) {
+  Shred.prototype[method] = function(options) {
+    options.method = method;
+    return this.request(options);
+  };
+});
+
+
+module.exports = Shred;
 
 });
 
@@ -2971,8 +4164,6 @@ require.define("/node_modules/shred/lib/shred/response.js", function (require, m
 var _ = require("underscore")
   , Content = require("./content")
   , HeaderMixins = require("./mixins/headers")
-  , CookieJarLib = require( "cookiejar" )
-  , Cookie = CookieJarLib.Cookie
 ;
 
 // Browser doesn't have zlib.
@@ -2989,7 +4180,7 @@ try {
 // and then use the callback to let the request know when it's ready.
 var Response = function(raw, request, callback) { 
   var response = this;
-  this._raw = raw;
+  this._raw = raw; 
 
   // The `._setHeaders` method is "private"; you can't otherwise set headers on
   // the response.
@@ -2997,34 +4188,16 @@ var Response = function(raw, request, callback) {
   
   // store any cookies
   if (request.cookieJar && this.getHeader('set-cookie')) {
-    var cookieStrings = this.getHeader('set-cookie');
-    var cookieObjs = []
-      , cookie;
-
-    for (var i = 0; i < cookieStrings.length; i++) {
-      var cookieString = cookieStrings[i];
-      if (!cookieString) {
-        continue;
-      }
-
-      if (!cookieString.match(/domain\=/i)) {
-        cookieString += '; domain=' + request.host;
-      }
-
-      if (!cookieString.match(/path\=/i)) {
-        cookieString += '; path=' + request.path;
-      }
-
-      try {
-        cookie = new Cookie(cookieStr);
-        if (cookie) {
-          cookieObjs.push(cookie);
+    var cookies = this.getHeader('set-cookie');
+    for (var cookieIndex = 0; cookieIndex < cookies.length; ++cookieIndex) {
+        if (!cookies[cookieIndex].match(/domain\=/i)) {
+            cookies[cookieIndex] += '; domain=' + request.host;
         }
-      } catch (e) {
-        console.warn("Tried to set bad cookie: " + cookieString);
-      }
+        
+        if (!cookies[cookieIndex].match(/path\=/i)) {
+            cookies[cookieIndex] += '; path=' + request.path;
+        }
     }
-
     request.cookieJar.setCookies(cookies);
   }
 
@@ -3442,7 +4615,7 @@ module.exports = {
 };
 });
 
-require.define("/spire/requests.js", function (require, module, exports, __dirname, __filename) {
+require.define("/spire/api/response_error.js", function (require, module, exports, __dirname, __filename) {
     // # ResponseError
 //
 // ResponseError is a wrapper for request errors, this makes it easier to pass an
@@ -3458,789 +4631,437 @@ var ResponseError = function (response) {
 
 ResponseError.prototype = new Error();
 
-// # Requests
-var Requests = function (spire) {
-  this.agent = spire.agent;
+module.exports = ResponseError;
 
-  this.description = new Description(spire);
-  this.sessions = new Sessions(spire);
-  this.channels = new Channels(spire);
-  this.subscriptions = new Subscriptions(spire);
-  this.messages = new Messages(spire);
-  this.accounts = new Accounts(spire);
-  this.billing = new Billing(spire);
-};
+});
 
-module.exports = Requests;
+require.define("/spire/api/account.js", function (require, module, exports, __dirname, __filename) {
+    var Resource = require('./resource');
 
-var Description = function (spire) {
+function Account (spire, data) {
   this.spire = spire;
+  this.data = data;
 };
 
-// ## Description.get
-//
-// Gets the description resource object and caches it for later, the
-// `callback` is triggered with an `error` object and the `description`
-// resource object.
-Description.prototype.get = function (callback) {
-  var spire = this.spire;
-  // If discovery has already happened use the cache.
-  if (spire.resources) {
-    var description = { resources: spire.resources
-        , schema: spire.schema
-        }
-    ;
+Account.prototype = new Resource();
 
-    return callback(null, description);
+module.exports = Account;
+
+Resource.defineRequest(Account.prototype, 'update_billing_subscription', function (info) {
+  var billing = this.data.billing;
+  return {
+    method: 'put',
+    url: billing.url,
+    content: info,
+    headers: {
+      'Accept': this.mediaType(),
+      'Content-Type': this.mediaType(),
+      'Authorization': this.authorization(invioces.capability)
+    }
+  };
+});
+
+Resource.defineRequest(Account.prototype, 'billing_invoices', function () {
+  var invoices = this.data.billing.invoices;
+  return {
+    method: 'get',
+    url: invoices.url,
+    headers: {
+      'Accept': "application/json",
+      'Authorization': "Capability " + invoices.capability
+    }
+  };
+});
+
+Resource.defineRequest(Account.prototype, 'billing_invoices_upcoming', function () {
+  var upcoming = this.data.billing.invoices.upcoming;
+  return {
+    method: 'get',
+    url: invoices.url.upcoming,
+    headers: {
+      'Accept': "application/json",
+      'Authorization': "Capability " + upcoming.capability
+    }
+  };
+});
+
+Account.prototype.updateBillingSubscription = function (info, cb) {
+  var account = this;
+  this.request('update_billing_subscription', info, function (err, data) {
+    if (err) return cb(err);
+    account.data = data;
+    cb(account);
+  });
+};
+
+});
+
+require.define("/spire/api/billing.js", function (require, module, exports, __dirname, __filename) {
+    var Resource = require('./resource');
+
+function Billing (spire, data) {
+  this.spire = spire;
+  this.data = data;
+};
+
+Billing.prototype = new Resource();
+
+module.exports = Billing;
+
+});
+
+require.define("/spire/api/channel.js", function (require, module, exports, __dirname, __filename) {
+    var Resource = require('./resource');
+
+function Channel (spire, data) {
+  this.spire = spire;
+  this.data = data;
+};
+
+Resource.defineRequest(Channel.prototype, 'publish', function (message) {
+  var spire = this.spire;
+  return {
+    method: 'post',
+    url: this.url,
+    headers: {
+      'Authorization': this.authorization(),
+      'Accept': this.mediaType()
+    },
+    content: message,
+  };
+});
+
+Channel.prototype.name = function () {
+  return this.data.name;
+};
+
+Channel.prototype.getByName = function (name, cb) {
+  var channel = this;
+  this.request('getByName', name, function (err, data) {
+    if (err) return cb(err);
+    channel.data = data;
+    cb(null, channel);
+  });
+};
+
+Channel.prototype.publish = function (message, cb) {
+  this.request('publish', { content: message }, cb);
+};
+
+Channel.prototype.subscribe = function (subName, cb) {
+  if (!cb) {
+    cb = subName;
+    name = null;
   }
-
-  // If there isn't a cache make an XHR to get the description.
-  spire.shred.get({
-    url: spire.options.url,
-    headers: {
-      accept: "application/json"
-    },
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-
-      success: function(response){
-        spire.resources = response.body.data.resources;
-        spire.schema = response.body.data.schema;
-
-        callback(null, response.body.data);
-      }
-    }
-  });
+  this.spire.subscribe(subName, this.name, cb);
 };
 
-var Sessions = function (spire) {
-  this.spire = spire;
-};
+});
 
-Sessions.prototype.get = function(session, callback){
-  var spire = this.spire;
-  spire.shred.get({
-    url: session.url,
-    headers: {
-      'Accept': spire.headers.mediaType('session'),
-      'Authorization': spire.headers.authorization(session)
-    },
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
-Sessions.prototype.create = function(options, callback){
-  var spire = this.spire;
-  if (! options.key && (typeof options.email !== 'string' && typeof options.password !== 'string')){
-    var message = [ 'You need a key to do that! Try doing this:'
-        , '   spire.options.key = <your account key>'
-        ].join('\n');
-    ;
-
-    throw new Error(message);
-  }
-
-  if (options.email && options.password) options.key = null;
-
-  spire.shred.post({
-    url: spire.resources.sessions.url,
-    headers: {
-      'Content-Type': spire.headers.mediaType('account'),
-      'Accept': spire.headers.mediaType('session')
-    },
-    content: options,
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
-var Channels = function (spire) {
-  this.spire = spire;
-};
-
-Channels.prototype.get = function(channel, callback){
-  var spire = this.spire;
-  spire.shred.get({
-    url: channel.url,
-    headers: {
-      'Authorization': spire.headers.authorization(channel),
-      'Accept': spire.headers.mediaType('channel')
-    },
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
-Channels.prototype.getAll = function(options, callback){
-  var spire = this.spire;
-  var channels = spire.session.resources.channels;
-
-  spire.shred.get({
-    url: channels.url,
-    headers: {
-      'Authorization': spire.headers.authorization(channels),
-      'Accept': spire.headers.mediaType('channels')
-    },
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
-Channels.prototype.getByName = function(options, callback){
-  var spire = this.spire;
-  var channels = spire.session.resources.channels
-    , name = options.name
+require.define("/spire/api/session.js", function (require, module, exports, __dirname, __filename) {
+    var Resource = require('./resource')
+  , Account = require('./account')
+  , Channel = require('./channel')
+  , Subscription = require('./subscription')
+  , _ = require('underscore')
   ;
 
-  spire.shred.get({
-    url: channels.url,
-    headers: {
-      'Authorization': spire.headers.authorization(channels),
-      'Accept': spire.headers.mediaType('channels')
-    },
-    query: {
-      name: name
-    },
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        callback(null, response.body.data);
-      }
-    }
-  });
+function Session (spire, data) {
+  this.spire = spire;
+  this.data = data;
 };
 
-Channels.prototype.create = function(options, callback){
-  var spire = this.spire;
-  var channels = spire.session.resources.channels
-    , name = options.name
-  ;
+Session.prototype = new Resource();
 
-  spire.shred.post({
-    url: channels.url,
+module.exports = Session;
+
+Resource.defineRequest(Session.prototype, 'account', function () {
+  var resource = this.resources('account');
+  return {
+    method: 'get',
+    url: resource.url,
     headers: {
-      'Content-Type': spire.headers.mediaType('channel'),
-      'Accept': spire.headers.mediaType('channel'),
-      'Authorization': spire.headers.authorization(channels)
-    },
+      'Authorization': this.authorization(resource.capability),
+      'Accept': this.mediaType('account')
+    }
+  };
+});
+
+Resource.defineRequest(Session.prototype, 'channels', function () {
+  var spire = this.spire;
+  var collection = this.resources('channels');
+  return {
+    method: 'get',
+    url: collection.url,
+    headers: {
+      'Authorization': this.authorization(collection.capability),
+      'Accept': this.mediaType('channels')
+    }
+  };
+});
+
+Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
+  var spire = this.spire;
+  var collection = this.resources('channels');
+  return {
+    method: 'get',
+    url: collection.url,
+    query: { name: name },
+    headers: {
+      'Authorization': this.authorization(collection.capability),
+      'Accept': this.mediaType('channels')
+    }
+  };
+});
+
+Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
+  var spire = this.spire;
+  var collection = this.resources('channels');
+  return {
+    method: 'post',
+    url: collection.url,
     content: { name: name },
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        callback(null, response.body.data);
-      }
+    headers: {
+      'Authorization': this.authorization(collection.capability),
+      'Accept': this.mediaType('channel'),
+      'Content-Type': this.mediaType('channel')
     }
+  };
+});
+
+Resource.defineRequest(Session.prototype, 'subscriptions', function () {
+  var spire = this.spire;
+  var collection = this.resources('subscriptions');
+  return {
+    method: 'get',
+    url: collection.url,
+    headers: {
+      'Authorization': this.authorization(collection.capability),
+      'Accept': this.mediaType('subscriptions')
+    }
+  };
+});
+
+Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls) {
+  var spire = this.spire;
+  var collection = this.resources('subscriptions');
+  return {
+    method: 'post',
+    url: collection.url,
+    content: {
+      name: name,
+      channel_urls: channelUrls
+    },
+    headers: {
+      'Authorization': this.authorization(collection.capability),
+      'Accept': this.mediaType('subscription'),
+      'Content-Type': this.mediaType('subscription')
+    }
+  };
+});
+
+Session.prototype.resource = function (name) {
+  if (name) return this.data.resources[name];
+  return this.data.resources;
+};
+
+Session.prototype.account = function (cb) {
+  if (this._account) return cb(null, this._account);
+  this.account$(cb);
+};
+
+Session.prototype.account$ = function (cb) {
+  var session = this;
+  this.request('account', function (err, account) {
+    if (err) return cb(err);
+    session._account = new Account(session.spire, account);
+    cb(null, session._account)
   });
 };
 
-Channels.CHANNEL_CREATION_RETRY_LIMIT = 5;
-
-Channels.prototype.getOrCreate = function (options, callback) {
-  var spire = this.spire;
-  var channels = this;
-
-  var creationCount = 0;
-
-  var channelName = options.name;
-
-  var channelOptions = {
-    name: channelName
-  };
-
-  var getChannel = function () {
-    channels.getByName(channelOptions, function(err, channels){
-      if (err && err.status !== 404) {
-        return callback(err);
-      }
-
-      if (channels && channels[channelName]) {
-        return callback(null, channels[channelName]);
-      }
-
-      // Else create the channel
-      createChannel();
-    });
-  };
-
-  var createChannel = function () {
-    spire.requests.channels.create(channelOptions, function(err, channel){
-      creationCount++;
-      if (err && err.status !== 409) {
-        return callback(err);
-      }
-
-      if (channel) {
-        return callback(null, channel);
-      }
-
-      if (creationCount >= Messages.CHANNEL_CREATION_RETRY_LIMIT) {
-        return callback(new Error("Error getting or creating channel"));
-      }
-
-      // Else get the channel
-      getChannel();
-    });
-  };
-
-  // Kick it off
-  getChannel();
+Session.prototype.channels = function (cb) {
+  if (this._channels) return cb(null, this._channels);
+  this.channels$(cb);
 };
 
-var Subscriptions = function (spire) {
-  this.spire = spire;
+Session.prototype.channels$ = function (cb) {
+  var session = this;
+  this.request('channels', function (err, channelsData) {
+    if (err) return cb(err);
+    _.each(channelsData, function (name, channel) {
+      session._memoizeChannel(new Channel(session.spire, channel));
+    });
+    cb(null, session._channels)
+  });
 };
 
-/*
+Session.prototype._memoizeChannel = function (channel) {
+  this._channels = this._channels || {};
+  this._channels[channel.name()] = channel;
+};
 
-{
-  channels: [ channel ],
-  events: [ 'messages' ]
-}
+Session.prototype.subscriptions = function (cb) {
+  if (this._subscriptions) return cb(null, this._subscriptions);
+  this.subscriptions$(cb);
+};
 
-*/
-Subscriptions.prototype.create = function(options, callback){
-  var spire = this.spire;
-  var subscriptions = spire.session.resources.subscriptions
-    , data = { events: options.events
-      , channels: []
-      }
+Session.prototype.subscriptions$ = function (cb) {
+  var session = this;
+  this.request('subscriptions', function (err, subscriptions) {
+    if (err) return cb(err);
+    _.each(subscriptions, function (name, subscription) {
+      session._memoizeSubscription(new Subscription(session.spire, subscription));
+    });
+    cb(null, session._subscriptions)
+  });
+};
+
+Session.prototype._memoizeSubscription = function (subscription) {
+  this._subscriptions = this._subscriptions || {};
+  this._subscriptions[subscription.name()] = subscription;
+};
+
+Session.prototype.createChannel = function (name, cb) {
+  var session = this;
+  this.request('create_channel', name, function (err, data) {
+    if (err) return cb(err);
+    var channel = new Channel(session.spire, data);
+    session._memoizeChannel(channel);
+    cb(null, channel);
+  });
+};
+
+Session.prototype.createSubscription = function (subName, channelNames, cb) {
+  var session = this;
+  this.channels(function (channels) {
+    var channelUrls = _.map(channelNames, function (name) {
+      return session._channels[name]
+    });
+    session.request('create_subscription', name, channelUrls, function (err, sub) {
+      if (err) return cb(err);
+      var subscription = new Subscription(sub);
+      session._memoizeSubscription(subscription);
+      cb(null, subscription);
+    });
+  });
+};
+
+});
+
+require.define("/spire/api/subscription.js", function (require, module, exports, __dirname, __filename) {
+    var Resource = require('./resource')
+  , _ = require('underscore')
   ;
 
-  // **!** The subscription create request wants an array of channel urls
-  // not 'channel' resource objects.
-  for (var i = 0; i < options.channels.length; i++) {
-    data.channels.push(options.channels[i].url);
-  }
-  
-  spire.shred.post({
-    url: subscriptions.url,
-    headers: {
-      'Content-Type': spire.headers.mediaType('subscription'),
-      'Accept': spire.headers.mediaType('subscription'),
-      'Authorization': spire.headers.authorization(subscriptions)
-    },
-    content: data,
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        callback(null, response.body.data);
-      }
-    }
-  });
+function Subscription (spire, data) {
+  this.spire = spire;
+  this.data = data;
+
+  this.last = null;
+  this.listeners = [];
+  this.listening = false;
 };
 
-/*
+Subscription.prototype = new Resource();
 
-{
-  timeout: ...,
-  subscription: subscription
-}
+module.exports = Subscription;
 
-*/
-Subscriptions.prototype.get = function(options, callback){
-  var spire = this.spire;
-  var subscription = options.subscription;
-
-  var data = {
-    timeout: options.timeout || spire.options.timeout/1000,
-    "order-by": options['order_by'] || options.order_by || 'desc',
-    limit: options.limit || '10',
-    delay: options.delay || 0,
-    "last-message": subscription["last-message"] || options["last-message"] || options.last_message || 0
+Resource.defineRequest('messages', function (options) {
+  options = options || {};
+  return {
+    method: 'post',
+    url: this.url,
+    query: {
+      timeout: options.timeout,
+      'last-message': options.last,
+      'order-by': options.orderBy,
+      'delay': options.delay
+    },
+    headers: {
+      'Authorization': this.authorization(),
+      'Accept': this.mediaType('events')
+    }
   };
-
-  spire.shred.get({
-    url: subscription.url,
-    // timeout: options.timeout + 10000,
-    headers: {
-      'Content-Type': spire.headers.mediaType('events'),
-      'Accept': spire.headers.mediaType('events'), 
-      'Authorization': spire.headers.authorization(subscription)
-    },
-    query: data,
-    on: {
-      timeout: function(response) {
-        // fake a returned events object
-        callback(null, { messages: [] });
-      },
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        var messageCount = response.body.data.messages.length
-        if (messageCount > 0){
-          var last = data['order-by'] === 'asc' ? 0 : messageCount - 1;
-          subscription['last-message'] = response.body.data.messages[last].timestamp;
-        }
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
-var Messages = function (spire) {
-  this.spire = spire;
-}
-
-// { channel: {}, content: .. }
-Messages.prototype.create = function(options, callback){
-  var spire = this.spire;
-  var channel = options.channel
-    , content = options.content
-  ;
-  
-  spire.shred.post({
-    url: channel.url,
-    headers: {
-      'Content-Type': spire.headers.mediaType('message'),
-      'Accept': spire.headers.mediaType('message'),
-      'Authorization': spire.headers.authorization(channel)
-    },
-    content: { content: content },
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
-var Accounts = function (spire) {
-  this.spire = spire;
-};
-
-Accounts.prototype.create = function(account, callback){
-  var spire = this.spire;
-  spire.shred.post({
-    url: spire.resources.accounts.url,
-    headers: {
-      'Content-Type': spire.headers.mediaType('account'),
-      'Accept': spire.headers.mediaType('session')
-    },
-    content: account,
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        spire.session = response.body.data;
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
-Accounts.prototype.update = function(account, callback){
-  var spire = this.spire;
-  spire.shred.put({
-    url: account.url,
-    headers: {
-      'Content-Type': spire.headers.mediaType('account'),
-      'Accept': spire.headers.mediaType('account'),
-      'Authorization': spire.headers.authorization(account)
-    },
-    content: account,
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        spire.session = response.body.data;
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
-Accounts.prototype.reset = function(account, callback){
-  var spire = this.spire;
-  spire.shred.post({
-    url: account.url,
-    headers: {
-      'Content-Type': spire.headers.mediaType('account'),
-      'Accept': spire.headers.mediaType('account'),
-      'Authorization': spire.headers.authorization(account)
-    },
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        spire.session = response.body.data;
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
-var Billing = function (spire) {
-  this.spire = spire;
-};
-
-Billing.prototype.get = function(callback){
-  var spire = this.spire;
-  spire.shred.get({
-    url: spire.resources.billing.url,
-    headers: {
-      'Content-Type': spire.headers.mediaType('billing'),
-      'Accept': spire.headers.mediaType('billing')
-    },
-    on: {
-      error: function(response){
-        var error = new ResponseError(response);
-        callback(error);
-      },
-      success: function(response){
-        callback(null, response.body.data);
-      }
-    }
-  });
-};
-
 });
 
-require.define("/spire/messages.js", function (require, module, exports, __dirname, __filename) {
-    // # spire.messages
-//
-// Provides a high level interface for message publishing and subscribing.
-var Messages = function (spire) {
-  this.spire = spire;
-  this.queue = [];
+Subscription.prototype.addListener = function (fn) {
+  this.listeners.push(fn);
 };
 
-module.exports = Messages;
+Subscription.prototype.removeListener = function (fn) {
+  this.listeners = _.without(this.listeners, fn);
+};
 
-// ## spire.messages.subscribe
-//
-// Subscribe to a channel with the `name`, when new messages come in trigger
-// the `callback` every time. This method uses long-polling to get the
-// events from a subscription resource and wraps up all the complexities of
-// interfacing with the REST API (discovery, session creation, channel
-// creation, subscription creation, and event listening for the
-// subscription).
-//
-// The callback is triggered with two arguments, an `error` object and a
-// `messages` array
-//
-//     spire.messages.subscribe('chat example', function(err, messages){
-//       $.each(messages, function(i, message){
-//         var el = $('<div class="message">').text(message);
-//
-//         $('.messages').append(el);
-//       });
-//     });
-//
-// You can also pass in a hash of options to the subscription.  Accepted
-// options are 'limit', 'order_by', 'timeout', and 'delay'.
-//
-Messages.prototype.subscribe = function(channelName, subOptions, callback){
-  var spire = this.spire;
-  var messages = this;
+Subscription.prototype.listen = function (opts) {
+  opts = opts || {};
+  while (this.listening) {
+    this.longPoll(function () {})
+  }
+};
 
-  if (arguments.length === 2 && typeof subOptions === 'function') {
-    callback = subOptions;
-    subOptions = {};
+Subscription.prototype.startListening = function (opts) {
+  this.listening = true;
+  this.listen(opts);
+};
+
+Subscription.prototype.stopListening = function (opts) {
+  this.listening = true;
+  this.listen(opts);
+};
+
+Subscription.prototype.retreiveMessages = function (options, cb) {
+  var subscription = this;
+  if (!cb) {
+    cb = options;
+    options = {};
   }
 
-  spire.connect(function(err, session){
-    if (err) return callback(err);
+  options.last = options.last || 0;
+  options.delay = options.delay || 0;
+  options.orderBy = options.orderBy || 'desc';
 
-    var subscriptionCallCount = 0;
+  this.request('messages', options, function (err, messagesData) {
+    if (err) return cb(err);
+    var messages = messagesData.messages;
+    if (messages.length) {
+      subscription.last = _.last(messages).timestamp
+    }
 
-    // Get events from the subscription
-    var get = function (options) {
-      subscriptionCallCount++;
-      if (subOptions.maxCallCount < subscriptionCallCount) {
-        return;
-      }
-
-      for (var key in subOptions) {
-        options[key] = subOptions[key];
-      }
-      
-      spire.requests.subscriptions.get(options, function(err, events){
-        if (err) return callback(err);
-
-        if (events.messages.length > 0){
-          callback(null, events.messages);
-        }
-
-        // Do it all over again
-        get(options);
-      });
-    };
-
-    spire.requests.channels.getOrCreate({ name: channelName }, function (err, channel) {
-      if (err) {
-        return callback(err);
-      }
-
-      var subCreateOptions = {
-        channels: [ channel ],
-        events: [ 'messages' ]
-      };
-
-      spire.requests.subscriptions.create(subCreateOptions, function(err, sub){
-        if (err) return callback(err);
-
-        // Kick off long-polling
-        get({ subscription: sub });
+    _each(messages, function (message) {
+      _.each(subscription.listeners, function (listener) {
+        listener(message);
       });
     });
   });
 };
 
-
-
-// ## spire.messages.publish
-//
-// Publish a message. This method takes the `options` `channel`,
-// which is the name of the channel to publish the message to and `content`
-// which is the content of the message you want to publish. It can also take
-// an optional callback which gets called with an `error` and a `message`
-// object.
-//
-//       // Fire and forget
-//       var options = { channel: 'chat example', content: 'herow' };
-//
-//       spire.messages.publish(options);
-//
-//   Or:
-//
-//       // Do something specific to sending this message
-//       spire.messages.publish(options, function(err, message){
-//          // you should probably do something useful though
-//         if (err) throw err;
-//
-//         $('form').hide();
-//       });
-//
-Messages.prototype.publish = function(message, callback){
-  var messages = this;
-  var spire = this.spire;
-  // If the `spire` is busy connecting, queue the message and return.
-  if (spire.isConnecting){
-    this.queue.push({ message: message
-    , callback: callback
-    });
-
-    return;
+Subscription.prototype.poll = function (options, cb) {
+  var subscription = this;
+  if (!cb) {
+    cb = options;
+    options = {};
   }
 
-  var channelName = message.channel;
-
-  callback = callback || function () {};
-
-  // Connect; discover and create a session.
-  spire.connect(function(err, session){
-    if (err) return callback(err);
-
-    spire.requests.channels.getOrCreate({ name: channelName }, function (err, channel) {
-      if (err) {
-        return callback(err);
-      }
-
-      var createOptions = {
-        channel: channel,
-        content: message.content
-      };
-
-      spire.requests.messages.create(createOptions, function(err, message){
-        if (err) return callback(err);
-
-        callback(null, message);
-      });
-    });
-  });
+  // timeout option of 0 means no long poll,
+  // so we force it here.
+  options.last = this.last;
+  options.timout = 0;
+  this.retreiveMessages(options, cb);
 };
 
+Subscription.prototype.longPoll = function (options, cb) {
+  var subscription = this;
+  if (!cb) {
+    cb = options;
+    options = {};
+  }
 
-});
-
-require.define("/spire/headers.js", function (require, module, exports, __dirname, __filename) {
-    // # spire.headers
-//
-// Helpers for generating header values for the http requests to the
-// spire.io API.
-var Headers = function (spire) {
-  this.spire = spire;
+  // timeout option of 0 means no long poll,
+  // so we force it here.
+  options.last = this.last;
+  options.timout = options.timeout || 30;
+  this.retreiveMessages(options, cb);
 };
-
-module.exports = Headers;
-
-// ## spire.headers.authorization
-//
-// Generate the authorization header for a resource with a capability.
-// Requires a resource object with a `capability` key.
-//
-//     authorization = spire.headers.authorization(subscription);
-//     //=> 'Capability 5iyTrZrcGw/X4LxhXJRIEn4HwFKSFB+iulVKkUjqxFq30cFBqEm'
-//
-Headers.prototype.authorization = function(resource){
-  return ['Capability', resource.capability].join(' ');
-};
-
-// ## spire.headers.mediaType
-//
-// Generate either a 'content-type' or 'authorization' header, requires a
-// string with the name of the resource so it can extract the media type
-// from the API's schema.
-//
-//     spire.headers.mediaType('channel');
-//     //=> 'application/vnd.spire-io.channel+json;version=1.0'
-Headers.prototype.mediaType = function(resourceName){
-  var spire = this.spire;
-  return spire.schema[spire.options.version][resourceName].mediaType
-};
-
-
-});
-
-require.define("/spire/accounts.js", function (require, module, exports, __dirname, __filename) {
-    // # spire.accounts
-//
-// Provides a high level interface for accounts. This is what the spire.io
-// website uses for logging in, registration, and account updates.
-var Accounts = function (spire) {
-  this.spire = spire;
-};
-
-module.exports = Accounts;
-
-// ## spire.accounts.create
-//
-// Wrapper for creating an account, makes a call for the API description
-// then creates the account. It requires an account object (with at least an
-// `email` and a `password`) and a `callback`. The `callback` will be called
-// with the arguments: `error` and `session`. The `session` is a session
-// resource.
-//
-//     var account = { email: 'jxson@jxson.cc'
-//         , password: 'topsecret'
-//         }
-//     ;
-//
-//     spire.accounts.create(account, function(err, session){
-//       // seriously, do something useful with this error...
-//       if (err) throw err;
-//
-//       console.log(session);
-//     });
-//
-Accounts.prototype.create = function(account, callback){
-  var spire = this.spire;
-  spire.requests.description.get(function(err, description){
-    if (err) return callback(err);
-
-    spire.requests.accounts.create(account, callback);
-  });
-};
-
-// ## spire.accounts.update
-//
-// Wrapper for updating an account, it requires an authenticated `account`
-// resource and a `callback`. The callback will be triggered with the
-// arguments: an `error` object and an `account` resource object.
-//
-//     account.email = 'something-else@test.com';
-//
-//     spire.accounts.update(account, function(err, account){
-//       if (err) throw err;
-//
-//       console.log(account);
-//     });
-//
-Accounts.prototype.update = function(account, callback){
-  var spire = this.spire;
-  spire.requests.description.get(function(err, description){
-    if (err) return callback(err);
-
-    spire.requests.accounts.update(account, callback);
-  });
-};
-
-// ## spire.accounts.authenticate
-//
-// Creates a session for a given account, expects an `account` object with
-// `password` and `email` properties and a `callback`. The callback gets
-// called with the arguments `error`, `session`
-//
-//
-//     var account = { email: 'jxson@jxson.cc'
-//         , password: 'totally-secure'
-//         }
-//     ;
-//
-//     spire.accounts.authenticate(account, function(err, session){
-//       if (err) return callback(err);
-//
-//       console.log(session);
-//     });
-//
-Accounts.prototype.authenticate = function(account, callback){
-  var spire = this.spire;
-  spire.requests.description.get(function(err, description){
-    if (err) return callback(err);
-
-    var options = { key: spire.options.key
-        , email: account.email
-        , password: account.password
-        }
-    ;
-
-    spire.requests.sessions.create(options, callback);
-  });
-};
-
 
 });
 

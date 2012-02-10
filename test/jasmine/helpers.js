@@ -5,7 +5,6 @@ if (typeof module === 'object' && module.exports) {
   module.exports.helpers = helpers;
 }
 
-
 // helpers.randomChannelName
 // makes a random string to use as channel name.
 helpers.randomChannelName = function(){
@@ -64,7 +63,11 @@ beforeEach(function(){
       var capability = this.actual.capability;
 
       return !!capability && typeof capability === 'string'
-    }
+    },
+    toBeAResourceObject: function(){
+      console.log(this.actual.constructor.name);
+      return this.actual && this.actual.constructor && this.actual.constructor.name === 'Resource';
+    },
   });
 });
 

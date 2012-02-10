@@ -5,135 +5,35 @@ if (typeof module === 'object' && module.exports) {
   module.exports.helpers = helpers;
 }
 
-//`helpers.account(callback)` - async: makes an async call to the
-// spire.io API to create a test account and triggers the `callback`, the
-// `callback` will be triggered with two args `err`, and the authenticated
-// `session` for the newly created account:
-//
-//     var account
-//     ;
-//
-//     helpers.account(function(err, session){
-//       if (err) throw err;
-//       else account = session.resources.account;
-//     });
-//
-// `helpers.account()` also wraps any work needed to handle async in the
-// jasmine test suite so it can be used in a `beforeEach` call without the
-// need to worry about async setup. Your `it` blocks will simply wait for the
-// `helpers.account()` function to do it's work before running.
-helpers.account = function(callback){
-  var properties = { email: helpers.randomEmail()
-      , password: 'super-secret'
-      }
-    , done
-  ;
 
-  waitsFor(function(){ return done; }
-  , 'waiting for test account ' + properties.email
-  , 10000);
-
-  spire.accounts.create(properties, function(err, session){
-    if (err) throw err;
-    else spire.options.key = session.resources.account.key;
-
-    done = true;
-
-    runs(function(){ callback(err, session); });
-  });
-};
-
-// `helpers.channel(callback)` - async: wraps account and channel creation set
-// up:
-//     var channel
-//     ;
-//
-//     helpers.channel(function(err, channel, session){
-//       if (err) throw err;
-//       else channel = channel;
-//     });
-//
-// `helpers.channel()` also wraps any work needed to handle async in the
-// jasmine test suite so it can be used in a `beforeEach` call without the
-// need to worry about async setup. Your `it` blocks will simply wait for the
-// `helpers.channel()` function to do it's work before running.
-helpers.channel = function(name, callback){
-  if (typeof name === 'function') {
-    // No name passed in, only a callback.
-    callback = name;
-    name = null;
-  }
-  helpers.account(function(err, session){
-    if (err) throw err;
-    else spire.options.key = session.resources.account.key;
-
-    var done
-      , options = { session: session
-        , name: name || helpers.randomChannelName()
-        }
-    ;
-
-    waitsFor(function(){ return done; }
-    , 'waiting for test channel creation'
-    , 10000);
-
-    spire.requests.channels.create(options, function(err, channel){
-      done = true;
-
-      runs(function(){ callback(err, channel, options.session); });
-    });
-  });
-};
-
-helpers.subscription = function(callback){
-  helpers.channel(function(err, channel, session){
-    var options = { channels: [ channel ]
-        , events: [ 'messages' ]
-        , session: session
-        }
-      , done
-    ;
-
-    waitsFor(function(){ return done; }
-    , 'waiting for a test subscription creation'
-    , 10000);
-
-    spire
-      .requests
-      .subscriptions
-      .create(options, function(err, subscription){
-        done = true;
-
-        runs(function(){ callback(err, subscription); });
-      });
-  })
-};
-
-//
-// waitsFor(function(){ return callback.called; }
-// , 'waiting for the subscription creation request'
-// , 10000);
-//
-// runs(function(){
-
-// `helpers.randomChannelName()`: creates a random string to use as a channel
-// name.
+// helpers.randomChannelName
+// makes a random string to use as channel name.
 helpers.randomChannelName = function(){
   return 'random channel ' + (new Date().getTime());
 };
 
+// helpers.randomEmail
+// creates a random string to use as email.
 helpers.randomEmail = function(){
   return 'test-' + (new Date().getTime()) + '@spire.io';
 };
 
 beforeEach(function(){
   this.addMatchers({
-    toBeAResourceObject: function(expected){
+    toBeAResource: function(expected){
       var isDefined = !!this.actual
         , hasURL = !!this.actual.url && typeof this.actual.url === 'string'
       ;
 
       return isDefined && hasURL;
+    },
+    toBeAPrivilegedResource: function(expected){
+      var isDefined = !!this.actual
+        , hasURL = !!this.actual.url && typeof this.actual.url === 'string'
+        , hasCapability = !!this.actual.capability
+      ;
+
+      return isDefined && hasURL && hasCapability
     },
     toIncludeASchemaFor: function(resource, version){
       var hasSchema = !!this.actual.schema

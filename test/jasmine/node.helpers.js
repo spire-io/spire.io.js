@@ -5,5 +5,9 @@ if (typeof module === 'object' && module.exports) {
     opts.url = process.env["SPIRE_URL"];
   }
 
-  module.exports.spire = new Spire(opts);
+  function createSpire() {
+    return new Spire({ url: 'http://build.spire.io' });
+  };
+
+  module.exports.createSpire = createSpire;
 }

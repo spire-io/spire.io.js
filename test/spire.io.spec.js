@@ -2,13 +2,12 @@ describe('Accounts and Session', function () {
   describe('Registration and Authentication', function () {
     describe('Registration with a valid email and password', function () {
       beforeEach(function () {
+        this.email = helpers.randomEmail();
         this.spire = createSpire();
-        var email = helpers.randomEmail();
-
         var finished = false;
         runs(function () {
           this.spire.register({
-            email: email,
+            email: this.email,
             password: 'foobarbaz'
           }, function (err) {
             finished = true;
@@ -17,7 +16,7 @@ describe('Accounts and Session', function () {
 
         waitsFor(function () {
           return finished;
-        }, 'spire.register', 5000);
+        }, 'spire.register', 10000);
       });
 
       it('should have a session', function () {
@@ -29,6 +28,30 @@ describe('Accounts and Session', function () {
         expect(this.spire.session.resources.account).toBeTruthy();
         expect(this.spire.session.resources.account).toBeAResourceObject();
       });
+
+      describe('Registration with the same email', function () {
+        it('should throw an error', function () {
+          var finished = false;
+          var err = null;
+          runs(function () {
+            this.spire.register({
+              email: this.email,
+              password: 'bazbarfoo'
+            }, function (e) {
+              finished = true;
+              err = e;
+            });
+          });
+
+          waitsFor(function () {
+            return finished;
+          }, 'spire.register', 10000);
+
+          runs(function () {
+            expect(err).toBeTruthy();
+          });
+        });
+      }); // Registration with the same email
     }); // Registration with valid email and password
   }); // Registration and authentication
 }); // Accounts and sessions

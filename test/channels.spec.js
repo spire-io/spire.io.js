@@ -66,11 +66,31 @@ describe('Channels', function () {
       });
 
       it('should be the same channel as before', function () {
-        console.log(this.channel);
-        console.log(this.channel2);
         expect(this.channel2.key).toEqual(this.channel.key);
       });
     }); // Creating a channel with the same name
-  }); // Create a channel
 
+    describe('Publish to a channel', function () {
+      beforeEach(function () {
+        var finished = false;
+        runs(function () {
+          var that = this;
+          this.messages = this.channel.publish('Hello world!', function (err, message) {
+            that.message = message;
+            finished = true;
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 'publish to channel', 10000);
+      });
+
+      it('Returns the message we sent', function () {
+        expect(this.message.content).toBe('Hello world!');
+      });
+    }); // Publish to a channel
+  }); // Create a channel
 }); // Channels
+
+

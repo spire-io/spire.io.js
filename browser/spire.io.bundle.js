@@ -373,10 +373,12 @@ module.exports = Spire;
 
 // ## Spire.prototype.key
 // Returns the account key
-Spire.prototype.key = function () {
-  this._ensureSession();
-  return this.session.resources.account.key;
-};
+Spire.prototype.__defineGetter__('key', function () {
+  if (this.session && this.session.resources && this.session.resources.account) {
+    return this.session.resources.account.key;
+  }
+  return null;
+});
 
 // ## Spire.prototype.discover
 // Discovers urls from Spire API
@@ -438,6 +440,10 @@ Spire.prototype.register = function (user, cb) {
   });
 };
 
+Spire.prototype.update = function (user, cb) {
+  this.session.resources.account.update(user, cb);
+};
+
 // ## Spire.prototype.passwordResetRequest
 // Request a password reset for email
 //
@@ -456,9 +462,8 @@ Spire.prototype.passwordResetRequest = function (email, cb) {
 // @param name {string} Channel name to get or create
 // @param cb {function(err, channel)} Callback
 Spire.prototype.channel = function (name, cb) {
-  this._ensureSession(cb);
   if (this.session._channels[name]) {
-    return cb(this.session._channels[name]);
+    return cb(null, this.session._channels[name]);
   }
   this.findOrCreateChannel(name, cb);
 };
@@ -469,17 +474,14 @@ Spire.prototype.channel = function (name, cb) {
 //
 // @param cb {function (err, channels)} Callback
 Spire.prototype.channels = function (cb) {
-  this._ensureSession(cb);
   this.spire.session.channels(cb);
 };
 
 Spire.prototype.channels$ = function (cb) {
-  this._ensureSession(cb);
   this.spire.session.channels$(cb);
 };
 
 Spire.prototype.findOrCreateChannel = function (name, cb) {
-  this._ensureSession(cb);
   var spire = this;
   var creationCount = 0;
 
@@ -513,25 +515,30 @@ Spire.prototype.findOrCreateChannel = function (name, cb) {
 // Create a new subscription for the given channels
 //
 // @param name {string} Subscription name
-// @param channels {array} Channel names for the subscription to listen // on
+// @param channelOrChannels {array} Either a single channel name, or an array of
+//   channel names to subscribe to
 // @param cb {function (err, subscription)} Callback
-Spire.prototype.subscribe = function (name, channels, cb) {
-  this._ensureSession(cb);
+Spire.prototype.subscribe = function (name, channelOrChannels, cb) {
+  var channelNames = (typeof channelOrChannels === 'string')
+    ? [channelOrChannels]
+    : channelOrChannels;
+
   var spire = this;
   async.forEach(
-    channels,
-    function (channel, innerCB) {
-      spire.findOrCreateChannel(name, innerCB);
+    channelNames,
+    function (channelName, innerCB) {
+      spire.findOrCreateChannel(channelName, function (err, channel) {
+        innerCB();
+      });
     },
     function (err) {
       if (err) return cb(err);
-      spire.findOrCreateSubscription(name, channels, cb);
+      spire.findOrCreateSubscription(name, channelNames, cb);
     }
   );
 };
 
 Spire.prototype.findOrCreateSubscription = function (name, channelNames, cb) {
-  this._ensureSession(cb);
   var spire = this;
   var creationCount = 0;
 
@@ -554,11 +561,11 @@ Spire.prototype.findOrCreateSubscription = function (name, channelNames, cb) {
       if (creationCount >= CREATION_RETRY_LIMIT) {
         return cb(new Error("Could not create subscription: " + name));
       }
-      createChannel();
+      createSubscription();
     });
   };
 
-  createChannel();
+  createSubscription();
 };
 
 // ## Spire.prototype.subscriptions
@@ -566,31 +573,7 @@ Spire.prototype.findOrCreateSubscription = function (name, channelNames, cb) {
 //
 // @param cb {function (err, subscriptions)} Callback
 Spire.prototype.subscriptions = function (cb) {
-  this._ensureSession(cb);
   this.session.subscriptions(cb);
-};
-
-// ## Spire.prototype._hasSession
-// Whether or not we have a Spire session.  Can run sync and async.
-//
-// @private
-// @param cb {function(err, bool)} Callback (optional)
-Spire.prototype._hasSession = function (cb) {
-  var res = !!this.session;
-  if (cb) return cb(res);
-  return res;
-};
-
-// ## Spire.prototype._ensureSession
-// Throws (or passes) error if we don't have a session.
-//
-// @private
-// @param cb {function(err)} Callback (optional)
-Spire.prototype._ensureSession = function (cb) {
-  if (this._hasSession()) return;
-  var err = new Error('No session!');
-  if (cb) return cb(err);
-  throw err;
 };
 
 });
@@ -1312,7 +1295,7 @@ require.define("/spire/api.js", function (require, module, exports, __dirname, _
 var API = function (spire, opts) {
   this.spire = spire;
 
-  opts |= {};
+  opts = opts || {};
   this.url = opts.url || 'https://api.spire.io';
   this.version = opts.version || '1.0';
   this.timeout = opts.timout || 30 * 1000;
@@ -1350,10 +1333,10 @@ Resource.defineRequest(API.prototype, 'login', function (email, password) {
   var spire = this.spire;
   return {
     method: 'post',
-    url: spire.resources.sessions.url,
+    url: this.description.resources.sessions.url,
     headers: {
-      'Content-Type': spire.headers.mediaType('account'),
-      'Accept': spire.headers.mediaType('session')
+      'Content-Type': this.mediaType('account'),
+      'Accept': this.mediaType('session')
     },
     content: {
       email: email,
@@ -1492,10 +1475,6 @@ function Resource (spire, data) {
 
 module.exports = Resource;
 
-Resource.prototype.resourceName = function () {
-  return this.constructor.name.toLowerCase();
-};
-
 Resource.defineRequest = function (obj, name, fn) {
   obj['_req_' + name] = function () {
     var args = Array.prototype.slice.call(arguments);
@@ -1538,7 +1517,7 @@ Resource.defineRequest(Resource.prototype, 'get', function () {
 
 Resource.defineRequest(Resource.prototype, 'update', function (data) {
   return {
-    method: 'get',
+    method: 'put',
     url: this.url(),
     content: data,
     headers: {
@@ -1548,10 +1527,10 @@ Resource.defineRequest(Resource.prototype, 'update', function (data) {
     }
   };
 });
-  
+
 Resource.defineRequest(Resource.prototype, 'delete', function () {
   return {
-    method: 'get',
+    method: 'delete',
     url: this.url(),
     headers: {
       'Authorization': this.authorization(),
@@ -1598,15 +1577,15 @@ Resource.prototype.capability = function () {
 
 Resource.prototype.authorization = function (cap) {
   cap = cap || this.capability();
-  return "Capability: " + this.capability();
+  return "Capability " + cap;
 };
 
-Resource.prototype.key = function () {
+Resource.prototype.__defineGetter__('key', function () {
   return this.data.key;
-};
+});
 
 Resource.prototype.schema = function (name) {
-  return this.spire.schema[name || this.resourceName];
+  return this.spire.api.schema[name || this.resourceName];
 };
 
 Resource.prototype.mediaType = function (name) {
@@ -4641,6 +4620,7 @@ require.define("/spire/api/account.js", function (require, module, exports, __di
 function Account (spire, data) {
   this.spire = spire;
   this.data = data;
+  this.resourceName = 'account';
 };
 
 Account.prototype = new Resource();
@@ -4702,6 +4682,7 @@ require.define("/spire/api/billing.js", function (require, module, exports, __di
 function Billing (spire, data) {
   this.spire = spire;
   this.data = data;
+  this.resourceName = 'billing';
 };
 
 Billing.prototype = new Resource();
@@ -4716,16 +4697,22 @@ require.define("/spire/api/channel.js", function (require, module, exports, __di
 function Channel (spire, data) {
   this.spire = spire;
   this.data = data;
+  this.resourceName = 'channel';
 };
+
+Channel.prototype = new Resource();
+
+module.exports = Channel;
 
 Resource.defineRequest(Channel.prototype, 'publish', function (message) {
   var spire = this.spire;
   return {
     method: 'post',
-    url: this.url,
+    url: this.url(),
     headers: {
       'Authorization': this.authorization(),
-      'Accept': this.mediaType()
+      'Accept': this.mediaType('message'),
+      'Content-Type': this.mediaType('message')
     },
     content: message,
   };
@@ -4769,6 +4756,20 @@ require.define("/spire/api/session.js", function (require, module, exports, __di
 function Session (spire, data) {
   this.spire = spire;
   this.data = data;
+  this.resourceName = 'session';
+
+  this._channels = {};
+  this._subscriptions = {};
+
+  var resources = {};
+  _.each(this.data.resources, function (resource, name) {
+    if (name === 'account') {
+      resource = new Account(spire, resource);
+    }
+    resources[name] = resource;
+  });
+
+  this.resources = resources;
 };
 
 Session.prototype = new Resource();
@@ -4776,7 +4777,7 @@ Session.prototype = new Resource();
 module.exports = Session;
 
 Resource.defineRequest(Session.prototype, 'account', function () {
-  var resource = this.resources('account');
+  var resource = this.resources.account;
   return {
     method: 'get',
     url: resource.url,
@@ -4789,7 +4790,7 @@ Resource.defineRequest(Session.prototype, 'account', function () {
 
 Resource.defineRequest(Session.prototype, 'channels', function () {
   var spire = this.spire;
-  var collection = this.resources('channels');
+  var collection = this.resources.channels;
   return {
     method: 'get',
     url: collection.url,
@@ -4802,7 +4803,7 @@ Resource.defineRequest(Session.prototype, 'channels', function () {
 
 Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
   var spire = this.spire;
-  var collection = this.resources('channels');
+  var collection = this.resources.channels;
   return {
     method: 'get',
     url: collection.url,
@@ -4816,7 +4817,7 @@ Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
 
 Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
   var spire = this.spire;
-  var collection = this.resources('channels');
+  var collection = this.resources.channels;
   return {
     method: 'post',
     url: collection.url,
@@ -4831,7 +4832,7 @@ Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
 
 Resource.defineRequest(Session.prototype, 'subscriptions', function () {
   var spire = this.spire;
-  var collection = this.resources('subscriptions');
+  var collection = this.resources.subscriptions;
   return {
     method: 'get',
     url: collection.url,
@@ -4844,13 +4845,13 @@ Resource.defineRequest(Session.prototype, 'subscriptions', function () {
 
 Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls) {
   var spire = this.spire;
-  var collection = this.resources('subscriptions');
+  var collection = this.resources.subscriptions;
   return {
     method: 'post',
     url: collection.url,
     content: {
       name: name,
-      channel_urls: channelUrls
+      channels: channelUrls
     },
     headers: {
       'Authorization': this.authorization(collection.capability),
@@ -4859,11 +4860,6 @@ Resource.defineRequest(Session.prototype, 'create_subscription', function (name,
     }
   };
 });
-
-Session.prototype.resource = function (name) {
-  if (name) return this.data.resources[name];
-  return this.data.resources;
-};
 
 Session.prototype.account = function (cb) {
   if (this._account) return cb(null, this._account);
@@ -4896,7 +4892,6 @@ Session.prototype.channels$ = function (cb) {
 };
 
 Session.prototype._memoizeChannel = function (channel) {
-  this._channels = this._channels || {};
   this._channels[channel.name()] = channel;
 };
 
@@ -4917,7 +4912,6 @@ Session.prototype.subscriptions$ = function (cb) {
 };
 
 Session.prototype._memoizeSubscription = function (subscription) {
-  this._subscriptions = this._subscriptions || {};
   this._subscriptions[subscription.name()] = subscription;
 };
 
@@ -4935,11 +4929,11 @@ Session.prototype.createSubscription = function (subName, channelNames, cb) {
   var session = this;
   this.channels(function (channels) {
     var channelUrls = _.map(channelNames, function (name) {
-      return session._channels[name]
+      return session._channels[name].url();
     });
-    session.request('create_subscription', name, channelUrls, function (err, sub) {
+    session.request('create_subscription', subName, channelUrls, function (err, sub) {
       if (err) return cb(err);
-      var subscription = new Subscription(sub);
+      var subscription = new Subscription(session.spire, sub);
       session._memoizeSubscription(subscription);
       cb(null, subscription);
     });
@@ -4951,11 +4945,13 @@ Session.prototype.createSubscription = function (subName, channelNames, cb) {
 require.define("/spire/api/subscription.js", function (require, module, exports, __dirname, __filename) {
     var Resource = require('./resource')
   , _ = require('underscore')
+  , async = require('async')
   ;
 
 function Subscription (spire, data) {
   this.spire = spire;
   this.data = data;
+  this.resourceName = 'subscription';
 
   this.last = null;
   this.listeners = [];
@@ -4966,16 +4962,16 @@ Subscription.prototype = new Resource();
 
 module.exports = Subscription;
 
-Resource.defineRequest('messages', function (options) {
+Resource.defineRequest(Subscription.prototype, 'messages', function (options) {
   options = options || {};
   return {
-    method: 'post',
-    url: this.url,
+    method: 'get',
+    url: this.url(),
     query: {
-      timeout: options.timeout,
-      'last-message': options.last,
-      'order-by': options.orderBy,
-      'delay': options.delay
+      'timeout': options.timeout || 0,
+      'last-message': options.last || 0,
+      'order-by': options.orderBy || 'desc',
+      'delay': options.delay || 0
     },
     headers: {
       'Authorization': this.authorization(),
@@ -4983,6 +4979,10 @@ Resource.defineRequest('messages', function (options) {
     }
   };
 });
+
+Subscription.prototype.name = function () {
+  return this.data.name;
+};
 
 Subscription.prototype.addListener = function (fn) {
   this.listeners.push(fn);
@@ -4993,10 +4993,15 @@ Subscription.prototype.removeListener = function (fn) {
 };
 
 Subscription.prototype.listen = function (opts) {
+  var subscription = this;
   opts = opts || {};
-  while (this.listening) {
-    this.longPoll(function () {})
-  }
+  async.whilst(
+    function () { return subscription.listening; },
+    function (cb) {
+      subscription.longPoll(opts, cb);
+    },
+    function () {}
+  );
 };
 
 Subscription.prototype.startListening = function (opts) {
@@ -5005,7 +5010,7 @@ Subscription.prototype.startListening = function (opts) {
 };
 
 Subscription.prototype.stopListening = function (opts) {
-  this.listening = true;
+  this.listening = false;
   this.listen(opts);
 };
 
@@ -5027,11 +5032,13 @@ Subscription.prototype.retreiveMessages = function (options, cb) {
       subscription.last = _.last(messages).timestamp
     }
 
-    _each(messages, function (message) {
+    _.each(messages, function (message) {
       _.each(subscription.listeners, function (listener) {
         listener(message);
       });
     });
+
+    cb(null, messages);
   });
 };
 
@@ -5045,7 +5052,7 @@ Subscription.prototype.poll = function (options, cb) {
   // timeout option of 0 means no long poll,
   // so we force it here.
   options.last = this.last;
-  options.timout = 0;
+  options.timeout = 0;
   this.retreiveMessages(options, cb);
 };
 
@@ -5059,7 +5066,7 @@ Subscription.prototype.longPoll = function (options, cb) {
   // timeout option of 0 means no long poll,
   // so we force it here.
   options.last = this.last;
-  options.timout = options.timeout || 30;
+  options.timeout = options.timeout || 30;
   this.retreiveMessages(options, cb);
 };
 

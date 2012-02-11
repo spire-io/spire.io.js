@@ -148,7 +148,7 @@ describe('Channels', function () {
           });
 
           it('should get back the message we sent', function () {
-            expect(this.messages[0]).toBe('Hello World!');
+            expect(this.messages[0].content).toBe('Hello world!');
           });
 
           it('should not give us any other messages', function () {

@@ -158,6 +158,69 @@ describe('Channels', function () {
         }); // Listen for the message we sent
       }); // Create a subscription to a channel
     }); // Publish to a channel
+
+    describe('Event listening on a channel', function () {
+      beforeEach(function () {
+        var finished = false;
+        runs(function () {
+          var that = this;
+          this.spire.channel('event_channel', function (err, channel) {
+            that.channel = channel;
+            finished = true;
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 'Creating event_channel', 10000);
+
+        var finished2 = false;
+        runs(function () {
+          var that = this;
+          this.spire.subscribe('new_sub', 'event_channel', function (err, sub) {
+            that.sub = sub;
+            finished2 = true;
+          });
+        });
+
+        waitsFor(function () {
+          return finished2;
+        }, 'Creating new_sub on event_channel', 10000);
+
+        runs(function () {
+          var that = this;
+          this.sub.addListener(function (m) {
+            that.last_message = m;
+          });
+          this.sub.startListening({
+            timeout: 5
+          });
+        });
+      });
+
+      describe('A listener is called each time a message is received', function () {
+        beforeEach(function () {
+          var finished = false;
+          runs(function () {
+            this.channel.publish('Message1', function (err, m) {
+              finished = true;
+            });
+          });
+
+          waitsFor(function () {
+            return finished;
+          }, 'Publishing "Message1"', 10000);
+        });
+
+        it('should have the last message', function () {
+          expect(this.last_message.content).toBe('Message1');
+          this.sub.stopListening();
+        });
+
+
+      }); // A listener is called each time a message is received
+
+    }); // Event listening on a channel
   }); // Create a channel
 }); // Channels
 

@@ -94,7 +94,7 @@ describe('Channels', function () {
         beforeEach(function () {
           var finished = false;
           var that = this;
-          this.subscription = this.spire.subscribe('sub_name', 'foo', function (err, sub) {
+          this.spire.subscribe('sub_name', 'foo', function (err, sub) {
             that.sub = sub;
             finished = true;
           });
@@ -107,6 +107,25 @@ describe('Channels', function () {
         it('should return a subscription resource', function () {
           expect(this.sub).toBeAResourceObject();
         });
+
+        describe('Creating subscription with the same name', function () {
+          beforeEach(function () {
+            var finished = false;
+            var that = this;
+            this.spire.subscribe('sub_name', 'foo', function (err, sub) {
+              that.sub2 = sub;
+              finished = true;
+            });
+
+            waitsFor(function () {
+              return finished;
+            }, 'subscribing to a channel', 10000);
+          });
+
+          it('should return the previously created subscription', function () {
+            expect(this.sub2.url()).toBe(this.sub.url());
+          });
+        }); // Create a subscription with the same name
       }); // Create a subscription to a channel
     }); // Publish to a channel
   }); // Create a channel

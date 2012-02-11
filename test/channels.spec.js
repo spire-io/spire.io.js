@@ -126,6 +126,36 @@ describe('Channels', function () {
             expect(this.sub2.url()).toBe(this.sub.url());
           });
         }); // Create a subscription with the same name
+
+        describe('Listen for the message we sent', function () {
+          beforeEach(function () {
+            var finished = false;
+            runs(function () {
+              var that = this;
+              this.sub.poll(function(err, messages) {
+                finished = true;
+                that.messages = messages;
+              });
+            });
+
+            waitsFor(function () {
+              return finished;
+            }, 'Listening on a subscription', 10000);
+          });
+
+          it('should get an array of messages', function () {
+            expect(this.messages instanceof Array).toBeTruthy();
+          });
+
+          it('should get back the message we sent', function () {
+            expect(this.messages[0]).toBe('Hello World!');
+          });
+
+          it('should not give us any other messages', function () {
+            expect(this.messages.length).toBe(1);
+          });
+
+        }); // Listen for the message we sent
       }); // Create a subscription to a channel
     }); // Publish to a channel
   }); // Create a channel

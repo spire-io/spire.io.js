@@ -195,7 +195,7 @@ task 'docs:pages', 'Update gh-pages branch', ->
         process.stdout.write stdout
         process.stderr.write stderr
         if !err # its possible to get a benign 'nothing to commit' err
-          exec 'git push -q o HEAD:gh-pages', (err, stdout, stderr)->
+          exec 'git push origin HEAD:gh-pages', (err, stdout, stderr)->
             process.stdout.write stdout
             process.stderr.write stderr
             throw err if err

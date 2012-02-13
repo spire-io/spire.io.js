@@ -189,7 +189,7 @@ describe('Channels', function () {
 
         runs(function () {
           var that = this;
-          this.sub.addListener(function (m) {
+          this.sub.addListener('message', function (m) {
             that.last_message = m;
           });
           this.sub.startListening({

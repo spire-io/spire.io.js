@@ -161,21 +161,18 @@ task 'docs', 'generate the inline documentation', ->
 
   # First do the main 'spire.io.js' file.
   command = [
-    'rm -r docs/*.html'
+    'rm -rf docs/*.html'
     'node_modules/docco/bin/docco lib/spire.io.js'
   ].join(' && ')
 
   # And rename it to 'index.html'
   exec command, (err) ->
     throw err if err
-    # move to the index
-    fs.rename 'docs/spire.io.html', 'docs/index.html', (err)->
-
-  # Then do all the other files
-  glob "lib/spire/**/*.js", (err, files) ->
-    files.forEach (file) ->
-      exec "node_modules/docco/bin/docco #{file}", (err) ->
-        throw err if err
+    # Then do all the other files
+    glob "lib/spire/**/*.js", (err, files) ->
+      files.forEach (file) ->
+        exec "node_modules/docco/bin/docco #{file}", (err) ->
+          throw err if err
 
 # Adapted from http://bit.ly/v02mG8
 task 'docs:pages', 'Update gh-pages branch', ->

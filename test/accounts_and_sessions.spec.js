@@ -23,7 +23,7 @@ describe('Accounts and Session', function () {
 
         // Save the key for later
         runs(function () {
-          this.key = this.spire.key;
+          this.key = this.spire.key();
         });
       });
 

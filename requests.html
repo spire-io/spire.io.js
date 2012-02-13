@@ -1,0 +1,473 @@
+<!DOCTYPE html>  <html> <head>   <title>requests.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               requests.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>ResponseError</h1>
+
+<p>ResponseError is a wrapper for request errors, this makes it easier to pass an
+error to the callbacks of the async functions that still retain their extra
+contextual information passed into the <code>arguments</code> of <code>requests</code>'s <code>error</code>
+handler</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">ResponseError</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s1">&#39;ResponseError&#39;</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="s1">&#39;ResponseError&#39;</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">response</span> <span class="o">=</span> <span class="nx">response</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">ResponseError</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h1>Requests</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Requests</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">agent</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">agent</span><span class="p">;</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">description</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Description</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">sessions</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sessions</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Channels</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">subscriptions</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Subscriptions</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Messages</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">accounts</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Accounts</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">billing</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Billing</span><span class="p">(</span><span class="nx">spire</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Requests</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">Description</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h2>Description.get</h2>
+
+<p>Gets the description resource object and caches it for later, the
+<code>callback</code> is triggered with an <code>error</code> object and the <code>description</code>
+resource object.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Description</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>If discovery has already happened use the cache.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">if</span> <span class="p">(</span><span class="nx">spire</span><span class="p">.</span><span class="nx">resources</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">description</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">resources</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">resources</span>
+        <span class="p">,</span> <span class="nx">schema</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">schema</span>
+        <span class="p">}</span>
+    <span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">description</span><span class="p">);</span>
+  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>If there isn't a cache make an XHR to get the description.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">accept</span><span class="o">:</span> <span class="s2">&quot;application/json&quot;</span>
+    <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">spire</span><span class="p">.</span><span class="nx">resources</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">resources</span><span class="p">;</span>
+        <span class="nx">spire</span><span class="p">.</span><span class="nx">schema</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">schema</span><span class="p">;</span>
+
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">Sessions</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Sessions</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">session</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">session</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">session</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">Sessions</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="nx">options</span><span class="p">.</span><span class="nx">key</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">options</span><span class="p">.</span><span class="nx">email</span> <span class="o">!==</span> <span class="s1">&#39;string&#39;</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">options</span><span class="p">.</span><span class="nx">password</span> <span class="o">!==</span> <span class="s1">&#39;string&#39;</span><span class="p">)){</span>
+    <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;You need a key to do that! Try doing this:&#39;</span>
+        <span class="p">,</span> <span class="s1">&#39;   spire.options.key = &lt;your account key&gt;&#39;</span>
+        <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">);</span>
+    <span class="p">;</span>
+
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">email</span> <span class="o">&amp;&amp;</span> <span class="nx">options</span><span class="p">.</span><span class="nx">password</span><span class="p">)</span> <span class="nx">options</span><span class="p">.</span><span class="nx">key</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">sessions</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">content</span><span class="o">:</span> <span class="nx">options</span><span class="p">,</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">Channels</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Channels</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">channel</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">channel</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">channel</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">Channels</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getAll</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">channels</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">channels</span><span class="p">;</span>
+
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">channels</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">channels</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;channels&#39;</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">Channels</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getByName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">channels</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">channels</span>
+    <span class="p">,</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">name</span>
+  <span class="p">;</span>
+
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">channels</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">channels</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;channels&#39;</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">query</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">name</span><span class="o">:</span> <span class="nx">name</span>
+    <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">Channels</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">channels</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">channels</span>
+    <span class="p">,</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">name</span>
+  <span class="p">;</span>
+
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">channels</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">channels</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">content</span><span class="o">:</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">name</span> <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">Channels</span><span class="p">.</span><span class="nx">CHANNEL_CREATION_RETRY_LIMIT</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+
+<span class="nx">Channels</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getOrCreate</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">channels</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">creationCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">channelName</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">channelOptions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="nx">channelName</span>
+  <span class="p">};</span>
+
+  <span class="kd">var</span> <span class="nx">getChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">channels</span><span class="p">.</span><span class="nx">getByName</span><span class="p">(</span><span class="nx">channelOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">channels</span><span class="p">){</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">&amp;&amp;</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">!==</span> <span class="mi">404</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">channels</span> <span class="o">&amp;&amp;</span> <span class="nx">channels</span><span class="p">[</span><span class="nx">channelName</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">channels</span><span class="p">[</span><span class="nx">channelName</span><span class="p">]);</span>
+      <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Else create the channel</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">createChannel</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">};</span>
+
+  <span class="kd">var</span> <span class="nx">createChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">channels</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">channelOptions</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">channel</span><span class="p">){</span>
+      <span class="nx">creationCount</span><span class="o">++</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">&amp;&amp;</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">!==</span> <span class="mi">409</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">channel</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">creationCount</span> <span class="o">&gt;=</span> <span class="nx">Messages</span><span class="p">.</span><span class="nx">CHANNEL_CREATION_RETRY_LIMIT</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Error getting or creating channel&quot;</span><span class="p">));</span>
+      <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Else get the channel</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">getChannel</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Kick it off</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">getChannel</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">Subscriptions</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/*</span>
+
+<span class="cm">{</span>
+<span class="cm">  channels: [ channel ],</span>
+<span class="cm">  events: [ &#39;messages&#39; ]</span>
+<span class="cm">}</span>
+
+<span class="cm">*/</span>
+<span class="nx">Subscriptions</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">subscriptions</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">subscriptions</span>
+    <span class="p">,</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">events</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">events</span>
+      <span class="p">,</span> <span class="nx">channels</span><span class="o">:</span> <span class="p">[]</span>
+      <span class="p">}</span>
+  <span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p><strong>!</strong> The subscription create request wants an array of channel urls
+not 'channel' resource objects.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">options</span><span class="p">.</span><span class="nx">channels</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">data</span><span class="p">.</span><span class="nx">channels</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">channels</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">url</span><span class="p">);</span>
+  <span class="p">}</span>
+  
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">subscriptions</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;subscription&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;subscription&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">subscriptions</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">content</span><span class="o">:</span> <span class="nx">data</span><span class="p">,</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="cm">/*</span>
+
+<span class="cm">{</span>
+<span class="cm">  timeout: ...,</span>
+<span class="cm">  subscription: subscription</span>
+<span class="cm">}</span>
+
+<span class="cm">*/</span>
+<span class="nx">Subscriptions</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">subscription</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">subscription</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">timeout</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">timeout</span> <span class="o">||</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">timeout</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="s2">&quot;order-by&quot;</span><span class="o">:</span> <span class="nx">options</span><span class="p">[</span><span class="s1">&#39;order_by&#39;</span><span class="p">]</span> <span class="o">||</span> <span class="nx">options</span><span class="p">.</span><span class="nx">order_by</span> <span class="o">||</span> <span class="s1">&#39;desc&#39;</span><span class="p">,</span>
+    <span class="nx">limit</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">limit</span> <span class="o">||</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span>
+    <span class="nx">delay</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">delay</span> <span class="o">||</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;last-message&quot;</span><span class="o">:</span> <span class="nx">subscription</span><span class="p">[</span><span class="s2">&quot;last-message&quot;</span><span class="p">]</span> <span class="o">||</span> <span class="nx">options</span><span class="p">[</span><span class="s2">&quot;last-message&quot;</span><span class="p">]</span> <span class="o">||</span> <span class="nx">options</span><span class="p">.</span><span class="nx">last_message</span> <span class="o">||</span> <span class="mi">0</span>
+  <span class="p">};</span>
+
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">subscription</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>timeout: options.timeout + 10000,</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">),</span> 
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">subscription</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">query</span><span class="o">:</span> <span class="nx">data</span><span class="p">,</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">timeout</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>fake a returned events object</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="p">{</span> <span class="nx">messages</span><span class="o">:</span> <span class="p">[]</span> <span class="p">});</span>
+      <span class="p">},</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">messageCount</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">length</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">messageCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+          <span class="kd">var</span> <span class="nx">last</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="s1">&#39;order-by&#39;</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;asc&#39;</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="nx">messageCount</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+          <span class="nx">subscription</span><span class="p">[</span><span class="s1">&#39;last-message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">messages</span><span class="p">[</span><span class="nx">last</span><span class="p">].</span><span class="nx">timestamp</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">Messages</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>{ channel: {}, content: .. }</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Messages</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">channel</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">channel</span>
+    <span class="p">,</span> <span class="nx">content</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">content</span>
+  <span class="p">;</span>
+  
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">channel</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">content</span><span class="o">:</span> <span class="p">{</span> <span class="nx">content</span><span class="o">:</span> <span class="nx">content</span> <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">Accounts</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Accounts</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">accounts</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">content</span><span class="o">:</span> <span class="nx">account</span><span class="p">,</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">Accounts</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">put</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">account</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">account</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">content</span><span class="o">:</span> <span class="nx">account</span><span class="p">,</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">Accounts</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">reset</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">account</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">account</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">account</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">Billing</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Billing</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">;</span>
+  <span class="nx">spire</span><span class="p">.</span><span class="nx">shred</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">billing</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;billing&#39;</span><span class="p">),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(</span><span class="s1">&#39;billing&#39;</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

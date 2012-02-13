@@ -179,40 +179,23 @@ task 'docs:pages', 'Update gh-pages branch', ->
   path = require 'path'
   cwd = process.cwd()
   {exec} = require 'child_process'
-  commitDocs = ->
-    process.chdir cwd
-    exec 'git rev-parse --short HEAD', (err, stdout, stderr)->
+  exec 'git rev-parse --short HEAD', (err, stdout, stderr)->
+    throw err if err
+    revision = stdout
+    exec 'git add docs/*.html', (err, stdout, stderr)->
+      process.stdout.write stdout
+      process.stderr.write stderr
       throw err if err
-      revision = stdout
-      process.chdir 'docs'
-      exec 'git add *.html', (err, stdout, stderr)->
+      commit = "git commit -m 'rebuild pages from " + revision + "'"
+      exec commit, (err, stdout, stderr)->
         process.stdout.write stdout
         process.stderr.write stderr
-        throw err if err
-        commit = "git commit -m 'rebuild pages from " + revision + "'"
-        exec commit, (err, stdout, stderr)->
-          process.stdout.write stdout
-          process.stderr.write stderr
-          if !err # its possible to get a benign 'nothing to commit' err
-            exec 'git push -q o HEAD:gh-pages', (err, stdout, stderr)->
-              process.stdout.write stdout
-              process.stderr.write stderr
-              throw err if err
-              process.chdir cwd
-  path.exists 'docs/.git', (exists)->
-    if exists
-      commitDocs()
-    else
-      process.chdir 'docs'
-      exec 'git init && git remote add o ../.git', (err, stdout, stderr)->
-        process.stdout.write stdout
-        process.stderr.write stderr
-        throw err if err
-        command = 'git fetch o && git reset --hard o/gh-pages && touch .'
-        exec command, (err, stdout, stderr)->
-          process.stderr.write stderr
-          throw err if err
-          commitDocs()
+        if !err # its possible to get a benign 'nothing to commit' err
+          exec 'git push origin gh-pages', (err, stdout, stderr)->
+            process.stdout.write stdout
+            process.stderr.write stderr
+            throw err if err
+            process.chdir cwd
 
 TaskHelpers =
   makeBundle: (callback) ->

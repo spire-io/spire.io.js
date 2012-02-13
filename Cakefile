@@ -165,9 +165,11 @@ task 'docs', 'generate the inline documentation', ->
     'node_modules/docco/bin/docco lib/spire.io.js'
   ].join(' && ')
 
-  # And rename it to 'index.html'
   exec command, (err) ->
     throw err if err
+    # And rename it to 'index.html'
+    fs.rename 'docs/spire.io.html', 'docs/index.html', (err)->
+
     # Then do all the other files
     glob "lib/spire/**/*.js", (err, files) ->
       files.forEach (file) ->
@@ -179,10 +181,12 @@ task 'docs:pages', 'Update gh-pages branch', ->
   path = require 'path'
   cwd = process.cwd()
   {exec} = require 'child_process'
+  process.chdir cwd
   exec 'git rev-parse --short HEAD', (err, stdout, stderr)->
     throw err if err
     revision = stdout
-    exec 'git add docs/*.html', (err, stdout, stderr)->
+    process.chdir 'docs'
+    exec 'git add *.html', (err, stdout, stderr)->
       process.stdout.write stdout
       process.stderr.write stderr
       throw err if err
@@ -191,11 +195,12 @@ task 'docs:pages', 'Update gh-pages branch', ->
         process.stdout.write stdout
         process.stderr.write stderr
         if !err # its possible to get a benign 'nothing to commit' err
-          exec 'git push origin gh-pages', (err, stdout, stderr)->
+          exec 'git push -q o HEAD:gh-pages', (err, stdout, stderr)->
             process.stdout.write stdout
             process.stderr.write stderr
             throw err if err
             process.chdir cwd
+
 
 TaskHelpers =
   makeBundle: (callback) ->

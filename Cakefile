@@ -161,6 +161,8 @@ task 'docs', 'generate the inline documentation', ->
 
   # First do the main 'spire.io.js' file.
   command = [
+    # Ugly way to create a directory if it doesnt exist
+    'mkdir docs; true'
     'rm -rf docs/*.html'
     'node_modules/docco/bin/docco lib/spire.io.js'
   ].join(' && ')
@@ -181,25 +183,40 @@ task 'docs:pages', 'Update gh-pages branch', ->
   path = require 'path'
   cwd = process.cwd()
   {exec} = require 'child_process'
-  process.chdir cwd
-  exec 'git rev-parse --short HEAD', (err, stdout, stderr)->
-    throw err if err
-    revision = stdout
-    process.chdir 'docs'
-    exec 'git add *.html', (err, stdout, stderr)->
-      process.stdout.write stdout
-      process.stderr.write stderr
+  commitDocs = ->
+    process.chdir cwd
+    exec 'git rev-parse --short HEAD', (err, stdout, stderr)->
       throw err if err
-      commit = "git commit -m 'rebuild pages from " + revision + "'"
-      exec commit, (err, stdout, stderr)->
+      revision = stdout
+      process.chdir 'docs'
+      exec 'git add *.html', (err, stdout, stderr)->
         process.stdout.write stdout
         process.stderr.write stderr
-        if !err # its possible to get a benign 'nothing to commit' err
-          exec 'git push origin HEAD:gh-pages', (err, stdout, stderr)->
-            process.stdout.write stdout
-            process.stderr.write stderr
-            throw err if err
-            process.chdir cwd
+        throw err if err
+        commit = "git commit -m 'rebuild pages from " + revision + "'"
+        exec commit, (err, stdout, stderr)->
+          process.stdout.write stdout
+          process.stderr.write stderr
+          if !err # its possible to get a benign 'nothing to commit' err
+            exec 'git push origin HEAD:gh-pages', (err, stdout, stderr)->
+              process.stdout.write stdout
+              process.stderr.write stderr
+              throw err if err
+              process.chdir cwd
+  path.exists 'docs/.git', (exists)->
+    if exists
+      commitDocs()
+    else
+      process.chdir 'docs'
+      exec 'git init && git remote add origin git@github.com:spire-io/spire.io.js.git', (err, stdout, stderr)->
+        process.stdout.write stdout
+        process.stderr.write stderr
+        throw err if err
+        command = 'git fetch origin && git reset --hard origin/gh-pages && touch .'
+        exec command, (err, stdout, stderr)->
+          process.stderr.write stderr
+          throw err if err
+          commitDocs()
 
 
 TaskHelpers =

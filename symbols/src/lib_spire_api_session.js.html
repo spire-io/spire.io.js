@@ -256,110 +256,116 @@
 <span class='line'>250</span> </span><span class="COMM">/**
 <span class='line'>251</span>  * Gets the account resource.
 <span class='line'>252</span>  * @name account
-<span class='line'>253</span>  */</span><span class="WHIT">
-<span class='line'>254</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'account'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>255</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">resource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.account</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>256</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>257</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>258</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">resource.url</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>259</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>260</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">resource</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>261</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'account'</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>262</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>263</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>264</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>265</span> 
-<span class='line'>266</span> </span><span class="COMM">/**
-<span class='line'>267</span>  * Gets the channels collection.
-<span class='line'>268</span>  * @name channels
-<span class='line'>269</span>  */</span><span class="WHIT">
-<span class='line'>270</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'channels'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>271</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>272</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.channels</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>273</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>274</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>275</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>276</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>277</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>278</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'channels'</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>279</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>280</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>281</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>282</span> 
-<span class='line'>283</span> </span><span class="COMM">/**
-<span class='line'>284</span>  * Gets a channel by name.  Returns a collection with a single value: { name: channel }.
-<span class='line'>285</span>  * @name channel_by_name
-<span class='line'>286</span>  */</span><span class="WHIT">
-<span class='line'>287</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'channel_by_name'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>288</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>289</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.channels</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>290</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>291</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>292</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>293</span> </span><span class="WHIT">    </span><span class="NAME">query</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>294</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>295</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>296</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'channels'</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>297</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>298</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>299</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>300</span> 
-<span class='line'>301</span> </span><span class="COMM">/**
-<span class='line'>302</span>  * Creates a channel.  Returns a channel object.
-<span class='line'>303</span>  * @name create_channel
-<span class='line'>304</span>  */</span><span class="WHIT">
-<span class='line'>305</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'create_channel'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>306</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>307</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.channels</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>308</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>309</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'post'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>310</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>311</span> </span><span class="WHIT">    </span><span class="NAME">content</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>312</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>313</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>314</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'channel'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>315</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'channel'</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>316</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>317</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>318</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>319</span> 
-<span class='line'>320</span> </span><span class="COMM">/**
-<span class='line'>321</span>  * Gets the subscriptions collection.
-<span class='line'>322</span>  * @name subscrtiptions
-<span class='line'>323</span>  */</span><span class="WHIT">
-<span class='line'>324</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'subscriptions'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>325</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>326</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.subscriptions</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>327</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>328</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>329</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>330</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>331</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>332</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'subscriptions'</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>333</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>334</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>335</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>336</span> 
-<span class='line'>337</span> </span><span class="COMM">/**
-<span class='line'>338</span>  * Creates a subscrtiption.  Returns a subscription object.
-<span class='line'>339</span>  * @name create_subscription
-<span class='line'>340</span>  */</span><span class="WHIT">
-<span class='line'>341</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'create_subscription'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channelUrls</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>342</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>343</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.subscriptions</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>344</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>345</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'post'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>346</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>347</span> </span><span class="WHIT">    </span><span class="NAME">content</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>348</span> </span><span class="WHIT">      </span><span class="NAME">name</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>349</span> </span><span class="WHIT">      </span><span class="NAME">channels</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">channelUrls</span><span class="WHIT">
-<span class='line'>350</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>351</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>352</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>353</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'subscription'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>354</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'subscription'</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>355</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>356</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>357</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>358</span> 
-<span class='line'>359</span> </span></pre></body></html>
+<span class='line'>253</span>  * @ignore
+<span class='line'>254</span>  */</span><span class="WHIT">
+<span class='line'>255</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'account'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>256</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">resource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.account</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>257</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>258</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>259</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">resource.url</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>260</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>261</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">resource</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>262</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'account'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>263</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>264</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>265</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>266</span> 
+<span class='line'>267</span> </span><span class="COMM">/**
+<span class='line'>268</span>  * Gets the channels collection.
+<span class='line'>269</span>  * @name channels
+<span class='line'>270</span>  * @ignore
+<span class='line'>271</span>  */</span><span class="WHIT">
+<span class='line'>272</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'channels'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>273</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>274</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.channels</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>275</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>276</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>277</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>278</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>279</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>280</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'channels'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>281</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>282</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>283</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>284</span> 
+<span class='line'>285</span> </span><span class="COMM">/**
+<span class='line'>286</span>  * Gets a channel by name.  Returns a collection with a single value: { name: channel }.
+<span class='line'>287</span>  * @name channel_by_name
+<span class='line'>288</span>  * @ignore
+<span class='line'>289</span>  */</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'channel_by_name'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>291</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>292</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.channels</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>294</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>295</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>296</span> </span><span class="WHIT">    </span><span class="NAME">query</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>297</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'channels'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>300</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>301</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>302</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>303</span> 
+<span class='line'>304</span> </span><span class="COMM">/**
+<span class='line'>305</span>  * Creates a channel.  Returns a channel object.
+<span class='line'>306</span>  * @name create_channel
+<span class='line'>307</span>  * @ignore
+<span class='line'>308</span>  */</span><span class="WHIT">
+<span class='line'>309</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'create_channel'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>310</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>311</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.channels</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>312</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>313</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'post'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>314</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>315</span> </span><span class="WHIT">    </span><span class="NAME">content</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>316</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>317</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>318</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'channel'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>319</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'channel'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>320</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>321</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>322</span> <span class='line'>323</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>324</span> 
+<span class='line'>325</span> </span><span class="COMM">/**
+<span class='line'>326</span>  * Gets the subscriptions collection.
+<span class='line'>327</span>  * @name subscrtiptions
+<span class='line'>328</span>  * @ignore
+<span class='line'>329</span>  */</span><span class="WHIT">
+<span class='line'>330</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'subscriptions'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>331</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>332</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.subscriptions</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>333</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>334</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>335</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>336</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>337</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>338</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'subscriptions'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>339</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>340</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>341</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>342</span> 
+<span class='line'>343</span> </span><span class="COMM">/**
+<span class='line'>344</span>  * Creates a subscrtiption.  Returns a subscription object.
+<span class='line'>345</span>  * @name create_subscription
+<span class='line'>346</span>  * @ignore
+<span class='line'>347</span>  */</span><span class="WHIT">
+<span class='line'>348</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Session.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'create_subscription'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channelUrls</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>349</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>350</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">collection</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.resources.subscriptions</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>351</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>352</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'post'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>353</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">collection.url</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>354</span> </span><span class="WHIT">    </span><span class="NAME">content</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>355</span> </span><span class="WHIT">      </span><span class="NAME">name</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>356</span> </span><span class="WHIT">      </span><span class="NAME">channels</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">channelUrls</span><span class="WHIT">
+<span class='line'>357</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>358</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>359</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">collection</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>360</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'subscription'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>361</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="STRN">'subscription'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>362</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>363</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>365</span> 
+<span class='line'>366</span> </span></pre></body></html>

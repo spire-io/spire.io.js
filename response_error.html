@@ -5,9 +5,9 @@ error to the callbacks of the async functions that still retain their extra
 contextual information passed into the <code>arguments</code> of <code>requests</code>'s <code>error</code>
 handler</p>
 
-<pre><code>@constructor
-@param {object} response Response HTTP client
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">ResponseError</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+<p><b>constructor</b></p>
+
+<p><b>param</b> {object} response Response HTTP client</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">ResponseError</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="s1">&#39;ResponseError: &#39;</span> <span class="o">+</span> <span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">response</span> <span class="o">=</span> <span class="nx">response</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">;</span>

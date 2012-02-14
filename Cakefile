@@ -162,22 +162,14 @@ task 'docs', 'generate the inline documentation', ->
 
   # First do the main 'spire.io.js' file.
   command = [
-    # Ugly way to create a directory if it doesnt exist
-    'mkdir docs; true'
-    'rm -rf docs/*.html'
-    'node_modules/docco/bin/docco lib/spire.io.js'
+    'rm -rf docs/*',
+    './node_modules/noc/bin/noc -d=./docs -r=10 -t=node_modules/noc/templates/codeview/ -v lib/'
   ].join(' && ')
 
-  exec command, (err) ->
+  exec command, (err, stdout, stderr) ->
+    process.stdout.write stdout
+    process.stderr.write stderr
     throw err if err
-    # And rename it to 'index.html'
-    fs.rename 'docs/spire.io.html', 'docs/index.html', (err)->
-
-    # Then do all the other files
-    glob "lib/spire/**/*.js", (err, files) ->
-      files.forEach (file) ->
-        exec "node_modules/docco/bin/docco #{file}", (err) ->
-          throw err if err
 
 # Adapted from http://bit.ly/v02mG8
 task 'docs:pages', 'Update gh-pages branch', ->
@@ -190,7 +182,7 @@ task 'docs:pages', 'Update gh-pages branch', ->
       throw err if err
       revision = stdout
       process.chdir 'docs'
-      exec 'git add *.html', (err, stdout, stderr)->
+      exec 'git add *', (err, stdout, stderr)->
         process.stdout.write stdout
         process.stderr.write stderr
         throw err if err

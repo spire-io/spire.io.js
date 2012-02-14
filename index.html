@@ -155,15 +155,13 @@ spire.register({
 
 <pre><code>var spire = new Spire();
 spire.update({
-  email: 'new_you
+  email: your_new_email
+}, function (err, session) {
+  if (!err) {
+    // Your account has been updated.
+  }
+});
 </code></pre>
-
-<p><b>new</b>_email.com',
-    }, function (err, session) {
-      if (!err) {
-        // Your account has been updated.
-      }
-    });</p>
 
 <p><b>param</b> {object} user User info</p>
 
@@ -183,15 +181,13 @@ spire.update({
 
 <pre><code>var spire = new Spire();
 spire.passwordResetRequest({
-  email: 'you
+  email: your_email
+}, function (err, session) {
+  if (!err) {
+    // A password reset email has been sent.
+  }
+});
 </code></pre>
-
-<p><b>email</b>.com',
-    }, function (err, session) {
-      if (!err) {
-        // A password reset email has been sent.
-      }
-    });</p>
 
 <p><b>param</b> {string} email Email</p>
 

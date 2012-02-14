@@ -37,10 +37,9 @@
   , "browserify": "1.8.3"
   , "http-browserify": "https://github.com/spire-io/http-browserify/tarball/master"
   , "uglify-js": "1.1.1"
-  , "docco": "https://github.com/tnyuan/docco/tarball/master"
+  , "noc": "1.0.1"
   , "gitio": "1.0.1"
   , "colors": "0.6.0"
-  , "underscore": "1.3.0"
   , "jasmine-node": "1.0.17"
   , "glob": "3.0.1"
   }

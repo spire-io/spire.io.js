@@ -19,7 +19,7 @@ Add `spire.io.bundle.js` or `spire.io.bundle.min.js` to your script tags, and th
     var Spire = require('spire.io.js');
 
 
-## Starting the Spire client
+### Starting the Spire client
 
 Create a new Spire instance:
 
@@ -47,7 +47,7 @@ Or start spire with an account key:
       });
     });
 
-## Creating a channel
+### Creating a channel
 
 To create a channel:
 
@@ -58,7 +58,7 @@ To create a channel:
       }
     });
 
-## Publish to a channel
+### Publish to a channel
 
 Then publish to the channel with:
 
@@ -68,7 +68,7 @@ Then publish to the channel with:
       }
     });
 
-## Listen to a channel
+### Listen to a channel
 
 To listen to a channel, first create a subscription:
 
@@ -93,6 +93,8 @@ Then add listeners to the subscription and start listening!
     mySubscription.addListener('message', function (message) {
       console.log('Message received: ' + message.content);
     });
+
+    mySubscription.startListening();
 
 Call `mySubscription.stopListening()` when you want to stop listening.
 

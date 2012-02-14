@@ -26,22 +26,21 @@ find help with the following things:</p>             </td>             <td class
   <span class="k">this</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Spire</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Spire.prototype.CREATION<em>RETRY</em>LIMIT
-Number of times to retry creating a channel or subscription before giving up.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">CREATION_RETRY_LIMIT</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Public Interface</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h3>Spire.prototype.key</h3>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Spire</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Public Interface</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h3>Spire.prototype.key</h3>
 
 <p>Returns the account key.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">key</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">session</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">account</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">account</span><span class="p">.</span><span class="nx">key</span><span class="p">();</span>
   <span class="p">}</span>
   <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h3>Spire.prototype.discover</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h3>Spire.prototype.discover</h3>
 
 <p>Discovers urls from Spire API.</p>
 
 <pre><code>@param {function(err, discovered)} cb Callback
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">discover</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h3>Spire.prototype.start</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h3>Spire.prototype.start</h3>
 
 <p>Starts the Spire session with the given account key.</p>
 
@@ -65,7 +64,7 @@ spire.stark(your_api_key, function (err, session) {
       <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
     <span class="p">});</span>
   <span class="p">});</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h3>Spire.prototype.login</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h3>Spire.prototype.login</h3>
 
 <p>Starts the Spire session with the given username and password.</p>
 
@@ -93,7 +92,7 @@ spire.login({
       <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
     <span class="p">});</span>
   <span class="p">});</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h3>Spire.prototype.register</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h3>Spire.prototype.register</h3>
 
 <p>Register for a new spire account, and authenticates as the newly created account</p>
 
@@ -124,7 +123,7 @@ spire.register({
       <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
     <span class="p">});</span>
   <span class="p">});</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h3>Spire.prototype.update</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h3>Spire.prototype.update</h3>
 
 <p>Update your account info.</p>
 
@@ -146,7 +145,7 @@ spire.update({
 @param {string} [user.password_confirmation] Optional password confirmation
 @param {function (err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">account</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h3>Spire.prototype.passwordResetRequest</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h3>Spire.prototype.passwordResetRequest</h3>
 
 <p>Request a password reset for email.</p>
 
@@ -168,7 +167,7 @@ spire.passwordResetRequest({
   <span class="k">this</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="nx">spire</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">passwordResetRequest</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
   <span class="p">});</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h3>Spire.prototype.channel</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h3>Spire.prototype.channel</h3>
 
 <p>Gets a channel (creates if necessary).</p>
 
@@ -190,7 +189,7 @@ spire.start(your_api_key, function (err, session) {
     <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">_channels</span><span class="p">[</span><span class="nx">name</span><span class="p">]);</span>
   <span class="p">}</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">_findOrCreateChannel</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h3>Spire.prototype.channels</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h3>Spire.prototype.channels</h3>
 
 <p>Gets a list of all channels.  Will return cached data if it is available,
 otherwise will make a request.</p>
@@ -209,7 +208,7 @@ spire.start(your_api_key, function (err, session) {
 
 <p>@param {function (err, channels)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">channels</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h3>Spire.prototype.channels$</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h3>Spire.prototype.channels$</h3>
 
 <p>Gets a list of all channels.  Ignores any cached data, and forces the
 request.</p>
@@ -218,7 +217,7 @@ request.</p>
 
 <p>@param {function (err, channels)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">channels$</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">channels$</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h3>Spire.prototype.subscribe</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h3>Spire.prototype.subscribe</h3>
 
 <p>Gets a subscription to the given channels.  Creates the channels and the
 subscription if necessary.</p>
@@ -256,7 +255,7 @@ spire.start(your_api_key, function (err, session) {
       <span class="nx">spire</span><span class="p">.</span><span class="nx">_findOrCreateSubscription</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">channelNames</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">);</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h3>Spire.prototype.subscriptions</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h3>Spire.prototype.subscriptions</h3>
 
 <p>Get the subscriptions for an account.  Will return cached data if it is
 available, otherwise makes a request.</p>
@@ -275,7 +274,7 @@ spire.start(your_api_key, function (err, session) {
 
 <p>@param {function (err, subscriptions)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscriptions</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h3>Spire.prototype.subscriptions$</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h3>Spire.prototype.subscriptions$</h3>
 
 <p>Get the subscriptions for an account.  Ignores any cached data and always
 makes a request.</p>
@@ -284,7 +283,9 @@ makes a request.</p>
 
 <p>@param {function (err, subscriptions)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscriptions$</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">subscriptions$</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
-<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>Private Interface</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h3>Spire.prototype._findOrCreateChannel</h3>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>Private Interface</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>Spire.prototype.CREATION<em>RETRY</em>LIMIT</h2>
+
+<p>Number of times to retry creating a channel or subscription before giving up.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">CREATION_RETRY_LIMIT</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h3>Spire.prototype._findOrCreateChannel</h3>
 
 <p>Returns the channel with name 'name', creating it if necessary.</p>
 

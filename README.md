@@ -15,9 +15,11 @@ NodeJS usage:
     var Spire = require('spire.io.js');
 
 Create a new Spire instance:
+
     var spire = new Spire();
 
 Register a new spire account:
+
     spire.register({
       email: 'you@email.com',
       password: your_password,
@@ -29,6 +31,7 @@ Register a new spire account:
     });
 
 Or start spire with an account key:
+
     spire.start(your_api_key, function (err, session) {
       spire.channel('foo', function (err, channel) {
         if (!err) {
@@ -38,6 +41,7 @@ Or start spire with an account key:
     });
 
 To create a channel:
+
     spire.channel('foo', function (err, channel) {
       if (!err) {
         // `channel` is the channel named "foo".
@@ -46,6 +50,7 @@ To create a channel:
     });
 
 Then publish to the channel with:
+
     myChannel.publish('Hello World!', function (err, message) {
       if (!err) {
         // Message was successfully published.
@@ -53,13 +58,16 @@ Then publish to the channel with:
     });
 
 To listen to a channel, first create a subscription:
+
     myChannel.subscribe('mySubscription', function (err, subscription) {
       if (!err) {
         // `subscription` is the new subscription resource
         var mySubscription = subscription;
       }
     });
+
 OR EQUIVALENTLY:
+
     spire.subscribe('mySubscripiton', 'channel_name_i_wish_to_subscribe_to', function (err, subscription) {
       if (!err) {
         // `subscription` is the new subscription resource
@@ -68,6 +76,7 @@ OR EQUIVALENTLY:
     });
 
 Then add listeners to the subscription and start listening!
+
     mySubscription.addListener('message', function (message) {
       console.log('Message received: ' + message.content);
     });

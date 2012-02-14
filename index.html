@@ -17,11 +17,13 @@ find help with the following things:</p>             </td>             <td class
 <pre><code>var spire = new Spire();
 </code></pre>
 
-<p>@constructor
-@param {object} opts Options for Spire
-@param {string} opts.url Spire url do use (defaults to 'https://api.spire.io')
-@param {string} opts.version Version of Spire api to use (defaults to '1.0')
-@param {number} opts.timeout Timeout for requests (defaults to 30 seconds)</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Spire</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
+<ul>
+<li>@constructor</li>
+<li>@param {object} opts Options for Spire</li>
+<li>@param {string} opts.url Spire url do use (defaults to 'https://api.spire.io')</li>
+<li>@param {string} opts.version Version of Spire api to use (defaults to '1.0')</li>
+<li>@param {number} opts.timeout Timeout for requests (defaults to 30 seconds)</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Spire</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">api</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">API</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">opts</span><span class="p">);</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
 <span class="p">};</span>

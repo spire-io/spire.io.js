@@ -205,7 +205,9 @@ describe('Channels', function () {
             var that = this;
             setTimeout(function () {
               that.channel.publish('Message1', function (err, m) {
-                finished = true;
+                setTimeout(function () {
+                  finished = true;
+                }, 1000);
               });
             }, 1000);
           });

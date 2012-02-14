@@ -2,17 +2,24 @@
 
 `spire.io.js` is a javascript library for the [spire.io API](http://www.spire.io/).
 
+For more docs, see our [inline documentation](http://spire-io.github.com/spire.io.js).
+
+## Usage
+
 This library can be used inside the browser, or as a NodeJS module.
 
-Browser usage:
+### Browser usage:
 Add `spire.io.bundle.js` or `spire.io.bundle.min.js` to your script tags, and then
 
     var Spire = require('./spire.io.js');
 
-NodeJS usage:
+### NodeJS usage:
 
     npm install spire.io.js
     var Spire = require('spire.io.js');
+
+
+## Starting the Spire client
 
 Create a new Spire instance:
 
@@ -40,6 +47,8 @@ Or start spire with an account key:
       });
     });
 
+## Creating a channel
+
 To create a channel:
 
     spire.channel('foo', function (err, channel) {
@@ -49,6 +58,8 @@ To create a channel:
       }
     });
 
+## Publish to a channel
+
 Then publish to the channel with:
 
     myChannel.publish('Hello World!', function (err, message) {
@@ -56,6 +67,8 @@ Then publish to the channel with:
         // Message was successfully published.
       }
     });
+
+## Listen to a channel
 
 To listen to a channel, first create a subscription:
 
@@ -83,14 +96,14 @@ Then add listeners to the subscription and start listening!
 
 Call `mySubscription.stopListening()` when you want to stop listening.
 
-## What is spire.io?
+## More Info
 
-[spire.io](http://spire.io) is a platform as service API.
+For more docs, see our [inline documentation](http://spire-io.github.com/spire.io.js).
 
 ## Working with this library
 
 * [source code](https://github.com/spire-io/spire.io.js)
-* [inline documentation](http://spire-io.github.com/spire.io.js/) (via [docco](http://jashkenas.github.com/docco/))
+* [inline documentation](http://spire-io.github.com/spire.io.js/)
 * [issues](https://github.com/spire-io/spire.io.js/issues)
 * [contact spire.io](http://spire.io/contact.html)
 

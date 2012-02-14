@@ -362,23 +362,20 @@ var async = require('async')
 // Creates a new instance of Spire client.
 //
 // Usage:
+//
 //     var spire = new Spire();
 //
-// @constructor
-// @param {object} opts Options for Spire
-// @param {string} opts.url Spire url do use (defaults to 'https://api.spire.io')
-// @param {string} opts.version Version of Spire api to use (defaults to '1.0')
-// @param {number} opts.timeout Timeout for requests (defaults to 30 seconds)
+//     @constructor
+//     @param {object} opts Options for Spire
+//     @param {string} opts.url Spire url do use (defaults to 'https://api.spire.io')
+//     @param {string} opts.version Version of Spire api to use (defaults to '1.0')
+//     @param {number} opts.timeout Timeout for requests (defaults to 30 seconds)
 var Spire = function (opts) {
   this.api = new API(this, opts);
   this.session = null;
 };
 
 module.exports = Spire;
-
-// Spire.prototype.CREATION_RETRY_LIMIT
-// Number of times to retry creating a channel or subscription before giving up.
-Spire.prototype.CREATION_RETRY_LIMIT = 5;
 
 // ## Public Interface
 
@@ -394,7 +391,7 @@ Spire.prototype.key = function () {
 // ### Spire.prototype.discover
 // Discovers urls from Spire API.
 //
-// @param {function(err, discovered)} cb Callback
+//     @param {function(err, discovered)} cb Callback
 Spire.prototype.discover = function (cb) {
   this.api.discover(cb);
 };
@@ -403,15 +400,17 @@ Spire.prototype.discover = function (cb) {
 // Starts the Spire session with the given account key.
 //
 // Usage:
+//
 //     var spire = new Spire();
 //     spire.stark(your_api_key, function (err, session) {
 //       if (!err) {
-//         // You now have a spire session.  Start creating channels and subscripions.
+//         // You now have a spire session.
+//         // Start creating channels and subscripions.
 //       }
 //     });
 //
-// @param {string} key The acccount key
-// @param {function(err)} cb Callback
+//     @param {string} key The acccount key
+//     @param {function(err)} cb Callback
 Spire.prototype.start = function (key, cb) {
   var spire = this;
   this.discover(function () {
@@ -427,19 +426,21 @@ Spire.prototype.start = function (key, cb) {
 // Starts the Spire session with the given username and password.
 //
 // Usage:
+//
 //     var spire = new Spire();
 //     spire.login({
 //       email: 'you@email.com',
 //       password: your_password
 //     }, function (err, session) {
 //       if (!err) {
-//         // You now have a spire session.  Start creating channels and subscripions.
+//         // You now have a spire session.
+//         // Start creating channels and subscripions.
 //       }
 //     });
 //
-// @param {string} email Email
-// @param {string} password Password
-// @param {function(err)} cb Callback
+//     @param {string} email Email
+//     @param {string} password Password
+//     @param {function(err)} cb Callback
 Spire.prototype.login = function (email, password, cb) {
   var spire = this;
   this.discover(function () {
@@ -455,6 +456,7 @@ Spire.prototype.login = function (email, password, cb) {
 // Register for a new spire account, and authenticates as the newly created account
 //
 // Usage:
+//
 //     var spire = new Spire();
 //     spire.register({
 //       email: 'you@email.com',
@@ -462,15 +464,17 @@ Spire.prototype.login = function (email, password, cb) {
 //       password_confirmation: your_password_confirmation
 //     }, function (err, session) {
 //       if (!err) {
-//         // Your account has been registered, and you now have a spire session.  Start creating channels and subscripions.
+//         // Your account has been registered,
+//         // and you now have a spire session.
+//         // Start creating channels and subscripions.
 //       }
 //     });
 //
-// @param {object} user User info
-// @param {string} user.email Email
-// @param {string} user.password Password
-// @param {string} [user.password_confirmation] Optional password confirmation
-// @param {function (err)} cb Callback
+//     @param {object} user User info
+//     @param {string} user.email Email
+//     @param {string} user.password Password
+//     @param {string} [user.password_confirmation] Optional password confirmation
+//     @param {function (err)} cb Callback
 Spire.prototype.register = function (user, cb) {
   var spire = this;
   this.discover(function () {
@@ -486,6 +490,7 @@ Spire.prototype.register = function (user, cb) {
 // Update your account info.
 //
 // Usage:
+//
 //     var spire = new Spire();
 //     spire.update({
 //       email: 'new_you@new_email.com',
@@ -495,11 +500,11 @@ Spire.prototype.register = function (user, cb) {
 //       }
 //     });
 //
-// @param {object} user User info
-// @param {string} user.email Email
-// @param {string} user.password Password
-// @param {string} [user.password_confirmation] Optional password confirmation
-// @param {function (err)} cb Callback
+//     @param {object} user User info
+//     @param {string} user.email Email
+//     @param {string} user.password Password
+//     @param {string} [user.password_confirmation] Optional password confirmation
+//     @param {function (err)} cb Callback
 Spire.prototype.update = function (user, cb) {
   this.session.resources.account.update(user, cb);
 };
@@ -508,6 +513,7 @@ Spire.prototype.update = function (user, cb) {
 // Request a password reset for email.
 //
 // Usage:
+//
 //     var spire = new Spire();
 //     spire.passwordResetRequest({
 //       email: 'you@email.com',
@@ -517,8 +523,8 @@ Spire.prototype.update = function (user, cb) {
 //       }
 //     });
 //
-// @param {string} email Email
-// @param {function (err)} cb Callback
+//     @param {string} email Email
+//     @param {function (err)} cb Callback
 Spire.prototype.passwordResetRequest = function (email, cb) {
   var spire = this;
   this.discover(function () {
@@ -530,6 +536,7 @@ Spire.prototype.passwordResetRequest = function (email, cb) {
 // Gets a channel (creates if necessary).
 //
 // Usage:
+//
 //     var spire = new Spire();
 //     spire.start(your_api_key, function (err, session) {
 //       spire.channel('foo', function (err, channel) {
@@ -539,8 +546,8 @@ Spire.prototype.passwordResetRequest = function (email, cb) {
 //       });
 //     });
 //
-// @param {string} name Channel name to get or create
-// @param {function(err, channel)} cb Callback
+//     @param {string} name Channel name to get or create
+//     @param {function(err, channel)} cb Callback
 Spire.prototype.channel = function (name, cb) {
   if (this.session._channels[name]) {
     return cb(null, this.session._channels[name]);
@@ -553,6 +560,7 @@ Spire.prototype.channel = function (name, cb) {
 // otherwise will make a request.
 //
 // Usage:
+//
 //     var spire = new Spire();
 //     spire.start(your_api_key, function (err, session) {
 //       spire.channels(function (err, channels) {
@@ -562,7 +570,7 @@ Spire.prototype.channel = function (name, cb) {
 //       });
 //     });
 //
-// @param {function (err, channels)} cb Callback
+//     @param {function (err, channels)} cb Callback
 Spire.prototype.channels = function (cb) {
   this.spire.session.channels(cb);
 };
@@ -573,7 +581,7 @@ Spire.prototype.channels = function (cb) {
 //
 // Usage is same as Spire.prototype.channels
 //
-// @param {function (err, channels)} cb Callback
+//     @param {function (err, channels)} cb Callback
 Spire.prototype.channels$ = function (cb) {
   this.spire.session.channels$(cb);
 };
@@ -583,6 +591,7 @@ Spire.prototype.channels$ = function (cb) {
 // subscription if necessary.
 //
 // Usage:
+//
 //     var spire = new Spire();
 //     spire.start(your_api_key, function (err, session) {
 //       spire.subscribe('mySubscription', ['foo', 'bar'], function (err, subscription) {
@@ -592,10 +601,10 @@ Spire.prototype.channels$ = function (cb) {
 //       });
 //     });
 //
-// @param {string} Subscription name
-// @param {array or string} channelOrChannels Either a single channel name, or an array of
+//     @param {string} Subscription name
+//     @param {array or string} channelOrChannels Either a single channel name, or an array of
 //   channel names to subscribe to
-// @param {function (err, subscription)} cb Callback
+//     @param {function (err, subscription)} cb Callback
 Spire.prototype.subscribe = function (name, channelOrChannels, cb) {
   var channelNames = (typeof channelOrChannels === 'string')
     ? [channelOrChannels]
@@ -621,6 +630,7 @@ Spire.prototype.subscribe = function (name, channelOrChannels, cb) {
 // available, otherwise makes a request.
 //
 // Usage:
+//
 //     var spire = new Spire();
 //     spire.start(your_api_key, function (err, session) {
 //       spire.subscriptions(function (err, subscriptions) {
@@ -630,7 +640,7 @@ Spire.prototype.subscribe = function (name, channelOrChannels, cb) {
 //       });
 //     });
 //
-// @param {function (err, subscriptions)} cb Callback
+//     @param {function (err, subscriptions)} cb Callback
 Spire.prototype.subscriptions = function (cb) {
   this.session.subscriptions(cb);
 };
@@ -641,12 +651,16 @@ Spire.prototype.subscriptions = function (cb) {
 //
 // Usage is the same as Spire.prototype.subscriptions.
 //
-// @param {function (err, subscriptions)} cb Callback
+//     @param {function (err, subscriptions)} cb Callback
 Spire.prototype.subscriptions$ = function (cb) {
   this.session.subscriptions$(cb);
 };
 
 // ## Private Interface
+
+// ### Spire.prototype.CREATION_RETRY_LIMIT
+// Number of times to retry creating a channel or subscription before giving up.
+Spire.prototype.CREATION_RETRY_LIMIT = 5;
 
 // ### Spire.prototype._findOrCreateChannel
 // Returns the channel with name 'name', creating it if necessary.
@@ -654,8 +668,8 @@ Spire.prototype.subscriptions$ = function (cb) {
 // You should use `Spire.prototype.channel` method instead of this one.  This
 // method ignores cached channels.
 //
-// @param {string} name Channel name
-// @param {function (err, channel)} cb Callback
+//     @param {string} name Channel name
+//     @param {function (err, channel)} cb Callback
 Spire.prototype._findOrCreateChannel = function (name, cb) {
   var spire = this;
   var creationCount = 0;
@@ -689,9 +703,9 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
 // You should use `Spire.prototype.subscribe` method instead of this one.  This
 // method ignores cached subscriptions, and does not create the channels.
 //
-// @param {string} name Subscription name
-// @param {string} channelNames Channel names
-// @param {function (err, subscription)} cb Callback
+//     @param {string} name Subscription name
+//     @param {string} channelNames Channel names
+//     @param {function (err, subscription)} cb Callback
 Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
   var spire = this;
   var creationCount = 0;
@@ -1439,12 +1453,12 @@ require.define("/spire/api.js", function (require, module, exports, __dirname, _
 // # API
 // Abstraction for the spire api.
 //
-// @constructor
-// @param {object} spire Spire object
-// @param {object} [opts] Options
-// @param {string} [opts.url] Spire api url
-// @param {string} [opts.version] Version of the Spire api to use
-// @param {string} [opts.timeout] Timeout for requests
+//     @constructor
+//     @param {object} spire Spire object
+//     @param {object} [opts] Options
+//     @param {string} [opts.url] Spire api url
+//     @param {string} [opts.version] Version of the Spire api to use
+//     @param {string} [opts.timeout] Timeout for requests
 var API = function (spire, opts) {
   this.spire = spire;
 
@@ -1470,7 +1484,7 @@ API.prototype.request = Resource.prototype.request;
 // Discovers urls from Spire API.  Since this description does not change often,
 // we only make the request once and cache the result for subsequent calls.
 //
-// @param {function(err, discovered)} cb Callback
+//     @param {function(err, discovered)} cb Callback
 API.prototype.discover = function (cb) {
   var api = this;
 
@@ -1491,8 +1505,8 @@ API.prototype.discover = function (cb) {
 //
 // You should probably call `spire.start` instead of this method.
 //
-// @param {string} key The acccount key
-// @param {function(err)} cb Callback
+//     @param {string} key The acccount key
+//     @param {function(err)} cb Callback
 API.prototype.createSession = function (key, cb) {
   var api = this;
   this.request('create_session', key, function (err, sessionData) {
@@ -1507,9 +1521,9 @@ API.prototype.createSession = function (key, cb) {
 //
 // You should probably be using `spire.login` instead of this method.
 //
-// @param {string} email Email
-// @param {string} password Password
-// @param {function(err)} cb Callback
+//     @param {string} email Email
+//     @param {string} password Password
+//     @param {function(err)} cb Callback
 API.prototype.login = function (email, password, cb) {
   var api = this;
   this.request('login', email, password, function (err, sessionData) {
@@ -1524,11 +1538,11 @@ API.prototype.login = function (email, password, cb) {
 //
 // You should probably be using `spire.register` instead of this method.
 //
-// @param {object} user User info
-// @param {string} user.email Email
-// @param {string} user.password Password
-// @param {string} [user.password_confirmation] Optional password confirmation
-// @param {function (err)} cb Callback
+//     @param {object} user User info
+//     @param {string} user.email Email
+//     @param {string} user.password Password
+//     @param {string} [user.password_confirmation] Optional password confirmation
+//     @param {function (err)} cb Callback
 API.prototype.createAccount = function (info, cb) {
   var api = this;
   this.request('create_account', info, function (err, sessionData) {
@@ -1543,8 +1557,8 @@ API.prototype.createAccount = function (info, cb) {
 //
 // You should probaby be using `spire.passwordResetRequest` instead of this method.
 //
-// @param {string} email Email
-// @param {function (err)} cb Callback
+//     @param {string} email Email
+//     @param {function (err)} cb Callback
 API.prototype.passwordResetRequest = function (cb) {
   this.request('password_reset_request', cb);
 };
@@ -1552,7 +1566,7 @@ API.prototype.passwordResetRequest = function (cb) {
 // ### API.prototype.billing
 // Get billing information for the account.
 //
-// @param {function (err, billingResource)} cb Callback
+//     @param {function (err, billingResource)} cb Callback
 API.prototype.billing = function (cb) {
   var api = this;
   this.request('billing', function (err, billingData) {
@@ -1565,7 +1579,7 @@ API.prototype.billing = function (cb) {
 // ### API.prototype.mediaType
 // Returns the MIME type for resourceName.
 //
-// @param {string} [name] Name of the resource MIME type to return
+//     @param {string} [name] Name of the resource MIME type to return
 API.prototype.mediaType = function(resourceName){
   return this.schema[resourceName].mediaType;
 };
@@ -1573,7 +1587,7 @@ API.prototype.mediaType = function(resourceName){
 // ### API.prototype.authorization
 // Returns the Authorization header for the resource.
 //
-// @param {object} resource Resource
+//     @param {object} resource Resource
 API.prototype.authorization = function(resource){
   return ['Capability', resource.capability].join(' ');
 };
@@ -1692,6 +1706,7 @@ require.define("/spire/api/resource.js", function (require, module, exports, __d
 // subclasses.
 //
 // Once a request method has been defined, it can be run with
+//
 //     resource.request(<request name>);
 //
 // Such request methods have no side effects, and return JSON objects direct
@@ -1699,9 +1714,9 @@ require.define("/spire/api/resource.js", function (require, module, exports, __d
 //
 // Resources inherit from EventEmitter.
 //
-// @constructor
-// @param {object} spire Spire object
-// @param {object} data Resource data from the spire api
+//     @constructor
+//     @param {object} spire Spire object
+//     @param {object} data Resource data from the spire api
 function Resource (spire, data) {
   this.spire = spire;
   this.data = data;
@@ -1720,8 +1735,11 @@ module.exports = Resource;
 // method when actually calling the request.
 //
 // For instance, a request defined with
+//
 //     defineRequest(somePrototype, 'get', createGetReq);
+//
 // is run by calling
+//
 //     resource.request('get', callback);
 //
 // `fn` is a function that takes any number of arguments and returns a hash
@@ -1730,6 +1748,7 @@ module.exports = Resource;
 //
 // For example, suppose `createGetReq` from above is the following function,
 // which takes an id number as argument as puts it in the query params:
+//
 //     function createGetReq (id) {
 //       return {
 //         method: 'get',
@@ -1739,11 +1758,12 @@ module.exports = Resource;
 //     };
 //
 //  You would call that request like this:
+//
 //      resource.request('get', id, callback);
 //
-// @param {object} obj Object to add the request method to.
-// @param {string} name Name of the request method
-// @param {function (*args)} fn Function taking any number of arguments,
+//     @param {object} obj Object to add the request method to.
+//     @param {string} name Name of the request method
+//     @param {function (*args)} fn Function taking any number of arguments,
 // returning an object describing the HTTP request.
 Resource.defineRequest = function (obj, name, fn) {
   obj['_req_' + name] = function () {
@@ -1786,7 +1806,7 @@ Resource.prototype.request = function () {
 //
 // Default method that may be overwritten by subclasses.
 //
-// @param {function (err, resource)} cd Callback
+//     @param {function (err, resource)} cd Callback
 Resource.prototype.get = function (cb) {
   var resource = this;
   this.request('get', function (err, data) {
@@ -1801,8 +1821,8 @@ Resource.prototype.get = function (cb) {
 //
 // Default method that may be overwritten by subclasses.
 //
-// @param {object} data Resource data
-// @param {function (err, resource)} cd Callback
+//     @param {object} data Resource data
+//     @param {function (err, resource)} cd Callback
 Resource.prototype.update = function (data, cb) {
   var resource = this;
   this.request('update', data, function (err, data) {
@@ -1817,7 +1837,7 @@ Resource.prototype.update = function (data, cb) {
 //
 // Default method that may be overwritten by subclasses.
 //
-// @param {function (err, resource)} cd Callback
+//     @param {function (err, resource)} cd Callback
 Resource.prototype.delete = function (data, cb) {
   var resource = this;
   this.request('delete', data, function (err, data) {
@@ -1843,7 +1863,7 @@ Resource.prototype.capability = function () {
 // Returns the Authorization header for this resource, or for another capability
 // if one is passed in.
 //
-// @param {object} [resource] Optional resource
+//     @param {object} [resource] Optional resource
 Resource.prototype.authorization = function (resource) {
   var cap;
   if (resource) {
@@ -1867,7 +1887,7 @@ Resource.prototype.key = function () {
 // ### Resource.prototype.schema
 // Returns the resource schema for this resource the resource of a given name.
 //
-// @param {string} [name] Optional name of the resource schema to return
+//     @param {string} [name] Optional name of the resource schema to return
 Resource.prototype.schema = function (name) {
   return this.spire.api.schema[name || this.resourceName];
 };
@@ -1875,7 +1895,7 @@ Resource.prototype.schema = function (name) {
 // ### Resource.prototype.mediaType
 // Returns the MIME type for this resource or the resource of a given name.
 //
-// @param {string} [name] Optional name of the resource MIME type to return
+//     @param {string} [name] Optional name of the resource MIME type to return
 Resource.prototype.mediaType = function (name) {
   return this.schema(name).mediaType;
 };
@@ -4941,8 +4961,8 @@ require.define("/spire/api/response_error.js", function (require, module, export
 // contextual information passed into the `arguments` of `requests`'s `error`
 // handler
 //
-// @constructor
-// @param {object} response Response HTTP client
+//     @constructor
+//     @param {object} response Response HTTP client
 var ResponseError = function (response) {
   this.message = 'ResponseError: ' + response.status;
   this.response = response;
@@ -4963,9 +4983,9 @@ require.define("/spire/api/account.js", function (require, module, exports, __di
 //
 // Inherits from `Resource`
 //
-// @constructor
-// @param spire {object} Spire object
-// @param data {object} Account data from the spire api
+//     @constructor
+//     @param spire {object} Spire object
+//     @param data {object} Account data from the spire api
 function Account (spire, data) {
   this.spire = spire;
   this.data = data;
@@ -4981,8 +5001,8 @@ module.exports = Account;
 // ### Account.prototype.updateBillingSubscription
 // Updates the billing plan for the account.
 //
-// @param {object} info New billing plan data
-// @param {function (err, account)} cb Callback
+//     @param {object} info New billing plan data
+//     @param {function (err, account)} cb Callback
 Account.prototype.updateBillingSubscription = function (info, cb) {
   var account = this;
   this.request('update_billing_subscription', info, function (err, data) {
@@ -5050,9 +5070,9 @@ require.define("/spire/api/billing.js", function (require, module, exports, __di
 //
 // Inherits from `Resource`.
 //
-// @constructor
-// @param spire {object} Spire object
-// @param data {object} Billing data from the spire api
+//     @constructor
+//     @param spire {object} Spire object
+//     @param data {object} Billing data from the spire api
 function Billing (spire, data) {
   this.spire = spire;
   this.data = data;
@@ -5073,9 +5093,9 @@ require.define("/spire/api/channel.js", function (require, module, exports, __di
 //
 // Inherits from `Resource`
 //
-// @constructor
-// @param {object} spire Spire object
-// @param {object} data  Channel data from the spire api
+//     @constructor
+//     @param {object} spire Spire object
+//     @param {object} data  Channel data from the spire api
 function Channel (spire, data) {
   this.spire = spire;
   this.data = data;
@@ -5098,6 +5118,7 @@ Channel.prototype.name = function () {
 // Publishes a message to the channel.
 //
 // Usage:
+//
 //     spire.channel('myChannel', function (err, channel) {
 //       channel.publish('hello world', function (err, message) {
 //         if (!err) {
@@ -5106,8 +5127,8 @@ Channel.prototype.name = function () {
 //       });
 //     });
 //
-// @param {string} message Message to publish
-// @param {function (err, message)} cb Callback
+//     @param {string} message Message to publish
+//     @param {function (err, message)} cb Callback
 Channel.prototype.publish = function (message, cb) {
   this.request('publish', { content: message }, cb);
 };
@@ -5123,8 +5144,8 @@ Channel.prototype.publish = function (message, cb) {
 //       });
 //     });
 //
-// @param {string} subName Subscription name
-// @param {function (err, subscription)} cb Callback
+//     @param {string} subName Subscription name
+//     @param {function (err, subscription)} cb Callback
 Channel.prototype.subscribe = function (subName, cb) {
   if (!cb) {
     cb = subName;
@@ -5182,9 +5203,9 @@ require.define("/spire/api/session.js", function (require, module, exports, __di
 // `session.channels$` and `session.subscriptions$` to get fresh data from the
 // api.
 //
-// @constructor
-// @param {object} spire Spire object
-// @param {object} data Session data from the spire api
+//     @constructor
+//     @param {object} spire Spire object
+//     @param {object} data Session data from the spire api
 function Session (spire, data) {
   this.spire = spire;
   this.data = data;
@@ -5218,13 +5239,14 @@ module.exports = Session;
 // Returns a value from the cache, if one if available.
 //
 // Usage:
+//
 //     spire.session.account(function (err, account) {
 //       if (!err) {
 //         // `account` is account resource.
 //       }
 //     });
 //
-// @param {function (err, account)} cb Callback
+//     @param {function (err, account)} cb Callback
 Session.prototype.account = function (cb) {
   if (this._account) return cb(null, this._account);
   this.account$(cb);
@@ -5238,7 +5260,7 @@ Session.prototype.account = function (cb) {
 //
 // Usage is the same as spire.session.account.
 //
-// @param {function (err, account)} cb Callback
+//     @param {function (err, account)} cb Callback
 Session.prototype.account$ = function (cb) {
   var session = this;
   this.request('account', function (err, account) {
@@ -5254,13 +5276,14 @@ Session.prototype.account$ = function (cb) {
 // Returns a value from the cache, if one if available.
 //
 // Usage:
+//
 //     spire.session.channels(function (err, channels) {
 //       if (!err) {
 //         // `channels` is a hash of all the account's channels
 //       }
 //     });
 //
-// @param {function (err, channels)} cb Callback
+//     @param {function (err, channels)} cb Callback
 Session.prototype.channels = function (cb) {
   if (this._channels) return cb(null, this._channels);
   this.channels$(cb);
@@ -5273,7 +5296,7 @@ Session.prototype.channels = function (cb) {
 //
 // Usage is the same as `spire.session.channels`.
 //
-// @param {function (err, channels)} cb Callback
+//     @param {function (err, channels)} cb Callback
 Session.prototype.channels$ = function (cb) {
   var session = this;
   this.request('channels', function (err, channelsData) {
@@ -5291,13 +5314,14 @@ Session.prototype.channels$ = function (cb) {
 // Returns a value from the cache, if one if available.
 //
 // Usage:
+//
 //     spire.session.subscriptions(function (err, subscriptions) {
 //       if (!err) {
 //         // `subscriptions` is a hash of all the account's subscriptions
 //       }
 //     });
 //
-// @param {function (err, channels)} cb Callback
+//     @param {function (err, channels)} cb Callback
 Session.prototype.subscriptions = function (cb) {
   if (this._subscriptions) return cb(null, this._subscriptions);
   this.subscriptions$(cb);
@@ -5310,7 +5334,7 @@ Session.prototype.subscriptions = function (cb) {
 //
 // Usage is the same as `spire.session.subscriptions`.
 //
-// @param {function (err, channels)} cb Callback
+//     @param {function (err, channels)} cb Callback
 Session.prototype.subscriptions$ = function (cb) {
   var session = this;
   this.request('subscriptions', function (err, subscriptions) {
@@ -5329,8 +5353,8 @@ Session.prototype.subscriptions$ = function (cb) {
 // You should use the `spire.channel` method instead of calling this one
 // directly.
 //
-// @param {string} name Channel name
-// @param {function (err, channel)} cb Callback
+//     @param {string} name Channel name
+//     @param {function (err, channel)} cb Callback
 Session.prototype.createChannel = function (name, cb) {
   var session = this;
   this.request('create_channel', name, function (err, data) {
@@ -5348,10 +5372,10 @@ Session.prototype.createChannel = function (name, cb) {
 // You should use the `spire.subscribe` method instead of calling this one
 // directly.
 //
-// @param {string} name Subscription name
-// @param {array} channelNames Array of channel names to subscribe to.  Can be
+//     @param {string} name Subscription name
+//     @param {array} channelNames Array of channel names to subscribe to.  Can be
 // empty.
-// @param {function (err, subscription)} cb Callback
+//     @param {function (err, subscription)} cb Callback
 Session.prototype.createSubscription = function (subName, channelNames, cb) {
   var session = this;
   this.channels(function (channels) {
@@ -5372,7 +5396,7 @@ Session.prototype.createSubscription = function (subName, channelNames, cb) {
 // ### Session.prototype._memoizeChannel
 // Stores the channel resource in a hash by its name.
 //
-// @param channel {object} Channel to store
+//     @param channel {object} Channel to store
 Session.prototype._memoizeChannel = function (channel) {
   this._channels[channel.name()] = channel;
 };
@@ -5380,7 +5404,7 @@ Session.prototype._memoizeChannel = function (channel) {
 // ### Session.prototype._memoizeSubscription
 // Stores the subscription resource in a hash by its name.
 //
-// @param subscription {object} Subscription to store
+//     @param subscription {object} Subscription to store
 Session.prototype._memoizeSubscription = function (subscription) {
   this._subscriptions[subscription.name()] = subscription;
 };
@@ -5514,6 +5538,7 @@ require.define("/spire/api/subscription.js", function (require, module, exports,
 //
 // You can also use the `message` and `messages` events to listen for new
 // messages on the subscription.
+// 
 //    subscription.addListener('message', function (message) {
 //      console.log('Message received: ' + message.content);
 //    });
@@ -5527,9 +5552,9 @@ require.define("/spire/api/subscription.js", function (require, module, exports,
 // The `messages` event fires first and contains the all the messages that were
 // received in a single request.  The `message` event fires once per message.
 //
-// @constructor
-// @param {object} spire Spire object
-// @param {object} data Subscription data from the spire api
+//     @constructor
+//     @param {object} spire Spire object
+//     @param {object} data Subscription data from the spire api
 function Subscription (spire, data) {
   this.spire = spire;
   this.data = data;
@@ -5559,6 +5584,7 @@ Subscription.prototype.name = function () {
 // message.
 //
 // Usage:
+//
 //    subscription.addListener('message', function (message) {
 //      console.log('Message received: ' + message.content);
 //    });
@@ -5574,12 +5600,12 @@ Subscription.prototype.name = function () {
 //      subscription.stopListening();
 //     }, 100000);
 //
-// @param {object} [options] Optional options argument
-// @param {number} [options.last] Optional last message
-// @param {number} [options.delay] Optional delay
-// @param {number} [options.timeout] Optional timeout
-// @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
-// @param {function (err, messages)} cb Callback
+//     @param {object} [options] Optional options argument
+//     @param {number} [options.last] Optional last message
+//     @param {number} [options.delay] Optional delay
+//     @param {number} [options.timeout] Optional timeout
+//     @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
+//     @param {function (err, messages)} cb Callback
 Subscription.prototype.startListening = function (opts) {
   this.listening = true;
   this._listen(opts);
@@ -5598,18 +5624,19 @@ Subscription.prototype.stopListening = function () {
 // poll repeatedly.
 //
 // Usage:
+//
 //     subscription.retreiveMessages(function (err, messages) {
 //       if (!err) {
 //         // `messages` is an array of messages (possably empty)
 //       }
 //     });
 //
-// @param {object} [options] Optional options argument
-// @param {number} [options.last] Optional last message
-// @param {number} [options.delay] Optional delay
-// @param {number} [options.timeout] Optional timeout
-// @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
-// @param {function (err, messages)} cb Callback
+//     @param {object} [options] Optional options argument
+//     @param {number} [options.last] Optional last message
+//     @param {number} [options.delay] Optional delay
+//     @param {number} [options.timeout] Optional timeout
+//     @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
+//     @param {function (err, messages)} cb Callback
 Subscription.prototype.retreiveMessages = function (options, cb) {
   var subscription = this;
   if (!cb) {
@@ -5650,16 +5677,17 @@ Subscription.prototype.retreiveMessages = function (options, cb) {
 // poll repeatedly.
 //
 // Usage:
+//
 //     subscription.poll(function (err, messages) {
 //       if (!err) {
 //         // `messages` is an array of messages (possably empty)
 //       }
 //     });
 //
-// @param {object} [options] Optional options argument
-// @param {number} [options.delay] Optional delay
-// @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
-// @param {function (err, messages)} cb Callback
+//     @param {object} [options] Optional options argument
+//     @param {number} [options.delay] Optional delay
+//     @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
+//     @param {function (err, messages)} cb Callback
 Subscription.prototype.poll = function (options, cb) {
   var subscription = this;
   if (!cb) {
@@ -5685,17 +5713,18 @@ Subscription.prototype.poll = function (options, cb) {
 // poll repeatedly.
 //
 // Usage:
+//
 //     subscription.longPoll({ timeout: 60 }, function (err, messages) {
 //       if (!err) {
 //         // `messages` is an array of messages (possably empty)
 //       }
 //     });
 //
-// @param {object} [options] Optional options argument
-// @param {number} [options.delay] Optional delay
-// @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
-// @param {number} [options.timeout] Optional timeout
-// @param {function (err, messages)} cb Callback
+//     @param {object} [options] Optional options argument
+//     @param {number} [options.delay] Optional delay
+//     @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
+//     @param {number} [options.timeout] Optional timeout
+//     @param {function (err, messages)} cb Callback
 Subscription.prototype.longPoll = function (options, cb) {
   var subscription = this;
   if (!cb) {

@@ -1,0 +1,72 @@
+<!DOCTYPE html>  <html> <head>   <title>account.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               account.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Resource</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./resource&#39;</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h1>Account Resource</h1>
+
+<p>Represents an account in the spire api.</p>
+
+<p>Inherits from <code>Resource</code></p>
+
+<p>@constructor
+@param spire {object} Spire object
+@param data {object} Account data from the spire api</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">function</span> <span class="nx">Account</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">resourceName</span> <span class="o">=</span> <span class="s1">&#39;account&#39;</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Account</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Resource</span><span class="p">();</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Account</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h2>Public Interface</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h3>Account.prototype.updateBillingSubscription</h3>
+
+<p>Updates the billing plan for the account.</p>
+
+<p>@param {object} info New billing plan data
+@param {function (err, account)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Account</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">updateBillingSubscription</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">info</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">account</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;update_billing_subscription&#39;</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="nx">account</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+    <span class="nx">cb</span><span class="p">(</span><span class="nx">account</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Requests</h2>
+
+<p>These define API calls and have no side effects.  They can be run by calling
+    this.request(<request name>);</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h3>update<em>billing</em>subscription</h3>
+
+<p>Updates the billing subscription with the given data.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">defineRequest</span><span class="p">(</span><span class="nx">Account</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="s1">&#39;update_billing_subscription&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">info</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">billing</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">billing</span><span class="p">;</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;put&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">billing</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">content</span><span class="o">:</span> <span class="nx">info</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(),</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(),</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(</span><span class="nx">invioces</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h3>billing_invoices</h3>
+
+<p>Gets the billing invoices for the account.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">defineRequest</span><span class="p">(</span><span class="nx">Account</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="s1">&#39;billing_invoices&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">invoices</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">billing</span><span class="p">.</span><span class="nx">invoices</span><span class="p">;</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;get&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">invoices</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="s2">&quot;Capability &quot;</span> <span class="o">+</span> <span class="nx">invoices</span><span class="p">.</span><span class="nx">capability</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h3>billing<em>invoices</em>upcoming</h3>
+
+<p>Gets the upcoming billing invoices for the account.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">defineRequest</span><span class="p">(</span><span class="nx">Account</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="s1">&#39;billing_invoices_upcoming&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">upcoming</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">billing</span><span class="p">.</span><span class="nx">invoices</span><span class="p">.</span><span class="nx">upcoming</span><span class="p">;</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;get&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">invoices</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">upcoming</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="s2">&quot;Capability &quot;</span> <span class="o">+</span> <span class="nx">upcoming</span><span class="p">.</span><span class="nx">capability</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">});</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

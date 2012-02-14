@@ -1,0 +1,226 @@
+<!DOCTYPE html>  <html> <head>   <title>resource.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               resource.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">Shred</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;shred&#39;</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">shred</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Shred</span><span class="p">()</span>
+  <span class="p">,</span> <span class="nx">ResponseError</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./response_error&#39;</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">EventEmitter</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">).</span><span class="nx">EventEmitter</span>
+  <span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h1>Resource Class</h1>
+
+<p>This is the base class for objects repreenting resources in the spire api.
+It is meant to be extended by other classes.</p>
+
+<p>Resources have methods for making requests to the spire api.  These methods
+are defined with <code>Request.defineRequest</code>.  Note that this is a method on the
+Request object itself, not the prototype.  It is used to create methods on
+the prototype of Resource classes.</p>
+
+<p>The <code>Resource</code> class provides default requests for the <code>get</code>, <code>put</code>,
+<code>delete</code>, and <code>post</code> methods.  These methods can be overwritten by
+subclasses.</p>
+
+<p>Once a request method has been defined, it can be run with
+    resource.request(<request name>);</p>
+
+<p>Such request methods have no side effects, and return JSON objects direct
+from the spire api.</p>
+
+<p>Resources inherit from EventEmitter.</p>
+
+<p>@constructor
+@param {object} spire Spire object
+@param {object} data Resource data from the spire api</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">function</span> <span class="nx">Resource</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">EventEmitter</span><span class="p">();</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Resource</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h2>Class Methods</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h3>Resource.defineRequest</h3>
+
+<p>Creates a request method on given object.</p>
+
+<p><code>name</code> is the name of the request.  This is what gets passed to the <code>request</code>
+method when actually calling the request.</p>
+
+<p>For instance, a request defined with
+    defineRequest(somePrototype, 'get', createGetReq);
+is run by calling
+    resource.request('get', callback);</p>
+
+<p><code>fn</code> is a function that takes any number of arguments and returns a hash
+describing the http request we are about to send.  Any arguments to this
+function can be passed to the <code>request</code> method.</p>
+
+<p>For example, suppose <code>createGetReq</code> from above is the following function,
+which takes an id number as argument as puts it in the query params:
+    function createGetReq (id) {
+      return {
+        method: 'get',
+        url: this.url(),
+        query: { id: id },
+       };
+    };</p>
+
+<p>You would call that request like this:
+     resource.request('get', id, callback);</p>
+
+<p>@param {object} obj Object to add the request method to.
+@param {string} name Name of the request method
+@param {function (*args)} fn Function taking any number of arguments,
+returning an object describing the HTTP request.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">defineRequest</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;_req_&#39;</span> <span class="o">+</span> <span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">callback</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+
+    <span class="kd">var</span> <span class="nx">req</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">)</span>
+
+    <span class="nx">shred</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResponseError</span><span class="p">(</span><span class="nx">res</span><span class="p">);</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">})</span>
+      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;success&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">});</span>
+  <span class="p">};</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Public Interface</h2>
+
+<p>Resource.prototype.request
+Makes the request with the given name.</p>
+
+<p>Arguments are the request name, followed by any number of arguments that will
+be passed to the function which creates the request description, and a
+callback.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">request</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">reqName</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+  <span class="kd">var</span> <span class="nx">cb</span> <span class="o">=</span> <span class="nx">args</span><span class="p">[</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="k">this</span><span class="p">[</span><span class="s1">&#39;_req_&#39;</span> <span class="o">+</span> <span class="nx">reqName</span><span class="p">]</span> <span class="o">!==</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;No request defined for &quot;</span> <span class="o">+</span> <span class="nx">reqName</span><span class="p">));</span>
+  <span class="p">}</span>
+  <span class="k">this</span><span class="p">[</span><span class="s1">&#39;_req_&#39;</span> <span class="o">+</span> <span class="nx">reqName</span><span class="p">].</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h3>Resource.prototype.get</h3>
+
+<p>Gets the resource.</p>
+
+<p>Default method that may be overwritten by subclasses.</p>
+
+<p>@param {function (err, resource)} cd Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">resource</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="nx">resource</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+    <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">resource</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h3>Resource.prototype.update</h3>
+
+<p>Updates (puts to) the resource.</p>
+
+<p>Default method that may be overwritten by subclasses.</p>
+
+<p>@param {object} data Resource data
+@param {function (err, resource)} cd Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">resource</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="nx">resource</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+    <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">resource</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h3>Resource.prototype.delete</h3>
+
+<p>Delete the resource.</p>
+
+<p>Default method that may be overwritten by subclasses.</p>
+
+<p>@param {function (err, resource)} cd Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="k">delete</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">resource</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="k">delete</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+    <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h3>Resource.prototype.url</h3>
+
+<p>Returns the url for the resource.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">url</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">url</span><span class="p">;</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h3>Resource.prototype.capability</h3>
+
+<p>Returns the capability for the resource.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">capability</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">capability</span><span class="p">;</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h3>Resource.prototype.authorization.</h3>
+
+<p>Returns the Authorization header for this resource, or for another capability
+if one is passed in.</p>
+
+<p>@param {object} [resource] Optional resource</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">authorization</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">resource</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">cap</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">resource</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">capability</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">cap</span> <span class="o">=</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">capability</span><span class="p">();</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">cap</span> <span class="o">=</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">capability</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">cap</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">capability</span><span class="p">();</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="s2">&quot;Capability &quot;</span> <span class="o">+</span> <span class="nx">cap</span><span class="p">;</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h3>Resource.prototype.key</h3>
+
+<p>Returns the resource key.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">key</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h3>Resource.prototype.schema</h3>
+
+<p>Returns the resource schema for this resource the resource of a given name.</p>
+
+<p>@param {string} [name] Optional name of the resource schema to return</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">schema</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">schema</span><span class="p">[</span><span class="nx">name</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">resourceName</span><span class="p">];</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h3>Resource.prototype.mediaType</h3>
+
+<p>Returns the MIME type for this resource or the resource of a given name.</p>
+
+<p>@param {string} [name] Optional name of the resource MIME type to return</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">mediaType</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">schema</span><span class="p">(</span><span class="nx">name</span><span class="p">).</span><span class="nx">mediaType</span><span class="p">;</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h2>Requests</h2>
+
+<p>These define API calls and have no side effects.  They can be run by calling
+    this.request(<request name>);</p>
+
+<p>The requests defined on the Resource class are defaults.  They can be
+overwritten by subclasses.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h3>get</h3>
+
+<p>Gets the resource.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">defineRequest</span><span class="p">(</span><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;get&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">(),</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(),</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h3>update</h3>
+
+<p>Updates (puts) to the resouce.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">defineRequest</span><span class="p">(</span><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;put&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">(),</span>
+    <span class="nx">content</span><span class="o">:</span> <span class="nx">data</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(),</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h3>delete</h3>
+
+<p>Deletes a resource.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">defineRequest</span><span class="p">(</span><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">(),</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">authorization</span><span class="p">(),</span>
+      <span class="s1">&#39;Accept&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">(),</span>
+      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mediaType</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">});</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

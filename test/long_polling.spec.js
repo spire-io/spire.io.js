@@ -76,10 +76,12 @@ describe('Long polling', function () {
 
         setTimeout(function () {
           that.channel.publish('Goodnight moon.', function (err, mes) {
-            finished = true;
-            that.sub1.stopListening();
+            setTimeout(function () {
+              finished = true;
+              that.sub1.stopListening();
+            }, 1000);
           });
-        }, 2000);
+        }, 1000);
       });
 
       waitsFor(function () {

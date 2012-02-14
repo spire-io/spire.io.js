@@ -202,9 +202,12 @@ describe('Channels', function () {
         beforeEach(function () {
           var finished = false;
           runs(function () {
-            this.channel.publish('Message1', function (err, m) {
-              finished = true;
-            });
+            var that = this;
+            setTimeout(function () {
+              that.channel.publish('Message1', function (err, m) {
+                finished = true;
+              });
+            }, 1000);
           });
 
           waitsFor(function () {

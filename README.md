@@ -39,7 +39,7 @@ Register a new spire account:
 
 Or start spire with an account key:
 
-    spire.start(your_api_key, function (err, session) {
+    spire.start(your_account, function (err, session) {
       spire.channel('foo', function (err, channel) {
         if (!err) {
           // `channel` is the channel named "foo".
@@ -54,7 +54,7 @@ To create a channel:
     spire.channel('foo', function (err, channel) {
       if (!err) {
         // `channel` is the channel named "foo".
-        var myChannel = channel
+        var fooChannel = channel;
       }
     });
 
@@ -62,7 +62,7 @@ To create a channel:
 
 Then publish to the channel with:
 
-    myChannel.publish('Hello World!', function (err, message) {
+    fooChannel.publish('Hello World!', function (err, message) {
       if (!err) {
         // Message was successfully published.
       }
@@ -72,16 +72,16 @@ Then publish to the channel with:
 
 To listen to a channel, first create a subscription:
 
-    myChannel.subscribe('mySubscription', function (err, subscription) {
+    fooChannel.subscribe('mySubscription', function (err, subscription) {
       if (!err) {
         // `subscription` is the new subscription resource
         var mySubscription = subscription;
       }
     });
 
-OR EQUIVALENTLY:
+or equivalently:
 
-    spire.subscribe('mySubscripiton', 'channel_name_i_wish_to_subscribe_to', function (err, subscription) {
+    spire.subscribe('mySubscripiton', 'foo', function (err, subscription) {
       if (!err) {
         // `subscription` is the new subscription resource
         var mySubscription = subscription;

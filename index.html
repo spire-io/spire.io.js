@@ -1,74 +1,335 @@
-<!DOCTYPE html>  <html> <head>   <title>spire.io.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               spire.io.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Spire.io.js is a library designed to help you get your client-side web applications up and running with the high level services provided by the spire.io API. This plugin also exposes a methodology for directly interfacing with the spire.io REST interface.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>You can learn more about spire.io and it's services at http://spire.io, or find help with the following things:</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <ul>
+<!DOCTYPE html>  <html> <head>   <title>spire.io.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               spire.io.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>spire.io.js is a library designed to help you get your client-side web
+applications up and running with the high level services provided by the
+spire.io API. This plugin also exposes a methodology for directly interfacing
+with the spire.io REST interface.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>You can learn more about spire.io and it's services at http://spire.io, or
+find help with the following things:</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <ul>
 <li><a href="http://github.com/spire-io/spire.io.js">source code</a></li>
 <li><a href="http://github.com/spire-io/spire.io.js/issues">issues</a></li>
 <li><a href="http://spire.io/contact.html">contact spire.io</a></li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Shred</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;shred&#39;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">Requests</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./spire/requests&#39;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">Messages</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./spire/messages&#39;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">Headers</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./spire/headers&#39;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">Accounts</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./spire/accounts&#39;</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h1>Spire</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Spire</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">opts</span> <span class="o">=</span> <span class="nx">opts</span> <span class="o">||</span> <span class="p">{};</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Set up the spire object with default <code>options</code> for <code>url</code>, <code>version</code>,
-and <code>timeout</code> as well as stub out some objects to make method definitions
-obvious.</p>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">async</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;async&#39;</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">API</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./spire/api&#39;</span><span class="p">)</span>
+  <span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h1>Spire</h1>
 
-<ul>
-<li><strong>spire.options.url</strong>: The url of the spire.io API, defaults to
-<a href="http://api.spire.io">http://api.spire.io</a>.</li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">this</span><span class="p">.</span><span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="nx">url</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">url</span> <span class="o">||</span> <span class="s1">&#39;https://api.spire.io&#39;</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <ul>
-<li><strong>spire.options.version</strong>: The spire.io API version to use when making requests for resources, defaults to 1.0.</li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">version</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">version</span> <span class="o">||</span> <span class="s1">&#39;1.0&#39;</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <ul>
-<li><strong>spire.options.timeout</strong>: The timeout for long-polling in seconds, defaults to 30 seconds</li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">timeout</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">timeout</span> <span class="o">||</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">30</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <ul>
-<li><strong>spire.options.key</strong>: The account key.</li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">key</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">key</span> <span class="o">||</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="p">};</span>
+<p>Creates a new instance of Spire client.</p>
 
-  <span class="k">this</span><span class="p">.</span><span class="nx">isConnecting</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<p>Usage:
+    var spire = new Spire();</p>
 
-  <span class="k">this</span><span class="p">.</span><span class="nx">shred</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Shred</span><span class="p">({</span>
-    <span class="nx">agent</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">agent</span>
-  <span class="p">});</span>
-
-  <span class="k">this</span><span class="p">.</span><span class="nx">requests</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Requests</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Messages</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Headers</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">accounts</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Accounts</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<p>@constructor
+@param {object} opts Options for Spire
+@param {string} opts.url Spire url do use (defaults to 'https://api.spire.io')
+@param {string} opts.version Version of Spire api to use (defaults to '1.0')
+@param {number} opts.timeout Timeout for requests (defaults to 30 seconds)</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Spire</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">api</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">API</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">opts</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Spire</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h1>spire.connect</h1>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Spire</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Spire.prototype.CREATION<em>RETRY</em>LIMIT
+Number of times to retry creating a channel or subscription before giving up.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">CREATION_RETRY_LIMIT</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Public Interface</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h3>Spire.prototype.key</h3>
 
-<p>provides a single point of connection that builds up the needed objects
-for discovery and sharing a session between requests.
-the callback is triggered with an error and a session</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">connect</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+<p>Returns the account key.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">key</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">session</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">account</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">account</span><span class="p">.</span><span class="nx">key</span><span class="p">();</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h3>Spire.prototype.discover</h3>
+
+<p>Discovers urls from Spire API.</p>
+
+<p>@param {function(err, discovered)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">discover</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h3>Spire.prototype.start</h3>
+
+<p>Starts the Spire session with the given account key.</p>
+
+<p>Usage:
+    var spire = new Spire();
+    spire.stark(your<em>api</em>key, function (err, session) {
+      if (!err) {
+        // You now have a spire session.  Start creating channels and subscripions.
+      }
+    });</p>
+
+<p>@param {string} key The acccount key
+@param {function(err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">start</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-  <span class="nx">spire</span><span class="p">.</span><span class="nx">isConnecting</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-
-  <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">description</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">description</span><span class="p">){</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
-
-    <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">key</span> <span class="p">};</span>
-
-    <span class="kd">var</span> <span class="nx">sessionBack</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">session</span><span class="p">){</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
-
-      <span class="nx">spire</span><span class="p">.</span><span class="nx">isConnecting</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>save it for later.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="nx">session</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>publish any messages in the queue</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">if</span> <span class="p">(</span><span class="nx">spire</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">queue</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
-        <span class="kd">var</span> <span class="nx">args</span><span class="p">;</span>
-        <span class="k">while</span> <span class="p">(</span><span class="nx">args</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">queue</span><span class="p">.</span><span class="nx">pop</span><span class="p">())</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>try it again, its possible this loop might get fired in
-parallel effecting the queue so make sure that the args are
-defined before calling the publish function</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="k">if</span> <span class="p">(</span><span class="nx">args</span><span class="p">)</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">publish</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="nx">args</span><span class="p">.</span><span class="nx">callback</span><span class="p">);</span>
-        <span class="p">}</span>
-      <span class="p">}</span>
-
-      <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">session</span><span class="p">);</span>
-    <span class="p">};</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">sessionBack</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">);</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="nx">spire</span><span class="p">.</span><span class="nx">requests</span><span class="p">.</span><span class="nx">sessions</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">sessionBack</span><span class="p">);</span>
-    <span class="p">}</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="nx">session</span><span class="p">;</span>
+      <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+    <span class="p">});</span>
   <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h3>Spire.prototype.login</h3>
+
+<p>Starts the Spire session with the given username and password.</p>
+
+<p>Usage:
+    var spire = new Spire();
+    spire.login({
+      email: 'you@email.com',
+      password: your_password
+    }, function (err, session) {
+      if (!err) {
+        // You now have a spire session.  Start creating channels and subscripions.
+      }
+    });</p>
+
+<p>@param {string} email Email
+@param {string} password Password
+@param {function(err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">login</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="nx">session</span><span class="p">;</span>
+      <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h3>Spire.prototype.register</h3>
+
+<p>Register for a new spire account, and authenticates as the newly created account</p>
+
+<p>Usage:
+    var spire = new Spire();
+    spire.register({
+      email: 'you@email.com',
+      password: your<em>password,
+      password</em>confirmation: your<em>password</em>confirmation
+    }, function (err, session) {
+      if (!err) {
+        // Your account has been registered, and you now have a spire session.  Start creating channels and subscripions.
+      }
+    });</p>
+
+<p>@param {object} user User info
+@param {string} user.email Email
+@param {string} user.password Password
+@param {string} [user.password_confirmation] Optional password confirmation
+@param {function (err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">register</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">createAccount</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span> <span class="o">=</span> <span class="nx">session</span><span class="p">;</span>
+      <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h3>Spire.prototype.update</h3>
+
+<p>Update your account info.</p>
+
+<p>Usage:
+    var spire = new Spire();
+    spire.update({
+      email: 'new<em>you@new</em>email.com',
+    }, function (err, session) {
+      if (!err) {
+        // Your account has been updated.
+      }
+    });</p>
+
+<p>@param {object} user User info
+@param {string} user.email Email
+@param {string} user.password Password
+@param {string} [user.password_confirmation] Optional password confirmation
+@param {function (err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">resources</span><span class="p">.</span><span class="nx">account</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h3>Spire.prototype.passwordResetRequest</h3>
+
+<p>Request a password reset for email.</p>
+
+<p>Usage:
+    var spire = new Spire();
+    spire.passwordResetRequest({
+      email: 'you@email.com',
+    }, function (err, session) {
+      if (!err) {
+        // A password reset email has been sent.
+      }
+    });</p>
+
+<p>@param {string} email Email
+@param {function (err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">passwordResetRequest</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">passwordResetRequest</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h3>Spire.prototype.channel</h3>
+
+<p>Gets a channel (creates if necessary).</p>
+
+<p>Usage:
+    var spire = new Spire();
+    spire.start(your<em>api</em>key, function (err, session) {
+      spire.channel('foo', function (err, channel) {
+        if (!err) {
+          // <code>channel</code> is the channel named "foo".
+        }
+      });
+    });</p>
+
+<p>@param {string} name Channel name to get or create
+@param {function(err, channel)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">channel</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">_channels</span><span class="p">[</span><span class="nx">name</span><span class="p">])</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">_channels</span><span class="p">[</span><span class="nx">name</span><span class="p">]);</span>
+  <span class="p">}</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">_findOrCreateChannel</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h3>Spire.prototype.channels</h3>
+
+<p>Gets a list of all channels.  Will return cached data if it is available,
+otherwise will make a request.</p>
+
+<p>Usage:
+    var spire = new Spire();
+    spire.start(your<em>api</em>key, function (err, session) {
+      spire.channels(function (err, channels) {
+        if (!err) {
+          // <code>channels</code> is a hash of all the account's channels
+        }
+      });
+    });</p>
+
+<p>@param {function (err, channels)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">channels</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h3>Spire.prototype.channels$</h3>
+
+<p>Gets a list of all channels.  Ignores any cached data, and forces the
+request.</p>
+
+<p>Usage is same as Spire.prototype.channels</p>
+
+<p>@param {function (err, channels)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">channels$</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">channels$</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h3>Spire.prototype.subscribe</h3>
+
+<p>Gets a subscription to the given channels.  Creates the channels and the
+subscription if necessary.</p>
+
+<p>Usage:
+    var spire = new Spire();
+    spire.start(your<em>api</em>key, function (err, session) {
+      spire.subscribe('mySubscription', ['foo', 'bar'], function (err, subscription) {
+        if (!err) {
+          // <code>subscription</code> is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
+        }
+      });
+    });</p>
+
+<p>@param {string} Subscription name
+@param {array or string} channelOrChannels Either a single channel name, or an array of
+  channel names to subscribe to
+@param {function (err, subscription)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscribe</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">channelOrChannels</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">channelNames</span> <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">channelOrChannels</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+    <span class="o">?</span> <span class="p">[</span><span class="nx">channelOrChannels</span><span class="p">]</span>
+    <span class="o">:</span> <span class="nx">channelOrChannels</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="nx">async</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span>
+    <span class="nx">channelNames</span><span class="p">,</span>
+    <span class="kd">function</span> <span class="p">(</span><span class="nx">channelName</span><span class="p">,</span> <span class="nx">innerCB</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">spire</span><span class="p">.</span><span class="nx">_findOrCreateChannel</span><span class="p">(</span><span class="nx">channelName</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">innerCB</span><span class="p">();</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="nx">spire</span><span class="p">.</span><span class="nx">_findOrCreateSubscription</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">channelNames</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">);</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h3>Spire.prototype.subscriptions</h3>
+
+<p>Get the subscriptions for an account.  Will return cached data if it is
+available, otherwise makes a request.</p>
+
+<p>Usage:
+    var spire = new Spire();
+    spire.start(your<em>api</em>key, function (err, session) {
+      spire.subscriptions(function (err, subscriptions) {
+        if (!err) {
+          // <code>subscriptions</code> is a hash of all the account's subscriptions
+        }
+      });
+    });</p>
+
+<p>@param {function (err, subscriptions)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscriptions</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h3>Spire.prototype.subscriptions$</h3>
+
+<p>Get the subscriptions for an account.  Ignores any cached data and always
+makes a request.</p>
+
+<p>Usage is the same as Spire.prototype.subscriptions.</p>
+
+<p>@param {function (err, subscriptions)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscriptions$</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">subscriptions$</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>Private Interface</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h3>Spire.prototype._findOrCreateChannel</h3>
+
+<p>Returns the channel with name 'name', creating it if necessary.</p>
+
+<p>You should use <code>Spire.prototype.channel</code> method instead of this one.  This
+method ignores cached channels.</p>
+
+<p>@param {string} name Channel name
+@param {function (err, channel)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">_findOrCreateChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">creationCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">createChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">creationCount</span><span class="o">++</span><span class="p">;</span>
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">createChannel</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">channel</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">!==</span> <span class="mi">409</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">creationCount</span> <span class="o">&gt;=</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">CREATION_RETRY_LIMIT</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Could not create channel: &quot;</span> <span class="o">+</span> <span class="nx">name</span><span class="p">));</span>
+      <span class="p">}</span>
+      <span class="nx">getChannel</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">};</span>
+
+  <span class="kd">var</span> <span class="nx">getChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">channels$</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">channels</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">err</span> <span class="o">&amp;&amp;</span> <span class="nx">channels</span><span class="p">[</span><span class="nx">name</span><span class="p">])</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">channels</span><span class="p">[</span><span class="nx">name</span><span class="p">]);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">&amp;&amp;</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">!==</span> <span class="mi">409</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="nx">createChannel</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">};</span>
+
+  <span class="nx">createChannel</span><span class="p">();</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h3>Spire.prototype.findOrCreateSubscription</h3>
+
+<p>Returns the subvscription with name 'name', creating it if necessary.</p>
+
+<p>You should use <code>Spire.prototype.subscribe</code> method instead of this one.  This
+method ignores cached subscriptions, and does not create the channels.</p>
+
+<p>@param {string} name Subscription name
+@param {string} channelNames Channel names
+@param {function (err, subscription)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">_findOrCreateSubscription</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">channelNames</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">creationCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">createSubscription</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">creationCount</span><span class="o">++</span><span class="p">;</span>
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">createSubscription</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">channelNames</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">sub</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">sub</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">!==</span> <span class="mi">409</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">creationCount</span> <span class="o">&gt;=</span> <span class="nx">spire</span><span class="p">.</span><span class="nx">CREATION_RETRY_LIMIT</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Could not create subscription: &quot;</span> <span class="o">+</span> <span class="nx">name</span><span class="p">));</span>
+      <span class="p">}</span>
+      <span class="nx">getSubscription</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">};</span>
+
+  <span class="kd">var</span> <span class="nx">getSubscription</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">subscriptions$</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">subscriptions</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">err</span> <span class="o">&amp;&amp;</span> <span class="nx">subscriptions</span><span class="p">[</span><span class="nx">name</span><span class="p">])</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">subscriptions</span><span class="p">[</span><span class="nx">name</span><span class="p">]);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">&amp;&amp;</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">!==</span> <span class="mi">409</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+      <span class="nx">createSubscription</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">};</span>
+
+  <span class="nx">createSubscription</span><span class="p">();</span>
 <span class="p">};</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

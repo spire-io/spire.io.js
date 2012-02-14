@@ -27,9 +27,10 @@ from the spire api.</p>
 
 <p>Resources inherit from EventEmitter.</p>
 
-<p>@constructor
+<pre><code>@constructor
 @param {object} spire Spire object
-@param {object} data Resource data from the spire api</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">function</span> <span class="nx">Resource</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+@param {object} data Resource data from the spire api
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">function</span> <span class="nx">Resource</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
 <span class="p">};</span>
@@ -72,12 +73,13 @@ which takes an id number as argument as puts it in the query params:</p>
 <p>You would call that request like this:</p>
 
 <pre><code> resource.request('get', id, callback);
-</code></pre>
 
-<p>@param {object} obj Object to add the request method to.
+@param {object} obj Object to add the request method to.
 @param {string} name Name of the request method
 @param {function (*args)} fn Function taking any number of arguments,
-returning an object describing the HTTP request.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">defineRequest</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+</code></pre>
+
+<p>returning an object describing the HTTP request.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">defineRequest</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">obj</span><span class="p">[</span><span class="s1">&#39;_req_&#39;</span> <span class="o">+</span> <span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
     <span class="kd">var</span> <span class="nx">callback</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
@@ -114,7 +116,8 @@ callback.</p>             </td>             <td class="code">               <div
 
 <p>Default method that may be overwritten by subclasses.</p>
 
-<p>@param {function (err, resource)} cd Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {function (err, resource)} cd Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">resource</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
@@ -127,8 +130,9 @@ callback.</p>             </td>             <td class="code">               <div
 
 <p>Default method that may be overwritten by subclasses.</p>
 
-<p>@param {object} data Resource data
-@param {function (err, resource)} cd Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {object} data Resource data
+@param {function (err, resource)} cd Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">resource</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
@@ -141,7 +145,8 @@ callback.</p>             </td>             <td class="code">               <div
 
 <p>Default method that may be overwritten by subclasses.</p>
 
-<p>@param {function (err, resource)} cd Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="k">delete</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {function (err, resource)} cd Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="k">delete</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">resource</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
@@ -161,7 +166,8 @@ callback.</p>             </td>             <td class="code">               <div
 <p>Returns the Authorization header for this resource, or for another capability
 if one is passed in.</p>
 
-<p>@param {object} [resource] Optional resource</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">authorization</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">resource</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {object} [resource] Optional resource
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">authorization</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">resource</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">cap</span><span class="p">;</span>
   <span class="k">if</span> <span class="p">(</span><span class="nx">resource</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">capability</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
@@ -181,13 +187,15 @@ if one is passed in.</p>
 
 <p>Returns the resource schema for this resource the resource of a given name.</p>
 
-<p>@param {string} [name] Optional name of the resource schema to return</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">schema</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {string} [name] Optional name of the resource schema to return
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">schema</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">schema</span><span class="p">[</span><span class="nx">name</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">resourceName</span><span class="p">];</span>
 <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h3>Resource.prototype.mediaType</h3>
 
 <p>Returns the MIME type for this resource or the resource of a given name.</p>
 
-<p>@param {string} [name] Optional name of the resource MIME type to return</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">mediaType</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {string} [name] Optional name of the resource MIME type to return
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Resource</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">mediaType</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">schema</span><span class="p">(</span><span class="nx">name</span><span class="p">).</span><span class="nx">mediaType</span><span class="p">;</span>
 <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h2>Requests</h2>
 

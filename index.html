@@ -15,11 +15,8 @@ find help with the following things:</p>             </td>             <td class
 <p>Usage:</p>
 
 <pre><code>var spire = new Spire();
-</code></pre>
 
-<p>Interface:</p>
-
-<pre><code>@constructor
+@constructor
 @param {object} opts Options for Spire
 @param {string} opts.url Spire url do use (defaults to 'https://api.spire.io')
 @param {string} opts.version Version of Spire api to use (defaults to '1.0')
@@ -41,7 +38,8 @@ Number of times to retry creating a channel or subscription before giving up.</p
 
 <p>Discovers urls from Spire API.</p>
 
-<p>@param {function(err, discovered)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">discover</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {function(err, discovered)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">discover</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
 <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h3>Spire.prototype.start</h3>
 
@@ -55,10 +53,10 @@ spire.stark(your_api_key, function (err, session) {
     // You now have a spire session.  Start creating channels and subscripions.
   }
 });
-</code></pre>
 
-<p>@param {string} key The acccount key
-@param {function(err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">start</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+@param {string} key The acccount key
+@param {function(err)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">start</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="nx">spire</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
@@ -82,11 +80,11 @@ spire.login({
     // You now have a spire session.  Start creating channels and subscripions.
   }
 });
-</code></pre>
 
-<p>@param {string} email Email
+@param {string} email Email
 @param {string} password Password
-@param {function(err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">login</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+@param {function(err)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">login</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">spire</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">discover</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="nx">spire</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">session</span><span class="p">)</span> <span class="p">{</span>

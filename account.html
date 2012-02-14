@@ -4,9 +4,10 @@
 
 <p>Inherits from <code>Resource</code></p>
 
-<p>@constructor
+<pre><code>@constructor
 @param spire {object} Spire object
-@param data {object} Account data from the spire api</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">function</span> <span class="nx">Account</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+@param data {object} Account data from the spire api
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">function</span> <span class="nx">Account</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">resourceName</span> <span class="o">=</span> <span class="s1">&#39;account&#39;</span><span class="p">;</span>
@@ -18,8 +19,9 @@
 
 <p>Updates the billing plan for the account.</p>
 
-<p>@param {object} info New billing plan data
-@param {function (err, account)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Account</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">updateBillingSubscription</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">info</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {object} info New billing plan data
+@param {function (err, account)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Account</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">updateBillingSubscription</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">info</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">account</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;update_billing_subscription&#39;</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>

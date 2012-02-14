@@ -4,9 +4,10 @@
 
 <p>Inherits from <code>Resource</code></p>
 
-<p>@constructor
+<pre><code>@constructor
 @param {object} spire Spire object
-@param {object} data  Channel data from the spire api</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">function</span> <span class="nx">Channel</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+@param {object} data  Channel data from the spire api
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">function</span> <span class="nx">Channel</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">resourceName</span> <span class="o">=</span> <span class="s1">&#39;channel&#39;</span><span class="p">;</span>
@@ -31,10 +32,10 @@
     }
   });
 });
-</code></pre>
 
-<p>@param {string} message Message to publish
-@param {function (err, message)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Channel</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">publish</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+@param {string} message Message to publish
+@param {function (err, message)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Channel</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">publish</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;publish&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">content</span><span class="o">:</span> <span class="nx">message</span> <span class="p">},</span> <span class="nx">cb</span><span class="p">);</span>
 <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Channel.prototype.subscribe</h2>
 
@@ -47,10 +48,10 @@
     }
   });
 });
-</code></pre>
 
-<p>@param {string} subName Subscription name
-@param {function (err, subscription)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Channel</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscribe</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">subName</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+@param {string} subName Subscription name
+@param {function (err, subscription)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Channel</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscribe</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">subName</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">cb</span> <span class="o">=</span> <span class="nx">subName</span><span class="p">;</span>
     <span class="nx">name</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>

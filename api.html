@@ -8,12 +8,13 @@
 
 <p>Abstraction for the spire api.</p>
 
-<p>@constructor
+<pre><code>@constructor
 @param {object} spire Spire object
 @param {object} [opts] Options
 @param {string} [opts.url] Spire api url
 @param {string} [opts.version] Version of the Spire api to use
-@param {string} [opts.timeout] Timeout for requests</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">API</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
+@param {string} [opts.timeout] Timeout for requests
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">API</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">spire</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">spire</span> <span class="o">=</span> <span class="nx">spire</span><span class="p">;</span>
 
   <span class="nx">opts</span> <span class="o">=</span> <span class="nx">opts</span> <span class="o">||</span> <span class="p">{};</span>
@@ -33,7 +34,8 @@ copy this one method.  See resource.js for usage</p>             </td>          
 <p>Discovers urls from Spire API.  Since this description does not change often,
 we only make the request once and cache the result for subsequent calls.</p>
 
-<p>@param {function(err, discovered)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">discover</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {function(err, discovered)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">discover</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">api</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 
   <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">description</span><span class="p">)</span> <span class="p">{</span>
@@ -52,8 +54,9 @@ we only make the request once and cache the result for subsequent calls.</p>
 
 <p>You should probably call <code>spire.start</code> instead of this method.</p>
 
-<p>@param {string} key The acccount key
-@param {function(err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">createSession</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {string} key The acccount key
+@param {function(err)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">createSession</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">api</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;create_session&#39;</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">sessionData</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
@@ -66,9 +69,10 @@ we only make the request once and cache the result for subsequent calls.</p>
 
 <p>You should probably be using <code>spire.login</code> instead of this method.</p>
 
-<p>@param {string} email Email
+<pre><code>@param {string} email Email
 @param {string} password Password
-@param {function(err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">login</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+@param {function(err)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">login</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">api</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">sessionData</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
@@ -81,11 +85,12 @@ we only make the request once and cache the result for subsequent calls.</p>
 
 <p>You should probably be using <code>spire.register</code> instead of this method.</p>
 
-<p>@param {object} user User info
+<pre><code>@param {object} user User info
 @param {string} user.email Email
 @param {string} user.password Password
 @param {string} [user.password_confirmation] Optional password confirmation
-@param {function (err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">createAccount</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">info</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+@param {function (err)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">createAccount</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">info</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">api</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;create_account&#39;</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">sessionData</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
@@ -98,14 +103,16 @@ we only make the request once and cache the result for subsequent calls.</p>
 
 <p>You should probaby be using <code>spire.passwordResetRequest</code> instead of this method.</p>
 
-<p>@param {string} email Email
-@param {function (err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">passwordResetRequest</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {string} email Email
+@param {function (err)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">passwordResetRequest</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;password_reset_request&#39;</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
 <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h3>API.prototype.billing</h3>
 
 <p>Get billing information for the account.</p>
 
-<p>@param {function (err, billingResource)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">billing</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+<pre><code>@param {function (err, billingResource)} cb Callback
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">billing</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">api</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s1">&#39;billing&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">billingData</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
@@ -116,13 +123,15 @@ we only make the request once and cache the result for subsequent calls.</p>
 
 <p>Returns the MIME type for resourceName.</p>
 
-<p>@param {string} [name] Name of the resource MIME type to return</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">mediaType</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">resourceName</span><span class="p">){</span>
+<pre><code>@param {string} [name] Name of the resource MIME type to return
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">mediaType</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">resourceName</span><span class="p">){</span>
   <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">schema</span><span class="p">[</span><span class="nx">resourceName</span><span class="p">].</span><span class="nx">mediaType</span><span class="p">;</span>
 <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h3>API.prototype.authorization</h3>
 
 <p>Returns the Authorization header for the resource.</p>
 
-<p>@param {object} resource Resource</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">authorization</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">resource</span><span class="p">){</span>
+<pre><code>@param {object} resource Resource
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">API</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">authorization</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">resource</span><span class="p">){</span>
   <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;Capability&#39;</span><span class="p">,</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">capability</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">);</span>
 <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h2>Requests</h2>
 

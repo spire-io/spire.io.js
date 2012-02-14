@@ -1,4 +1,3 @@
-
 # Synopsis
 
 `spire.io.js` is a javascript library for the [spire.io API](http://www.spire.io/).
@@ -12,39 +11,68 @@ Add `spire.io.bundle.js` or `spire.io.bundle.min.js` to your script tags, and th
 
 NodeJS usage:
 
-    var Spire = require('./spire.io.js');
+    npm install spire.io.js
+    var Spire = require('spire.io.js');
 
-Connect to the spire server and listen on a channel.
+Create a new Spire instance:
+    var spire = new Spire();
 
-    var spire = new Spire({
-      key: '<your account key>'
+Register a new spire account:
+    spire.register({
+      email: 'you@email.com',
+      password: your_password,
+      password_confirmation: your_password_confirmation
+    }, function (err, session) {
+      if (!err) {
+        // Your account has been registered, and you now have a spire session.  Start creating channels and subscripions.
+      }
     });
 
-    spire.messages.subscribe('chat example', function(err, messages){
-      $.each(messages, function(i, message){
-        var p = $('<p>').text(message.content);
-
-        $('body').append(p);
+Or start spire with an account key:
+    spire.start(your_api_key, function (err, session) {
+      spire.channel('foo', function (err, channel) {
+        if (!err) {
+          // `channel` is the channel named "foo".
+        }
       });
     });
 
-Construct a message to send, `message.content` can be a string or json object.
-
-    var message = {
-      channel: 'chat example',
-      content: 'herow'
-    };
-
-    spire.messages.publish(message, function(err, message){
-      if (err) throw err; // you could do better ;)
-
-      alert('message sent!');
+To create a channel:
+    spire.channel('foo', function (err, channel) {
+      if (!err) {
+        // `channel` is the channel named "foo".
+        var myChannel = channel
+      }
     });
 
-Or if you don't care that the message was sent
+Then publish to the channel with:
+    myChannel.publish('Hello World!', function (err, message) {
+      if (!err) {
+        // Message was successfully published.
+      }
+    });
 
-    spire.messages.publish(message);
+To listen to a channel, first create a subscription:
+    myChannel.subscribe('mySubscription', function (err, subscription) {
+      if (!err) {
+        // `subscription` is the new subscription resource
+        var mySubscription = subscription;
+      }
+    });
+OR EQUIVALENTLY:
+    spire.subscribe('mySubscripiton', 'channel_name_i_wish_to_subscribe_to', function (err, subscription) {
+      if (!err) {
+        // `subscription` is the new subscription resource
+        var mySubscription = subscription;
+      }
+    });
 
+Then add listeners to the subscription and start listening!
+    mySubscription.addListener('message', function (message) {
+      console.log('Message received: ' + message.content);
+    });
+
+Call `mySubscription.stopListening()` when you want to stop listening.
 
 ## What is spire.io?
 
@@ -75,9 +103,13 @@ If you don't know about cake and Cakefiles head on over to the CoffeeScript site
 
 ## Bundle
 
-So you made some changes and want to minify?
+So you made some changes and want to make a new browser bundle?
 
     cake bundle
+
+Want to bundle *and* minify?
+
+    cake bundle:min
 
 # Contributing
 

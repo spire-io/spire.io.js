@@ -1,0 +1,984 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		<title>Resource | JsDoc Reference</title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		<meta name="mobileoptimized" content="0" />
+	
+		<link rel="stylesheet" href="../css/all.css" media="all" />
+		<link rel="stylesheet" href="../css/handheld.css" media="only screen and (max-width: 660px)" />
+		<link rel="stylesheet" href="../css/handheld.css" media="handheld" />
+		<link rel="stylesheet" href="../css/screen.css" media="screen and (min-width: 661px)" />
+
+		<script src="../javascript/all.js"></script>
+		<!--[if lt IE 9]>
+			<script src="../javascript/html5.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+<div class="index">
+	<div class="menu">
+		<div class="indexLinks">
+			<a href="../index.html">Classes</a>
+			<a href="../files.html">Files</a>
+		</div>
+	
+		<h2 class="heading1">Classes</h2>
+		
+		<input type="text" name="classFilter" class="classFilter" id="ClassFilter" placeholder="Filter"></input>
+		
+		<nav>
+			<ul class="classList" id="ClassList">
+				
+					<li><a href="../symbols/_global_.html">_global_</a></li>
+				
+					<li><a href="../symbols/Account.html">Account</a></li>
+				
+					<li><a href="../symbols/API.html">API</a></li>
+				
+					<li><a href="../symbols/Billing.html">Billing</a></li>
+				
+					<li><a href="../symbols/Channel.html">Channel</a></li>
+				
+					<li><a href="../symbols/Resource.html">Resource</a></li>
+				
+					<li><a href="../symbols/ResponseError.html">ResponseError</a></li>
+				
+					<li><a href="../symbols/Session.html">Session</a></li>
+				
+					<li><a href="../symbols/Spire.html">Spire</a></li>
+				
+					<li><a href="../symbols/Subscription.html">Subscription</a></li>
+				
+			</ul>
+		</nav>
+	</div>
+	<div class="fineprint" style="clear:both">
+		<footer>
+			
+			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
+			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
+			Generated on:
+			<time datetime='2012-1-14' pubdate>2012-1-14 13:21</time>
+		</footer>
+	</div>
+</div>
+
+<div class="index indexStatic"></div>
+
+<div class="content">
+	<div class="innerContent">
+		<article>
+			<header>
+				<h1 class="classTitle">
+					
+					Class <span>Resource</span>
+				</h1>
+				
+				<div class="intro">
+					<p class="description summary">
+						
+					</p>
+						
+					
+						<ul class="summary">
+							
+							
+							
+								<li>Defined in: <a href="../symbols/src/lib_spire_api_resource.js.html">resource.js</a></li>
+							
+							<li>Extends <span class="fixedFont">
+								EventEmitter</span></li>
+							
+						</ul>
+					
+				</div>
+			</header>
+			
+			
+				<section>
+					<div class="props">
+						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Resource.">
+							<caption class="sectionTitle">Class Summary</caption>
+							<thead>
+								<tr>
+									<th scope="col">Constructor Attributes</th>
+									<th scope="col">Constructor Name and Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="attributes">&nbsp;</td>
+									<td class="nameDescription" >
+										<div class="fixedFont">
+											<b><a href="../symbols/Resource.html#constructor">Resource</a></b>(spire, data)
+										</div>
+										<div class="description"><p>Base class for objects repreenting resources in the spire api.</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+			
+			
+			
+	<!--
+	#### METHODS SUMMARY
+	-->
+			
+				<section>
+					
+					
+					<div class="props">
+						<h2 class="sectionTitle">Method Summary</h2>
+						
+						
+							<nav>
+								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class Resource.">
+									<thead>
+										<tr>
+											<th scope="col">Method Attributes</th>
+											<th scope="col">Method Name and Description</th>
+										</tr>
+									</thead>
+									
+									<tbody>
+										
+										
+											<tr
+												 class='item0'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#authorization">authorization</a></b>(resource)
+													</div>
+													<div class="description">Returns the Authorization header for this resource, or for another capability
+if one is passed in.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item1'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#capability">capability</a></b>()
+													</div>
+													<div class="description">Returns the capability for the resource.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item2'
+											>
+												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont">Resource.<b><a href="../symbols/Resource.html#.defineRequest">defineRequest</a></b>(obj, name, fn)
+													</div>
+													<div class="description">Creates a request method on given object.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item3'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#delete">delete</a></b>(cd, cb)
+													</div>
+													<div class="description"><p>Delete the resource.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item4'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#get">get</a></b>(cd)
+													</div>
+													<div class="description"><p>Gets the resource.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item5'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#key">key</a></b>()
+													</div>
+													<div class="description">Returns the resource key.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item6'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#mediaType">mediaType</a></b>(name)
+													</div>
+													<div class="description">Returns the MIME type for this resource or the resource of a given name.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item7'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#request">request</a></b>()
+													</div>
+													<div class="description"><p>Makes the request with the given name.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item8'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#schema">schema</a></b>(name)
+													</div>
+													<div class="description">Returns the resource schema for this resource the resource of a given name.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item9'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#update">update</a></b>(data, cd)
+													</div>
+													<div class="description"><p>Updates (puts to) the resource.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item10'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Resource.html#url">url</a></b>()
+													</div>
+													<div class="description">Returns the url for the resource.</div>
+												</td>
+											</tr>
+										
+									</tbody>
+								</table>
+							</nav>
+						
+					
+						
+					</div>
+				</section>
+			
+			
+	<!--
+	#### EVENTS SUMMARY
+	-->
+			
+	<!--
+	#### CONSTRUCTOR DETAILS
+	-->
+			
+				<section>
+					<div class="details props">
+						<div class="innerProps">
+							<h2 class="sectionTitle" id="constructor">
+								Class Detail
+							</h2>
+							
+							<div class="fixedFont">
+								<b>Resource</b>(spire, data)
+							</div>
+							
+							<div class="description">
+								<p>Base class for objects repreenting resources in the spire api.  It is meant
+to be extended by other classes.</p>
+
+<p>Resources have methods for making requests to the spire api.  These methods
+are defined with `Request.defineRequest`.  Note that this is a method on the
+Request object itself, not the prototype.  It is used to create methods on
+the prototype of Resource classes.</p>
+
+<p>The `Resource` class provides default requests for the `get`, `put`,
+`delete`, and `post` methods.  These methods can be overwritten by
+subclasses.</p>
+
+<p>Once a request method has been defined, it can be run with
+<pre><code>
+  resource.request(<request name>);
+</code></pre>
+</p>
+
+<p>Such request methods have no side effects, and return JSON objects direct
+from the spire api.</p>
+								
+							</div>
+							
+							
+						
+							
+								<dl class="detailList params">
+									<dt class="heading">Parameters:</dt>
+									
+										<dt>
+											<span class="light fixedFont">{object}</span>  <b>spire</b>
+											
+										</dt>
+										<dd>Spire object</dd>
+									
+										<dt>
+											<span class="light fixedFont">{object}</span>  <b>data</b>
+											
+										</dt>
+										<dd>Resource data from the spire api</dd>
+									
+								</dl>
+							
+							
+							
+						</div>
+					</div>
+				</section>
+			
+	<!--
+	#### FIELD DETAILS
+	-->
+			
+	<!--
+	#### METHOD DETAILS
+	-->		
+			
+				<section>
+					<div class="details props">
+						<div class="innerProps">
+							<h2 class="sectionTitle">
+								Method Detail
+							</h2>
+							
+							<ul class="methodDetail" id="MethodDetail">
+								
+								
+									<li 
+										 class='item0'
+									>
+										<div class="fixedFont heading" id="authorization">
+											<span class='lighter'>
+											
+											</span>
+											
+											<span class="light">{string}</span>
+											
+											<b>authorization</b>(resource)
+										</div>
+										
+										<div class="description">
+											Returns the Authorization header for this resource, or for another capability
+if one is passed in.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{<a href="../symbols/Resource.html">Resource</a>}</span> <b>resource</b>
+														<i>Optional</i>
+													</dt>
+													<dd>Optional resource</dd>
+												
+											</dl>
+										
+										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{string}</span> Authorization header</dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item1'
+									>
+										<div class="fixedFont heading" id="capability">
+											<span class='lighter'>
+											
+											</span>
+											
+											<span class="light">{string}</span>
+											
+											<b>capability</b>()
+										</div>
+										
+										<div class="description">
+											Returns the capability for the resource.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{string}</span> Capability</dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item2'
+									>
+										<div class="fixedFont heading" id=".defineRequest">
+											<span class='lighter'>
+											&lt;static&gt; 
+											</span>
+											
+											
+											
+											<span class="light">Resource.</span><b>defineRequest</b>(obj, name, fn)
+										</div>
+										
+										<div class="description">
+											Creates a request method on given object.
+
+`name` is the name of the request.  This is what gets passed to the `request`
+method when actually calling the request.
+
+For instance, a request defined with
+<pre><code>
+  defineRequest(somePrototype, 'get', createGetReq);
+</code></pre>
+
+is run by calling
+<pre><code>
+  resource.request('get', callback);
+</code></pre>
+
+`fn` is a function that takes any number of arguments and returns a hash
+describing the http request we are about to send.  Any arguments to this
+function can be passed to the `request` method.
+
+For example, suppose `createGetReq` from above is the following function,
+which takes an id number as argument as puts it in the query params:
+
+<pre><code>
+  function createGetReq (id) {
+    return {
+      method: 'get',
+      url: this.url(),
+      query: { id: id },
+     };
+  };
+</code></pre>
+
+ You would call that request like this:
+ <code>resource.request('get', id, callback);</code>
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{object}</span> <b>obj</b>
+														
+													</dt>
+													<dd>Object to add the request method to.</dd>
+												
+													<dt>
+														<span class="light fixedFont">{string}</span> <b>name</b>
+														
+													</dt>
+													<dd>Name of the request method</dd>
+												
+													<dt>
+														<span class="light fixedFont">{function (*args)}</span> <b>fn</b>
+														
+													</dt>
+													<dd>Function taking any number of arguments, returning an object describing the HTTP request.</dd>
+												
+											</dl>
+										
+										
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item3'
+									>
+										<div class="fixedFont heading" id="delete">
+											<span class='lighter'>
+											
+											</span>
+											
+											
+											
+											<b>delete</b>(cd, cb)
+										</div>
+										
+										<div class="description">
+											<p>Delete the resource.
+
+<p>Default method that may be overwritten by subclasses.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{function (err|resource)}</span> <b>cd</b>
+														
+													</dt>
+													<dd>Callback</dd>
+												
+													<dt>
+														<b>cb</b>
+														
+													</dt>
+													<dd></dd>
+												
+											</dl>
+										
+										
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item4'
+									>
+										<div class="fixedFont heading" id="get">
+											<span class='lighter'>
+											
+											</span>
+											
+											
+											
+											<b>get</b>(cd)
+										</div>
+										
+										<div class="description">
+											<p>Gets the resource.
+
+<p>Default method that may be overwritten by subclasses.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{function (err|resource)}</span> <b>cd</b>
+														
+													</dt>
+													<dd>Callback</dd>
+												
+											</dl>
+										
+										
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item5'
+									>
+										<div class="fixedFont heading" id="key">
+											<span class='lighter'>
+											
+											</span>
+											
+											<span class="light">{string}</span>
+											
+											<b>key</b>()
+										</div>
+										
+										<div class="description">
+											Returns the resource key.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{string}</span> Key</dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item6'
+									>
+										<div class="fixedFont heading" id="mediaType">
+											<span class='lighter'>
+											
+											</span>
+											
+											<span class="light">{string}</span>
+											
+											<b>mediaType</b>(name)
+										</div>
+										
+										<div class="description">
+											Returns the MIME type for this resource or the resource of a given name.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{string}</span> <b>name</b>
+														<i>Optional</i>
+													</dt>
+													<dd>Optional name of the resource MIME type to return</dd>
+												
+											</dl>
+										
+										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{string}</span> MIME type</dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item7'
+									>
+										<div class="fixedFont heading" id="request">
+											<span class='lighter'>
+											
+											</span>
+											
+											
+											
+											<b>request</b>()
+										</div>
+										
+										<div class="description">
+											<p>Makes the request with the given name.
+
+<p>Arguments are the request name, followed by any number of arguments that will
+be passed to the function which creates the request description, and a
+callback.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+										
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item8'
+									>
+										<div class="fixedFont heading" id="schema">
+											<span class='lighter'>
+											
+											</span>
+											
+											<span class="light">{string}</span>
+											
+											<b>schema</b>(name)
+										</div>
+										
+										<div class="description">
+											Returns the resource schema for this resource the resource of a given name.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{string}</span> <b>name</b>
+														<i>Optional</i>
+													</dt>
+													<dd>Optional name of the resource schema to return</dd>
+												
+											</dl>
+										
+										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{string}</span> Schema</dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item9'
+									>
+										<div class="fixedFont heading" id="update">
+											<span class='lighter'>
+											
+											</span>
+											
+											
+											
+											<b>update</b>(data, cd)
+										</div>
+										
+										<div class="description">
+											<p>Updates (puts to) the resource.
+
+<p>Default method that may be overwritten by subclasses.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{object}</span> <b>data</b>
+														
+													</dt>
+													<dd>Resource data</dd>
+												
+													<dt>
+														<span class="light fixedFont">{function (err|resource)}</span> <b>cd</b>
+														
+													</dt>
+													<dd>Callback</dd>
+												
+											</dl>
+										
+										
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item10'
+									>
+										<div class="fixedFont heading" id="url">
+											<span class='lighter'>
+											
+											</span>
+											
+											<span class="light">{string}</span>
+											
+											<b>url</b>()
+										</div>
+										
+										<div class="description">
+											Returns the url for the resource.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{string}</span> url</dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
+										
+										
+									</li>
+								
+							</ul>
+						</div>
+					</div>
+				</section>
+			
+			
+	<!--
+	#### EVENT DETAILS
+	-->		
+			
+		</article>
+	</div>
+</div>
+
+		<script type="text/javascript">
+			wbos.CssTools.MediaQueryFallBack.LoadCss('../css/screen.css', '../css/handheld.css', 660)
+			codeview.classFilter.Init()
+		</script>
+	</body>
+</html>
+

@@ -75,17 +75,15 @@ spire.stark(your_api_key, function (err, session) {
 
 <pre><code>var spire = new Spire();
 spire.login({
-  email: 'you
+  email: your_email,
+  password: your_password
+}, function (err, session) {
+  if (!err) {
+    // You now have a spire session.
+    // Start creating channels and subscripions.
+  }
+});
 </code></pre>
-
-<p><b>email</b>.com',
-      password: your_password
-    }, function (err, session) {
-      if (!err) {
-        // You now have a spire session.
-        // Start creating channels and subscripions.
-      }
-    });</p>
 
 <p><b>param</b> {string} email Email</p>
 
@@ -108,19 +106,17 @@ spire.login({
 
 <pre><code>var spire = new Spire();
 spire.register({
-  email: 'you
+  email: your_email,
+  password: your_password,
+  password_confirmation: your_password_confirmation
+}, function (err, session) {
+  if (!err) {
+    // Your account has been registered,
+    // and you now have a spire session.
+    // Start creating channels and subscripions.
+  }
+});
 </code></pre>
-
-<p><b>email</b>.com',
-      password: your<em>password,
-      password</em>confirmation: your<em>password</em>confirmation
-    }, function (err, session) {
-      if (!err) {
-        // Your account has been registered,
-        // and you now have a spire session.
-        // Start creating channels and subscripions.
-      }
-    });</p>
 
 <p><b>param</b> {object} user User info</p>
 

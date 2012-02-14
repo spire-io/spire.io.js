@@ -17,8 +17,10 @@ the prototype of Resource classes.</p>
 <code>delete</code>, and <code>post</code> methods.  These methods can be overwritten by
 subclasses.</p>
 
-<p>Once a request method has been defined, it can be run with
-    resource.request(<request name>);</p>
+<p>Once a request method has been defined, it can be run with</p>
+
+<pre><code>resource.request(&lt;request name&gt;);
+</code></pre>
 
 <p>Such request methods have no side effects, and return JSON objects direct
 from the spire api.</p>
@@ -41,27 +43,36 @@ from the spire api.</p>
 <p><code>name</code> is the name of the request.  This is what gets passed to the <code>request</code>
 method when actually calling the request.</p>
 
-<p>For instance, a request defined with
-    defineRequest(somePrototype, 'get', createGetReq);
-is run by calling
-    resource.request('get', callback);</p>
+<p>For instance, a request defined with</p>
+
+<pre><code>defineRequest(somePrototype, 'get', createGetReq);
+</code></pre>
+
+<p>is run by calling</p>
+
+<pre><code>resource.request('get', callback);
+</code></pre>
 
 <p><code>fn</code> is a function that takes any number of arguments and returns a hash
 describing the http request we are about to send.  Any arguments to this
 function can be passed to the <code>request</code> method.</p>
 
 <p>For example, suppose <code>createGetReq</code> from above is the following function,
-which takes an id number as argument as puts it in the query params:
-    function createGetReq (id) {
-      return {
-        method: 'get',
-        url: this.url(),
-        query: { id: id },
-       };
-    };</p>
+which takes an id number as argument as puts it in the query params:</p>
 
-<p>You would call that request like this:
-     resource.request('get', id, callback);</p>
+<pre><code>function createGetReq (id) {
+  return {
+    method: 'get',
+    url: this.url(),
+    query: { id: id },
+   };
+};
+</code></pre>
+
+<p>You would call that request like this:</p>
+
+<pre><code> resource.request('get', id, callback);
+</code></pre>
 
 <p>@param {object} obj Object to add the request method to.
 @param {string} name Name of the request method

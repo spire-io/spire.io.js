@@ -22,14 +22,16 @@
 
 <p>Publishes a message to the channel.</p>
 
-<p>Usage:
-    spire.channel('myChannel', function (err, channel) {
-      channel.publish('hello world', function (err, message) {
-        if (!err) {
-          // Message has been published.
-        }
-      });
-    });</p>
+<p>Usage:</p>
+
+<pre><code>spire.channel('myChannel', function (err, channel) {
+  channel.publish('hello world', function (err, message) {
+    if (!err) {
+      // Message has been published.
+    }
+  });
+});
+</code></pre>
 
 <p>@param {string} message Message to publish
 @param {function (err, message)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Channel</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">publish</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>

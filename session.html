@@ -51,12 +51,14 @@ with an email and password.</p>
 
 <p>Returns a value from the cache, if one if available.</p>
 
-<p>Usage:
-    spire.session.account(function (err, account) {
-      if (!err) {
-        // <code>account</code> is account resource.
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>spire.session.account(function (err, account) {
+  if (!err) {
+    // `account` is account resource.
+  }
+});
+</code></pre>
 
 <p>@param {function (err, account)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Session</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">account</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_account</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_account</span><span class="p">);</span>
@@ -83,12 +85,14 @@ with an email and password.</p>
 
 <p>Returns a value from the cache, if one if available.</p>
 
-<p>Usage:
-    spire.session.channels(function (err, channels) {
-      if (!err) {
-        // <code>channels</code> is a hash of all the account's channels
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>spire.session.channels(function (err, channels) {
+  if (!err) {
+    // `channels` is a hash of all the account's channels
+  }
+});
+</code></pre>
 
 <p>@param {function (err, channels)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Session</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_channels</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_channels</span><span class="p">);</span>
@@ -116,12 +120,14 @@ with an email and password.</p>
 
 <p>Returns a value from the cache, if one if available.</p>
 
-<p>Usage:
-    spire.session.subscriptions(function (err, subscriptions) {
-      if (!err) {
-        // <code>subscriptions</code> is a hash of all the account's subscriptions
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>spire.session.subscriptions(function (err, subscriptions) {
+  if (!err) {
+    // `subscriptions` is a hash of all the account's subscriptions
+  }
+});
+</code></pre>
 
 <p>@param {function (err, channels)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Session</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscriptions</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_subscriptions</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_subscriptions</span><span class="p">);</span>

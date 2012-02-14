@@ -19,8 +19,9 @@ has a 30 second timeout, so the request will wait up to 30 seconds for new
 messages to arrive before returning.</p>
 
 <p>You can also use the <code>message</code> and <code>messages</code> events to listen for new
-messages on the subscription.
-   subscription.addListener('message', function (message) {
+messages on the subscription.</p>
+
+<p>subscription.addListener('message', function (message) {
      console.log('Message received: ' + message.content);
    });</p>
 
@@ -58,8 +59,9 @@ messages.  The <code>message</code> event will fire once per message, while the
 <code>messages</code> event fires every time a request comes back with more than one
 message.</p>
 
-<p>Usage:
-   subscription.addListener('message', function (message) {
+<p>Usage:</p>
+
+<p>subscription.addListener('message', function (message) {
      console.log('Message received: ' + message.content);
    });</p>
 
@@ -93,12 +95,14 @@ message.</p>
 <p>This method only makes one request.  Use <code>subscription.startListening</code> to
 poll repeatedly.</p>
 
-<p>Usage:
-    subscription.retreiveMessages(function (err, messages) {
-      if (!err) {
-        // <code>messages</code> is an array of messages (possably empty)
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>subscription.retreiveMessages(function (err, messages) {
+  if (!err) {
+    // `messages` is an array of messages (possably empty)
+  }
+});
+</code></pre>
 
 <p>@param {object} [options] Optional options argument
 @param {number} [options.last] Optional last message
@@ -143,12 +147,14 @@ array of messages if there are no new ones.</p>
 <p>This method only makes one request.  Use <code>subscription.startListening</code> to
 poll repeatedly.</p>
 
-<p>Usage:
-    subscription.poll(function (err, messages) {
-      if (!err) {
-        // <code>messages</code> is an array of messages (possably empty)
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>subscription.poll(function (err, messages) {
+  if (!err) {
+    // `messages` is an array of messages (possably empty)
+  }
+});
+</code></pre>
 
 <p>@param {object} [options] Optional options argument
 @param {number} [options.delay] Optional delay
@@ -173,12 +179,14 @@ the <code>options.timeout</code> paraameter.</p>
 <p>This method only makes one request.  Use <code>subscription.startListening</code> to
 poll repeatedly.</p>
 
-<p>Usage:
-    subscription.longPoll({ timeout: 60 }, function (err, messages) {
-      if (!err) {
-        // <code>messages</code> is an array of messages (possably empty)
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>subscription.longPoll({ timeout: 60 }, function (err, messages) {
+  if (!err) {
+    // `messages` is an array of messages (possably empty)
+  }
+});
+</code></pre>
 
 <p>@param {object} [options] Optional options argument
 @param {number} [options.delay] Optional delay

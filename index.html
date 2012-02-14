@@ -44,13 +44,15 @@ Number of times to retry creating a channel or subscription before giving up.</p
 
 <p>Starts the Spire session with the given account key.</p>
 
-<p>Usage:
-    var spire = new Spire();
-    spire.stark(your<em>api</em>key, function (err, session) {
-      if (!err) {
-        // You now have a spire session.  Start creating channels and subscripions.
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>var spire = new Spire();
+spire.stark(your_api_key, function (err, session) {
+  if (!err) {
+    // You now have a spire session.  Start creating channels and subscripions.
+  }
+});
+</code></pre>
 
 <p>@param {string} key The acccount key
 @param {function(err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">start</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
@@ -66,16 +68,18 @@ Number of times to retry creating a channel or subscription before giving up.</p
 
 <p>Starts the Spire session with the given username and password.</p>
 
-<p>Usage:
-    var spire = new Spire();
-    spire.login({
-      email: 'you@email.com',
-      password: your_password
-    }, function (err, session) {
-      if (!err) {
-        // You now have a spire session.  Start creating channels and subscripions.
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>var spire = new Spire();
+spire.login({
+  email: 'you@email.com',
+  password: your_password
+}, function (err, session) {
+  if (!err) {
+    // You now have a spire session.  Start creating channels and subscripions.
+  }
+});
+</code></pre>
 
 <p>@param {string} email Email
 @param {string} password Password
@@ -92,17 +96,19 @@ Number of times to retry creating a channel or subscription before giving up.</p
 
 <p>Register for a new spire account, and authenticates as the newly created account</p>
 
-<p>Usage:
-    var spire = new Spire();
-    spire.register({
-      email: 'you@email.com',
-      password: your<em>password,
-      password</em>confirmation: your<em>password</em>confirmation
-    }, function (err, session) {
-      if (!err) {
-        // Your account has been registered, and you now have a spire session.  Start creating channels and subscripions.
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>var spire = new Spire();
+spire.register({
+  email: 'you@email.com',
+  password: your_password,
+  password_confirmation: your_password_confirmation
+}, function (err, session) {
+  if (!err) {
+    // Your account has been registered, and you now have a spire session.  Start creating channels and subscripions.
+  }
+});
+</code></pre>
 
 <p>@param {object} user User info
 @param {string} user.email Email
@@ -121,15 +127,17 @@ Number of times to retry creating a channel or subscription before giving up.</p
 
 <p>Update your account info.</p>
 
-<p>Usage:
-    var spire = new Spire();
-    spire.update({
-      email: 'new<em>you@new</em>email.com',
-    }, function (err, session) {
-      if (!err) {
-        // Your account has been updated.
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>var spire = new Spire();
+spire.update({
+  email: 'new_you@new_email.com',
+}, function (err, session) {
+  if (!err) {
+    // Your account has been updated.
+  }
+});
+</code></pre>
 
 <p>@param {object} user User info
 @param {string} user.email Email
@@ -141,15 +149,17 @@ Number of times to retry creating a channel or subscription before giving up.</p
 
 <p>Request a password reset for email.</p>
 
-<p>Usage:
-    var spire = new Spire();
-    spire.passwordResetRequest({
-      email: 'you@email.com',
-    }, function (err, session) {
-      if (!err) {
-        // A password reset email has been sent.
-      }
-    });</p>
+<p>Usage:</p>
+
+<pre><code>var spire = new Spire();
+spire.passwordResetRequest({
+  email: 'you@email.com',
+}, function (err, session) {
+  if (!err) {
+    // A password reset email has been sent.
+  }
+});
+</code></pre>
 
 <p>@param {string} email Email
 @param {function (err)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">passwordResetRequest</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
@@ -161,15 +171,17 @@ Number of times to retry creating a channel or subscription before giving up.</p
 
 <p>Gets a channel (creates if necessary).</p>
 
-<p>Usage:
-    var spire = new Spire();
-    spire.start(your<em>api</em>key, function (err, session) {
-      spire.channel('foo', function (err, channel) {
-        if (!err) {
-          // <code>channel</code> is the channel named "foo".
-        }
-      });
-    });</p>
+<p>Usage:</p>
+
+<pre><code>var spire = new Spire();
+spire.start(your_api_key, function (err, session) {
+  spire.channel('foo', function (err, channel) {
+    if (!err) {
+      // `channel` is the channel named "foo".
+    }
+  });
+});
+</code></pre>
 
 <p>@param {string} name Channel name to get or create
 @param {function(err, channel)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">channel</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
@@ -182,15 +194,17 @@ Number of times to retry creating a channel or subscription before giving up.</p
 <p>Gets a list of all channels.  Will return cached data if it is available,
 otherwise will make a request.</p>
 
-<p>Usage:
-    var spire = new Spire();
-    spire.start(your<em>api</em>key, function (err, session) {
-      spire.channels(function (err, channels) {
-        if (!err) {
-          // <code>channels</code> is a hash of all the account's channels
-        }
-      });
-    });</p>
+<p>Usage:</p>
+
+<pre><code>var spire = new Spire();
+spire.start(your_api_key, function (err, session) {
+  spire.channels(function (err, channels) {
+    if (!err) {
+      // `channels` is a hash of all the account's channels
+    }
+  });
+});
+</code></pre>
 
 <p>@param {function (err, channels)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">spire</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">channels</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>
@@ -208,15 +222,17 @@ request.</p>
 <p>Gets a subscription to the given channels.  Creates the channels and the
 subscription if necessary.</p>
 
-<p>Usage:
-    var spire = new Spire();
-    spire.start(your<em>api</em>key, function (err, session) {
-      spire.subscribe('mySubscription', ['foo', 'bar'], function (err, subscription) {
-        if (!err) {
-          // <code>subscription</code> is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
-        }
-      });
-    });</p>
+<p>Usage:</p>
+
+<pre><code>var spire = new Spire();
+spire.start(your_api_key, function (err, session) {
+  spire.subscribe('mySubscription', ['foo', 'bar'], function (err, subscription) {
+    if (!err) {
+      // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
+    }
+  });
+});
+</code></pre>
 
 <p>@param {string} Subscription name
 @param {array or string} channelOrChannels Either a single channel name, or an array of
@@ -244,15 +260,17 @@ subscription if necessary.</p>
 <p>Get the subscriptions for an account.  Will return cached data if it is
 available, otherwise makes a request.</p>
 
-<p>Usage:
-    var spire = new Spire();
-    spire.start(your<em>api</em>key, function (err, session) {
-      spire.subscriptions(function (err, subscriptions) {
-        if (!err) {
-          // <code>subscriptions</code> is a hash of all the account's subscriptions
-        }
-      });
-    });</p>
+<p>Usage:</p>
+
+<pre><code>var spire = new Spire();
+spire.start(your_api_key, function (err, session) {
+  spire.subscriptions(function (err, subscriptions) {
+    if (!err) {
+      // `subscriptions` is a hash of all the account's subscriptions
+    }
+  });
+});
+</code></pre>
 
 <p>@param {function (err, subscriptions)} cb Callback</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Spire</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">subscriptions</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">(</span><span class="nx">cb</span><span class="p">);</span>

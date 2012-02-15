@@ -342,6 +342,8 @@ exports.extname = function(path) {
 
 require.define("/spire.io.js", function (require, module, exports, __dirname, __filename) {
     /**
+ * @fileOverview <p>Spire class definition</p>
+ *
  * <p>spire.io.js is a library designed to help you get your client-side web
  * applications up and running with the high level services provided by the
  * spire.io API. This plugin also exposes a methodology for directly interfacing
@@ -349,12 +351,12 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
  *
  * <p>You can learn more about spire.io and it's services at http://spire.io, or
  * find help with the following things:</p>
- * [source code](http://github.com/spire-io/spire.io.js)
- * [issues](http://github.com/spire-io/spire.io.js/issues)
- * [contact spire.io](http://spire.io/contact.html)
  *
- * @fileOverview Spire class definition
- * @name Spire
+ * <ul>
+ *   <li>source code: http://github.com/spire-io/spire.io.js</li>
+ *   <li>issues: http://github.com/spire-io/spire.io.js/issues</li>
+ *   <li>contact: http://spire.io/contact.htms</li>
+ * </ul>
  */
 
 var async = require('async')
@@ -363,6 +365,8 @@ var async = require('async')
 
 /**
  * Spire API Client
+ *
+ * @class <strong>Spire API Client</strong>
  *
  * @example
  * var spire = new Spire();
@@ -628,6 +632,7 @@ Spire.prototype.subscribe = function (name, channelOrChannels, cb) {
     channelNames,
     function (channelName, innerCB) {
       spire._findOrCreateChannel(channelName, function (err, channel) {
+        if (err) { return cb(err); }
         innerCB();
       });
     },
@@ -1464,7 +1469,6 @@ require.define("/node_modules/async/lib/async.js", function (require, module, ex
 require.define("/spire/api.js", function (require, module, exports, __dirname, __filename) {
     /**
  * @fileOverview API class definition
- * @name API
  */
 
 var Resource = require('./api/resource')
@@ -1477,6 +1481,8 @@ var Resource = require('./api/resource')
 
 /**
  * Abstraction for the Spire API
+ *
+ * @class Collection of API methods
  *
  * @example
  * var api = new API(options);
@@ -1742,7 +1748,11 @@ Resource.defineRequest(API.prototype, 'billing', function () {
 });
 
 require.define("/spire/api/resource.js", function (require, module, exports, __dirname, __filename) {
-    var _ = require('underscore')
+    /**
+ * @fileOverview Resource class definition
+ */
+
+var _ = require('underscore')
   , Shred = require('shred')
   , shred = new Shred()
   , ResponseError = require('./response_error')
@@ -1750,8 +1760,8 @@ require.define("/spire/api/resource.js", function (require, module, exports, __d
   ;
 
 /**
- * <p>Base class for objects repreenting resources in the spire api.  It is meant
- * to be extended by other classes.</p>
+ * Base class for objects repreenting resources in the spire api.  It is meant
+ * to be extended by other classes.
  *
  * <p>Resources have methods for making requests to the spire api.  These methods
  * are defined with `Request.defineRequest`.  Note that this is a method on the
@@ -1770,6 +1780,8 @@ require.define("/spire/api/resource.js", function (require, module, exports, __d
  *
  * <p>Such request methods have no side effects, and return JSON objects direct
  * from the spire api.</p>
+ *
+ * @class Base class for Spire API Resources
  *
  * @constructor
  * @extends EventEmitter
@@ -5042,11 +5054,16 @@ module.exports = {
 
 require.define("/spire/api/response_error.js", function (require, module, exports, __dirname, __filename) {
     /**
+ * @fileOverview ResponseError class definition
+ */
+
+/**
  * ResponseError is a wrapper for request errors, this makes it easier to pass
  * an error to the callbacks of the async functions that still retain their
  * extra contextual information passed into the arguments of requests's error
  * handler
  *
+ * @class HTTP Response Error
  * @constructor
  * @param {object} response Response HTTP client
  */
@@ -5063,10 +5080,16 @@ module.exports = ResponseError;
 });
 
 require.define("/spire/api/account.js", function (require, module, exports, __dirname, __filename) {
-    var Resource = require('./resource');
+    /**
+ * @fileOverview Account Resource class definition
+ */
+
+var Resource = require('./resource');
 
 /**
  * Represents an account in the spire api.
+ *
+ * @class Account resource
  *
  * @constructor
  * @extends Resource
@@ -5160,10 +5183,16 @@ Resource.defineRequest(Account.prototype, 'billing_invoices_upcoming', function 
 });
 
 require.define("/spire/api/billing.js", function (require, module, exports, __dirname, __filename) {
-    var Resource = require('./resource');
+    /**
+ * @fileOverview Billing Resource class definition
+ */
+
+var Resource = require('./resource');
 
 /**
  * Represents a billing subscription in the spire api.
+ *
+ * @class Billing Resource
  *
  * @constructor
  * @extends Resource
@@ -5183,10 +5212,15 @@ module.exports = Billing;
 });
 
 require.define("/spire/api/channel.js", function (require, module, exports, __dirname, __filename) {
-    var Resource = require('./resource');
+    /**
+ * @fileOverview Channel Resource class definition
+ */
+var Resource = require('./resource');
 
 /**
  * Represents a channel in the spire api.
+ *
+ * @class Channel Resource
  *
  * @constructor
  * @extends Resource
@@ -5283,7 +5317,11 @@ Resource.defineRequest(Channel.prototype, 'publish', function (message) {
 });
 
 require.define("/spire/api/session.js", function (require, module, exports, __dirname, __filename) {
-    var Resource = require('./resource')
+    /**
+ * @fileOverview Session Resource class definition
+ */
+
+var Resource = require('./resource')
   , Account = require('./account')
   , Channel = require('./channel')
   , Subscription = require('./subscription')
@@ -5291,7 +5329,7 @@ require.define("/spire/api/session.js", function (require, module, exports, __di
   ;
 
 /**
- * <p>Represents a session in the spire api.</p>
+ * Represents a session in the spire api.
  *
  * <p>Sessions contain other resources, like channels and subscriptions.  These
  * can be accessed in the <code>session.resources</code> object.</p>
@@ -5306,6 +5344,8 @@ require.define("/spire/api/session.js", function (require, module, exports, __di
  * methods, you will get back cached data if it exists.  Use the <code>$</code>
  * cache-bypass methods: <code>session.channels$</code> and
  * <code>session.subscriptions$</code> to get fresh data from the api.</p>
+ *
+ * @class Session Resource
  *
  * @constructor
  * @extends Resource
@@ -5416,7 +5456,7 @@ Session.prototype.channels$ = function (cb) {
   var session = this;
   this.request('channels', function (err, channelsData) {
     if (err) return cb(err);
-    _.each(channelsData, function (name, channel) {
+    _.each(channelsData, function (channel, name) {
       session._memoizeChannel(new Channel(session.spire, channel));
     });
     cb(null, session._channels)
@@ -5460,7 +5500,7 @@ Session.prototype.subscriptions$ = function (cb) {
   var session = this;
   this.request('subscriptions', function (err, subscriptions) {
     if (err) return cb(err);
-    _.each(subscriptions, function (name, subscription) {
+    _.each(subscriptions, function (subscription, name) {
       session._memoizeSubscription(new Subscription(session.spire, subscription));
     });
     cb(null, session._subscriptions)
@@ -5650,13 +5690,17 @@ Resource.defineRequest(Session.prototype, 'create_subscription', function (name,
 });
 
 require.define("/spire/api/subscription.js", function (require, module, exports, __dirname, __filename) {
-    var Resource = require('./resource')
+    /**
+ * @fileOverview Subscription Resource class definition
+ */
+
+var Resource = require('./resource')
   , _ = require('underscore')
   , async = require('async')
   ;
 
 /**
- * <p>Represents a subscription in the spire api.
+ * Represents a subscription in the spire api.
  *
  * <p>There are a few ways to get messages from a subscription.
  *
@@ -5688,6 +5732,8 @@ require.define("/spire/api/subscription.js", function (require, module, exports,
  *
  * <p>The `messages` event fires first and contains the all the messages that were
  * received in a single request.  The `message` event fires once per message.
+ *
+ * @class Subscription Resource
  *
  * @constructor
  * @extends Resource

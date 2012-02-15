@@ -15,16 +15,17 @@
 <span class='line'>  8</span>  * extra contextual information passed into the arguments of requests's error
 <span class='line'>  9</span>  * handler
 <span class='line'> 10</span>  *
-<span class='line'> 11</span>  * @constructor
-<span class='line'> 12</span>  * @param {object} response Response HTTP client
-<span class='line'> 13</span>  */</span><span class="WHIT">
-<span class='line'> 14</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ResponseError</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">response</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 15</span> </span><span class="WHIT">  </span><span class="NAME">this.message</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'ResponseError: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">response.status</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 16</span> </span><span class="WHIT">  </span><span class="NAME">this.response</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">response</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 17</span> </span><span class="WHIT">  </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">response.status</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 18</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 19</span> 
-<span class='line'> 20</span> </span><span class="NAME">ResponseError.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 21</span> 
-<span class='line'> 22</span> </span><span class="NAME">module.exports</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ResponseError</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 23</span> </span></pre></body></html>
+<span class='line'> 11</span>  * @class HTTP Response Error
+<span class='line'> 12</span>  * @constructor
+<span class='line'> 13</span>  * @param {object} response Response HTTP client
+<span class='line'> 14</span>  */</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ResponseError</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">response</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">  </span><span class="NAME">this.message</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'ResponseError: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">response.status</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 17</span> </span><span class="WHIT">  </span><span class="NAME">this.response</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">response</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="WHIT">  </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">response.status</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> 
+<span class='line'> 21</span> </span><span class="NAME">ResponseError.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 22</span> 
+<span class='line'> 23</span> </span><span class="NAME">module.exports</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ResponseError</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 24</span> </span></pre></body></html>

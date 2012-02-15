@@ -1,13 +1,9 @@
 # Synopsis
 
 `spire.io.js` is a javascript library for the [spire.io API](http://www.spire.io/).
-
-For more docs, see our [inline documentation](http://spire-io.github.com/spire.io.js).
+It can run inside the browser, or as NodeJS module.
 
 ## Usage
-
-This library can be used inside the browser, or as a NodeJS module.
-
 ### Browser usage:
 Add `spire.io.bundle.js` or `spire.io.bundle.min.js` to your script tags, and then
 
@@ -17,7 +13,6 @@ Add `spire.io.bundle.js` or `spire.io.bundle.min.js` to your script tags, and th
 
     npm install spire.io.js
     var Spire = require('spire.io.js');
-
 
 ### Starting the Spire client
 
@@ -98,18 +93,9 @@ Then add listeners to the subscription and start listening!
 
 Call `mySubscription.stopListening()` when you want to stop listening.
 
-## More Info
+## Reference Documentation
 
-For more docs, see our [inline documentation](http://spire-io.github.com/spire.io.js).
-
-## Working with this library
-
-* [source code](https://github.com/spire-io/spire.io.js)
-* [inline documentation](http://spire-io.github.com/spire.io.js/)
-* [issues](https://github.com/spire-io/spire.io.js/issues)
-* [contact spire.io](http://spire.io/contact.html)
-
-# Development
+For more docs, see our [reference documentation](http://spire-io.github.com/spire.io.js).
 
 ## Tests
 
@@ -137,7 +123,7 @@ Want to bundle *and* minify?
 
 # Contributing
 
-Fork and send pull requests via github, also any [issues](https://github.com/spire-io/jquery.spire.js/issues) are always welcome
+Fork and send pull requests via github, also any [issues](https://github.com/spire-io/spire.io.js/issues) are always welcome
 
 # License
 

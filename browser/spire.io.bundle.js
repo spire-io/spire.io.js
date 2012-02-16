@@ -680,6 +680,86 @@ Spire.prototype.subscriptions$ = function (cb) {
 };
 
 /**
+ * Get Account from url and capability.
+ *
+ * Use this method to get the account without starting a spire session.
+ *
+ * If you have a spire session, you should use <code>spire.session.account</code>.
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.accountFromUrlAndCapability({
+ *   url: account_url,
+ *   capability: account_capability
+ * }, function (err, account) {
+ *   if (!err) {
+ *     // ...
+ *   }
+ * })
+ *
+ * @param {object} creds Url and Capability
+ * @param {string} creds.url Url
+ * @param {string} creds.capability Capability
+ * @param {function (err, account)} cb Callback
+ */
+Spire.prototype.accountFromUrlAndCapability = function (creds, cb) {
+  this.api.accountFromUrlAndCapability(creds, cb);
+};
+
+/**
+ * Get Channel from url and capability.
+ *
+ * Use this method to get a channel without starting a spire session.
+ *
+ * If you have a spire session, you should use <code>spire.channel</code>.
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.channelFromUrlAndCapability({
+ *   url: channel_url,
+ *   capability: channel_capability
+ * }, function (err, channel) {
+ *   if (!err) {
+ *     // ...
+ *   }
+ * })
+ *
+ * @param {object} creds Url and Capability
+ * @param {string} creds.url Url
+ * @param {string} creds.capability Capability
+ * @param {function (err, channel)} cb Callback
+ */
+Spire.prototype.channelFromUrlAndCapability = function (creds, cb) {
+  this.api.channelFromUrlAndCapability(creds, cb);
+};
+
+/**
+ * Get Subscription from url and capability.
+ * Use this method to get a subscription without starting a spire session.
+ *
+ * If you have a spire session, you should use <code>spire.subscribe</code>.
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.subscriptionFromUrlAndCapability({
+ *   url: subscription_url,
+ *   capability: subscription_capability
+ * }, function (err, subscription) {
+ *   if (!err) {
+ *     // ...
+ *   }
+ * })
+ *
+ * @param {object} creds Url and Capability
+ * @param {string} creds.url Url
+ * @param {string} creds.capability Capability
+ * @param {function (err, subscription)} cb Callback
+ */
+Spire.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
+  this.api.subscriptionFromUrlAndCapability(creds, cb);
+};
+
+/**
  * Number of times to retry creating a channel or subscription before giving up.
  */
 Spire.prototype.CREATION_RETRY_LIMIT = 5;
@@ -1611,6 +1691,45 @@ API.prototype.billing = function (cb) {
     var billing = new Billing(api.spire, billingData);
     cb(null, billing);
   });
+};
+
+/**
+ * Get Account from url and capability.
+ *
+ * @param {object} creds Url and Capability
+ * @param {string} creds.url Url
+ * @param {string} creds.capability Capability
+ * @param {function (err, account)} cb Callback
+ */
+API.prototype.accountFromUrlAndCapability = function (creds, cb) {
+  var account = new Account(creds, this.spire);
+  account.get(cb);
+};
+
+/**
+ * Get Channel from url and capability.
+ *
+ * @param {object} creds Url and Capability
+ * @param {string} creds.url Url
+ * @param {string} creds.capability Capability
+ * @param {function (err, channel)} cb Callback
+ */
+API.prototype.channelFromUrlAndCapability = function (creds, cb) {
+  var channel = new Channel(creds, this.spire);
+  channel.get(cb);
+};
+
+/**
+ * Get Subscription from url and capability.
+ *
+ * @param {object} creds Url and Capability
+ * @param {string} creds.url Url
+ * @param {string} creds.capability Capability
+ * @param {function (err, subscription)} cb Callback
+ */
+API.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
+  var subscription = new Subscription(creds, this.spire);
+  subscription.get(cb);
 };
 
 /**

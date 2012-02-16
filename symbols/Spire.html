@@ -65,7 +65,7 @@
 			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
 			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
 			Generated on:
-			<time datetime='2012-1-14' pubdate>2012-1-14 16:40</time>
+			<time datetime='2012-1-16' pubdate>2012-1-16 12:06</time>
 		</footer>
 	</div>
 </div>
@@ -582,21 +582,23 @@ spire.start(your_api_key, function (err, session) {
 										<div class="description">
 											Gets a list of all channels.  Ignores any cached data, and forces the
 request.
-
-var spire = new Spire();
-spire.start(your_api_key, function (err, session) {
-  spire.channels$(function (err, channels) {
-    if (!err) {
-      // `channels` is a hash of all the account's channels
-    }
-  });
-});
 											
 											
 											
 											
 										</div>
 										
+										
+											
+												<pre class="code">var spire = new Spire();
+spire.start(your_api_key, function (err, session) {
+  spire.channels$(function (err, channels) {
+    if (!err) {
+      // `channels` is a hash of all the account's channels
+    }
+  });
+});</pre>
+											
 										
 										
 										
@@ -795,9 +797,7 @@ spire.login({
 										
 											
 												<pre class="code">var spire = new Spire();
-spire.passwordResetRequest({
-  email: your_email
-}, function (err, session) {
+spire.passwordResetRequest(your_email, function (err, session) {
   if (!err) {
     // A password reset email has been sent.
   }

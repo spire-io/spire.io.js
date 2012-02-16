@@ -65,7 +65,7 @@
 			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
 			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
 			Generated on:
-			<time datetime='2012-1-16' pubdate>2012-1-16 12:06</time>
+			<time datetime='2012-1-16' pubdate>2012-1-16 12:17</time>
 		</footer>
 	</div>
 </div>
@@ -732,10 +732,7 @@ spire.start(your_api_key, function (err, session) {
 										
 											
 												<pre class="code">var spire = new Spire();
-spire.login({
-  email: your_email,
-  password: your_password
-}, function (err, session) {
+spire.login(your_email, your_password, function (err, session) {
   if (!err) {
     // You now have a spire session.
     // Start creating channels and subscripions.

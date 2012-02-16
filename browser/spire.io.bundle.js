@@ -342,7 +342,7 @@ exports.extname = function(path) {
 
 require.define("/spire.io.js", function (require, module, exports, __dirname, __filename) {
     /**
- * @fileOverview <p>Spire class definition</p>
+ * @overview <p>Spire API Client</p>
  *
  * <p>spire.io.js is a library designed to help you get your client-side web
  * applications up and running with the high level services provided by the
@@ -436,10 +436,7 @@ Spire.prototype.start = function (key, cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.login({
- *   email: your_email,
- *   password: your_password
- * }, function (err, session) {
+ * spire.login(your_email, your_password, function (err) {
  *   if (!err) {
  *     // You now have a spire session.
  *     // Start creating channels and subscripions.
@@ -470,7 +467,7 @@ Spire.prototype.login = function (email, password, cb) {
  *   email: your_email,
  *   password: your_password,
  *   password_confirmation: your_password_confirmation
- * }, function (err, session) {
+ * }, function (err) {
  *   if (!err) {
  *     // Your account has been registered,
  *     // and you now have a spire session.
@@ -502,7 +499,7 @@ Spire.prototype.register = function (user, cb) {
  * var spire = new Spire();
  * spire.update({
  *   email: your_new_email
- * }, function (err, session) {
+ * }, function (err, account) {
  *   if (!err) {
  *     // Your account has been updated.
  *   }
@@ -523,9 +520,7 @@ Spire.prototype.update = function (user, cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.passwordResetRequest({
- *   email: your_email
- * }, function (err, session) {
+ * spire.passwordResetRequest(your_email, function (err) {
  *   if (!err) {
  *     // A password reset email has been sent.
  *   }
@@ -588,6 +583,7 @@ Spire.prototype.channels = function (cb) {
  * Gets a list of all channels.  Ignores any cached data, and forces the
  * request.
  *
+ * @example
  * var spire = new Spire();
  * spire.start(your_api_key, function (err, session) {
  *   spire.channels$(function (err, channels) {
@@ -1599,8 +1595,8 @@ API.prototype.createAccount = function (info, cb) {
  * @param {string} email Email
  * @param {function (err)} cb Callback
  */
-API.prototype.passwordResetRequest = function (cb) {
-  this.request('password_reset_request', cb);
+API.prototype.passwordResetRequest = function (email, cb) {
+  this.request('password_reset_request', email, cb);
 };
 
 /**
@@ -5067,6 +5063,20 @@ Account.prototype = new Resource();
 module.exports = Account;
 
 /**
+ * Resets the account
+ *
+ * @param {function (err, account)} cb Callback
+ */
+Account.prototype.reset = function (cb) {
+  var account = this;
+  this.request('reset', info, function (err, data) {
+    if (err) return cb(err);
+    account.data = data;
+    cb(account);
+  });
+};
+
+/**
  * Updates the billing plan for the account.
  *
  * @param {object} info New billing plan data
@@ -5087,6 +5097,21 @@ Account.prototype.updateBillingSubscription = function (info, cb) {
  *     this.request(<request name>);
  */
 
+/**
+ * Reset your account
+ * @name reset_key
+ * @ignore
+ */
+Resource.defineRequest(Account.prototype, 'reset', function (info) {
+  return {
+    method: 'post',
+    url: this.url(),
+    headers: {
+      'Accept': this.mediaType(),
+      'Authorization': this.authorization()
+    }
+  };
+});
 /**
  * Updates the billing subscription with the given data.
  * @name update_billing_subscription

@@ -5213,7 +5213,8 @@ require.define("/spire/api/account.js", function (require, module, exports, __di
  * @fileOverview Account Resource class definition
  */
 
-var Resource = require('./resource');
+var Resource = require('./resource')
+  ;
 
 /**
  * Represents an account in the spire api.
@@ -5238,14 +5239,17 @@ module.exports = Account;
 /**
  * Resets the account
  *
- * @param {function (err, account)} cb Callback
+ * Note that this passes a session to the callback, and not an account.
+ * This is because many of the session urls will have changed.
+ *
+ * @param {function (err, session)} cb Callback
  */
 Account.prototype.reset = function (cb) {
   var account = this;
-  this.request('reset', info, function (err, data) {
+  this.request('reset', function (err, sessionData) {
     if (err) return cb(err);
-    account.data = data;
-    cb(account);
+    account.data = sessionData.resources.account;
+    cb(null, sessionData);
   });
 };
 
@@ -5260,7 +5264,7 @@ Account.prototype.updateBillingSubscription = function (info, cb) {
   this.request('update_billing_subscription', info, function (err, data) {
     if (err) return cb(err);
     account.data = data;
-    cb(account);
+    cb(null, account);
   });
 };
 
@@ -5275,7 +5279,7 @@ Account.prototype.updateBillingSubscription = function (info, cb) {
  * @name reset_key
  * @ignore
  */
-Resource.defineRequest(Account.prototype, 'reset', function (info) {
+Resource.defineRequest(Account.prototype, 'reset', function () {
   return {
     method: 'post',
     url: this.url(),
@@ -5520,21 +5524,28 @@ function Session (spire, data) {
   this._channels = {};
   this._subscriptions = {};
 
-  var resources = {};
-  _.each(this.data.resources, function (resource, name) {
-    // Turn the account object into an instance of Resource.
-    if (name === 'account') {
-      resource = new Account(spire, resource);
-    }
-    resources[name] = resource;
-  });
+	this._storeResources();
 
-  this.resources = resources;
 };
 
 Session.prototype = new Resource();
 
 module.exports = Session;
+
+/**
+ * <p>Gets the Session resource.
+ *
+ * @param {function (err, session)} cb Callback
+ */
+Session.prototype.get = function (cb) {
+  var session = this;
+  this.request('get', function (err, data) {
+    if (err) return cb(err);
+    session.data = data;
+    session._storeResources();
+    cb(null, session);
+  });
+};
 
 /**
  * Gets the account resource.  Only available to sessions that are authenticated
@@ -5576,6 +5587,28 @@ Session.prototype.account$ = function (cb) {
     if (err) return cb(err);
     session._account = new Account(session.spire, account);
     cb(null, session._account)
+  });
+};
+
+/**
+ * Resets the account resource.  Only available to sessions that are authenticated
+ * with an email and password.
+ * *
+ * @example
+ * spire.session.resetAccount(function (err, session) {
+ *   if (!err) {
+ *     // `session` is session with new account resource.
+ *   }
+ * });
+ * @param {function (err, session)} cb Callback
+ */
+Session.prototype.resetAccount = function (cb) {
+  var session = this;
+  this._account.reset(function (err, sessionData) {
+    if (err) return cb(err);
+		session.data = sessionData;
+		session._storeResources();
+    cb(null, session)
   });
 };
 
@@ -5726,6 +5759,21 @@ Session.prototype._memoizeSubscription = function (subscription) {
 };
 
 /**
+ * Stores the resources.
+ */
+Session.prototype._storeResources = function () {
+	var resources = {};
+  _.each(this.data.resources, function (resource, name) {
+    // Turn the account object into an instance of Resource.
+    if (name === 'account') {
+      resource = new Account(spire, resource);
+    }
+    resources[name] = resource;
+  });
+
+  this.resources = resources;
+};
+/**
  * Requests
  * These define API calls and have no side effects.  They can be run by calling
  *     this.request(<request name>);
@@ -5737,7 +5785,7 @@ Session.prototype._memoizeSubscription = function (subscription) {
  * @ignore
  */
 Resource.defineRequest(Session.prototype, 'account', function () {
-  var resource = this.resources.account;
+  var resource = this.data.resources.account;
   return {
     method: 'get',
     url: resource.url,
@@ -5755,7 +5803,7 @@ Resource.defineRequest(Session.prototype, 'account', function () {
  */
 Resource.defineRequest(Session.prototype, 'channels', function () {
   var spire = this.spire;
-  var collection = this.resources.channels;
+  var collection = this.data.resources.channels;
   return {
     method: 'get',
     url: collection.url,
@@ -5773,7 +5821,7 @@ Resource.defineRequest(Session.prototype, 'channels', function () {
  */
 Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
   var spire = this.spire;
-  var collection = this.resources.channels;
+  var collection = this.data.resources.channels;
   return {
     method: 'get',
     url: collection.url,
@@ -5792,7 +5840,7 @@ Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
  */
 Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
   var spire = this.spire;
-  var collection = this.resources.channels;
+  var collection = this.data.resources.channels;
   return {
     method: 'post',
     url: collection.url,
@@ -5812,7 +5860,7 @@ Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
  */
 Resource.defineRequest(Session.prototype, 'subscriptions', function () {
   var spire = this.spire;
-  var collection = this.resources.subscriptions;
+  var collection = this.data.resources.subscriptions;
   return {
     method: 'get',
     url: collection.url,
@@ -5830,7 +5878,7 @@ Resource.defineRequest(Session.prototype, 'subscriptions', function () {
  */
 Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls) {
   var spire = this.spire;
-  var collection = this.resources.subscriptions;
+  var collection = this.data.resources.subscriptions;
   return {
     method: 'post',
     url: collection.url,

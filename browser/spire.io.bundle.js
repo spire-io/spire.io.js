@@ -410,7 +410,7 @@ Spire.prototype.discover = function (cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.stark(your_api_key, function (err, session) {
+ * spire.start(your_api_key, function (err, session) {
  *   if (!err) {
  *     // You now have a spire session.
  *     // Start creating channels and subscripions.
@@ -703,7 +703,10 @@ Spire.prototype.subscriptions$ = function (cb) {
  * @param {function (err, account)} cb Callback
  */
 Spire.prototype.accountFromUrlAndCapability = function (creds, cb) {
-  this.api.accountFromUrlAndCapability(creds, cb);
+  var api = this.api;
+  this.discover(function () {
+    api.accountFromUrlAndCapability(creds, cb);
+  });
 };
 
 /**
@@ -730,7 +733,10 @@ Spire.prototype.accountFromUrlAndCapability = function (creds, cb) {
  * @param {function (err, channel)} cb Callback
  */
 Spire.prototype.channelFromUrlAndCapability = function (creds, cb) {
-  this.api.channelFromUrlAndCapability(creds, cb);
+  var api = this.api;
+  this.discover(function () {
+    api.channelFromUrlAndCapability(creds, cb);
+  });
 };
 
 /**
@@ -756,7 +762,42 @@ Spire.prototype.channelFromUrlAndCapability = function (creds, cb) {
  * @param {function (err, subscription)} cb Callback
  */
 Spire.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
-  this.api.subscriptionFromUrlAndCapability(creds, cb);
+  var api = this.api;
+  this.discover(function () {
+    api.subscriptionFromUrlAndCapability(creds, cb);
+  });
+};
+
+/**
+ * Start the Spire session with the url and capability for the session.
+ *
+ * @example
+ * var spire = new Spire();
+ * var creds = {
+ *   url: session_url,
+ *   capability: session_capability
+ * };
+ * spire._startSessionFromUrlAndCapability(creds, function (err) {
+ *   if (!err) {
+ *     // You now have a spire session.
+ *     // Start creating channels and subscripions.
+ *   }
+ * });
+ *
+ * @param {object} creds Url and Capability
+ * @param {string} creds.url Url
+ * @param {string} creds.capability Capability
+ * @param {function (err)} cb Callback
+ */
+Spire.prototype._startSessionFromUrlAndCapability = function (creds, cb) {
+  var spire = this;
+  this.discover(function () {
+    spire.api.sessionFromUrlAndCapability(creds, function (err, session) {
+      if (err) return cb(err);
+      spire.session = session;
+      cb(null);
+    });
+  });
 };
 
 /**
@@ -1702,7 +1743,7 @@ API.prototype.billing = function (cb) {
  * @param {function (err, account)} cb Callback
  */
 API.prototype.accountFromUrlAndCapability = function (creds, cb) {
-  var account = new Account(creds, this.spire);
+  var account = new Account(this.spire, creds);
   account.get(cb);
 };
 
@@ -1715,8 +1756,21 @@ API.prototype.accountFromUrlAndCapability = function (creds, cb) {
  * @param {function (err, channel)} cb Callback
  */
 API.prototype.channelFromUrlAndCapability = function (creds, cb) {
-  var channel = new Channel(creds, this.spire);
+  var channel = new Channel(this.spire, creds);
   channel.get(cb);
+};
+
+/**
+ * Get Session from url and capability.
+ *
+ * @param {object} creds Url and Capability
+ * @param {string} creds.url Url
+ * @param {string} creds.capability Capability
+ * @param {function (err, subscription)} cb Callback
+ */
+API.prototype.sessionFromUrlAndCapability = function (creds, cb) {
+  var session = new Session(this.spire, creds);
+  session.get(cb);
 };
 
 /**
@@ -1728,7 +1782,7 @@ API.prototype.channelFromUrlAndCapability = function (creds, cb) {
  * @param {function (err, subscription)} cb Callback
  */
 API.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
-  var subscription = new Subscription(creds, this.spire);
+  var subscription = new Subscription(this.spire, creds);
   subscription.get(cb);
 };
 
@@ -5353,6 +5407,8 @@ Channel.prototype.name = function () {
 /**
  * Publishes a message to the channel.
  *
+ * The messages can be a string, or any json'able object.
+ *
  * @example
  * spire.channel('myChannel', function (err, channel) {
  *   channel.publish('hello world', function (err, message) {
@@ -5362,7 +5418,7 @@ Channel.prototype.name = function () {
  *   });
  * });
  *
- * @param {string} message Message to publish
+ * @param {string|object} message Message to publish
  * @param {function (err, message)} cb Callback
  */
 Channel.prototype.publish = function (message, cb) {

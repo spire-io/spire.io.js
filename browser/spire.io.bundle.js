@@ -1717,7 +1717,7 @@ API.prototype.createAccount = function (info, cb) {
  * @param {function (err)} cb Callback
  */
 API.prototype.passwordResetRequest = function (email, cb) {
-  this.request('password_reset_request', email, cb);
+  this.request('password_reset', email, cb);
 };
 
 /**

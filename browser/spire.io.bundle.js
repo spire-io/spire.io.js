@@ -5762,11 +5762,12 @@ Session.prototype._memoizeSubscription = function (subscription) {
  * Stores the resources.
  */
 Session.prototype._storeResources = function () {
+  var session = this;
 	var resources = {};
   _.each(this.data.resources, function (resource, name) {
     // Turn the account object into an instance of Resource.
     if (name === 'account') {
-      resource = new Account(spire, resource);
+      resource = new Account(session.spire, resource);
     }
     resources[name] = resource;
   });

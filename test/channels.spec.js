@@ -26,6 +26,28 @@ describe('Channels', function () {
     }, 'Session registration or start', 10000);
   });
 
+  describe('Publish to a non-existant channel', function () {
+    beforeEach(function () {
+      var finished = false;
+
+      runs(function () {
+        var that = this;
+        this.spire.publish('a channel', 'my message', function (err, message) {
+          that.message = message;
+          finished = true;
+        });
+      });
+
+      waitsFor(function () {
+        return finished;
+      }, 10000, 'Publish to a non-existant channel');
+    });
+
+    it('should return the message', function () {
+      expect(this.message.content).toBe('my message');
+    });
+  });
+
   describe('Create a channel', function () {
     beforeEach(function () {
       var finished = false;

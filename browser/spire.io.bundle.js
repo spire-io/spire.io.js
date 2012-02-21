@@ -1748,6 +1748,24 @@ API.prototype.accountFromUrlAndCapability = function (creds, cb) {
 };
 
 /**
+ * Update Account from url and capability.
+ *
+ * @param {object} account Must contain at least Url and Capability
+ * @param {string} creds.url Url
+ * @param {string} creds.capability Capability
+ * @param {function (err, account)} cb Callback
+ */
+API.prototype.updateAccountWithUrlAndCapability = function (accountData, cb) {
+  var api = this;
+  this.discover(function (err) {
+    api.request('update_account', accountData, function (err, acc) {
+      if (err) return cb(err);
+      var account = new Account(api.spire, acc);
+      cb(null, account);
+    });
+  });
+};
+/**
  * Get Channel from url and capability.
  *
  * @param {object} creds Url and Capability
@@ -1914,6 +1932,23 @@ Resource.defineRequest(API.prototype, 'billing', function () {
   };
 });
 
+/**
+ * Updates (puts) to the resouce.
+ * @name update
+ * @ignore
+ */
+Resource.defineRequest(API.prototype, 'update_account', function (data) {
+  return {
+    method: 'put',
+    url: data.url,
+    content: data,
+    headers: {
+      'Authorization': "Capability " + data.capability,
+      'Accept': this.mediaType('account'),
+      'Content-Type': this.mediaType('account')
+    }
+  };
+});
 });
 
 require.define("/spire/api/resource.js", function (require, module, exports, __dirname, __filename) {
@@ -5289,6 +5324,7 @@ Resource.defineRequest(Account.prototype, 'reset', function () {
     }
   };
 });
+
 /**
  * Updates the billing subscription with the given data.
  * @name update_billing_subscription
@@ -5762,11 +5798,13 @@ Session.prototype._memoizeSubscription = function (subscription) {
  * Stores the resources.
  */
 Session.prototype._storeResources = function () {
+  var session = this;
 	var resources = {};
   _.each(this.data.resources, function (resource, name) {
     // Turn the account object into an instance of Resource.
     if (name === 'account') {
       resource = new Account(spire, resource);
+      session._account = resource;
     }
     resources[name] = resource;
   });

@@ -5803,7 +5803,7 @@ Session.prototype._storeResources = function () {
   _.each(this.data.resources, function (resource, name) {
     // Turn the account object into an instance of Resource.
     if (name === 'account') {
-      resource = new Account(spire, resource);
+      resource = new Account(session.spire, resource);
       session._account = resource;
     }
     resources[name] = resource;

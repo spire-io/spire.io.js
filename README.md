@@ -42,9 +42,49 @@ Or start spire with an account key:
       });
     });
 
-### Creating a channel
+Once Spire is started, you can start subscribing and publishing to channels.
 
-To create a channel:
+### Subscribe to a Channel
+
+To subscribe to a channel:
+
+    spire.subcribe('channel name', function (messages) {
+      for (var i = 0; i < messages.length; i++) {
+        console.log("Received message: " + messages[i].content);
+      }
+    });
+
+To subscribe to multiple channels:
+
+    spire.subcribe(['channel one', 'channel two'], function (messages) {
+      for (var i = 0; i < messages.length; i++) {
+        console.log("Received message from channel " +
+          messages[i].channel + ": " + messages[i].content);
+      }
+    });
+
+
+### Publish to a Channel
+
+To publish to a channel
+
+    // 'message' can be a string or any JSON-serilazable object.
+    spire.publish('channel name', message, function (err) {
+      if (!err) {
+        console.log('Message sent!');
+      }
+    });
+
+## Advanced Usage
+
+The `subscribe` and `publish` methods wrap a lot of low-level functionality.
+The Spire library provides access to many low-level methods to make more advanced applications possible.
+
+Also be sure to checkout the [reference documentation](http://spire-io.github.com/spire.io.js).
+
+### Channels
+
+Create a channel:
 
     spire.channel('foo', function (err, channel) {
       if (!err) {
@@ -53,9 +93,8 @@ To create a channel:
       }
     });
 
-### Publish to a channel
 
-Then publish to the channel with:
+Publish to a channel:
 
     fooChannel.publish('Hello World!', function (err, message) {
       if (!err) {
@@ -63,9 +102,9 @@ Then publish to the channel with:
       }
     });
 
-### Listen to a channel
+### Subscriptions
 
-To listen to a channel, first create a subscription:
+Create a subscription to a channel:
 
     fooChannel.subscribe('mySubscription', function (err, subscription) {
       if (!err) {
@@ -83,15 +122,31 @@ or equivalently:
       }
     });
 
-Then add listeners to the subscription and start listening!
+### Listening on a subscription
+
+Subscriptions have two events:
+    * the `messages` event will fire with every batch of messages received, and
+    * the `message` event will fire with every message individually.
+
+Here are examples of both kinds of event listeners:
 
     mySubscription.addListener('message', function (message) {
       console.log('Message received: ' + message.content);
     });
 
+    mySubscription.addListener('messages', function (messages) {
+      console.log('Received ' + messages.length' + ' messages.');
+    });
+
+To start listening on a subscription, call:
+
     mySubscription.startListening();
 
-Call `mySubscription.stopListening()` when you want to stop listening.
+To stop listening on a subscription, call:
+
+    mySubscription.stopListening();
+
+
 
 ## Reference Documentation
 

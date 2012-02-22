@@ -606,7 +606,7 @@ Spire.prototype.channels$ = function (cb) {
  * @example
  * var spire = new Spire();
  * spire.start(your_api_key, function (err, session) {
- *   spire.subscribe('mySubscription', ['foo', 'bar'], function (err, subscription) {
+ *   spire.subscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
  *     if (!err) {
  *       // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
  *     }
@@ -618,7 +618,7 @@ Spire.prototype.channels$ = function (cb) {
  *   channel names to subscribe to
  * @param {function (err, subscription)} cb Callback
  */
-Spire.prototype.subscribe = function (name, channelOrChannels, cb) {
+Spire.prototype.subscription = function (name, channelOrChannels, cb) {
   var channelNames = (typeof channelOrChannels === 'string')
     ? [channelOrChannels]
     : channelOrChannels;
@@ -677,6 +677,67 @@ Spire.prototype.subscriptions = function (cb) {
  */
 Spire.prototype.subscriptions$ = function (cb) {
   this.session.subscriptions$(cb);
+};
+
+/**
+ * Creates an new subscription to a channel or channels, and adds a listener.
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.start(your_api_key, function (err, session) {
+ *   spire.subscribe('myChannel', options, function (messages) {
+ *     // `messages` is array of messages sent to the channel
+ *   }, function (err) {
+ *   // `err` will be non-null if there was a problem creating the subscription.
+ * });
+ *
+ * @param {array or string} channelOrChannels Either a single channel name, or an array of
+ *   channel names to subscribe to
+ * @param {object} [options] Options to pass to the listener
+ * @param {function (messages)} listener Listener that will get called with each batch of messages
+ * @param {function (err, subscription)} [cb] Callback
+ */
+Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) {
+  if (typeof options === 'function') {
+    cb = listener;
+    listener = options;
+  }
+
+  cb = cb || function () {};
+
+  var name = 'anon-' + Date.now() + '-' + Math.random();
+
+  this.subscription(name, channelOrChannels, function (err, subscription) {
+    if (err) return cb(err);
+    subscription.addListener('messages', listener);
+    subscription.startListening(options);
+    return cb(null, subscription);
+  });
+};
+
+/**
+ * Publish to a channel.
+ *
+ * Creates the channel if necessary.
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.publish('my_channel', 'my message', function (err, message) {
+ *   if (!err) {
+ *     //  Message sent successfully
+ *   }
+ * });
+ *
+ * @param {string} channelName Channel name
+ * @param {object, string} message Message
+ * @param {function (err, subscription)} cb Callback
+ */
+Spire.prototype.publish = function (channelName, message, cb) {
+  var spire = this;
+  spire.channel(channelName, function (err, channel) {
+    if (err) { return cb(err); }
+    channel.publish(message, cb);
+  });
 };
 
 /**
@@ -5470,7 +5531,7 @@ Channel.prototype.publish = function (message, cb) {
  *
  * @example
  * spire.channel('myChannel', function (err, channel) {
- *   channel.subscribe('mySubscription', function (err, subscription) {
+ *   channel.subscription('mySubscription', function (err, subscription) {
  *     if (!err) {
  *       // `subscription` is the new subscription.
  *     }
@@ -5480,12 +5541,12 @@ Channel.prototype.publish = function (message, cb) {
  * @param {string} subName Subscription name
  * @param {function (err, subscription)} cb Callback
  */
-Channel.prototype.subscribe = function (subName, cb) {
+Channel.prototype.subscription = function (subName, cb) {
   if (!cb) {
     cb = subName;
     name = null;
   }
-  this.spire.subscribe(subName, this.name(), cb);
+  this.spire.subscription(subName, this.name(), cb);
 };
 
 /**

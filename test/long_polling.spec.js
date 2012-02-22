@@ -8,7 +8,7 @@ describe('Long polling', function () {
       var createChannelAndSub = function () {
         that.spire.channel('chan', function (err, chan) {
           that.channel = chan;
-          chan.subscribe('new_sub1', function (err, sub) {
+          chan.subscription('new_sub1', function (err, sub) {
             that.sub1 = sub;
             finished = true;
           });

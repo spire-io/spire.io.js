@@ -26,7 +26,7 @@ describe('Channels', function () {
     }, 'Session registration or start', 10000);
   });
 
-  describe('Publish to a non-existant channel', function () {
+  describe('Publish to a channel using spire.publish', function () {
     beforeEach(function () {
       var finished = false;
 
@@ -45,6 +45,68 @@ describe('Channels', function () {
 
     it('should return the message', function () {
       expect(this.message.content).toBe('my message');
+    });
+
+    describe('Listen to a channel using spire.subscribe with no options', function () {
+      beforeEach(function () {
+        var finished = false;
+
+        runs(function () {
+          var that = this;
+          this.spire.publish('another channel', 'message one', function () {
+            that.spire.publish('another channel', 'message two', function () {
+              that.spire.subscribe('another channel', function (messages) {
+                that.messages = messages;
+                finished = true;
+              }, function (err, subscription) {
+                that.subscription = subscription;
+              });
+            });
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 10000, 'spire.subscribe');
+      });
+
+      it('should return the messages', function () {
+        expect(this.messages.length).toBe(2);
+        expect(this.messages[0].content).toBe('message one');
+        expect(this.messages[1].content).toBe('message two');
+        this.subscription.stopListening();
+      });
+    });
+
+    describe('Passing options to spire.subscribe', function () {
+      beforeEach(function () {
+        var finished = false;
+
+        runs(function () {
+          var that = this;
+          that.spire.publish('yet another channel', 'message uno', function () {
+            that.spire.publish('yet another channel', 'message dos', function () {
+              that.spire.subscribe('yet another channel', {orderBy: 'asc'}, function (messages) {
+                that.messages = messages;
+                finished = true;
+              }, function (err, subscription) {
+                that.subscription = subscription;
+              });
+            });
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 10000, 'spire.subscribe');
+      });
+
+      it('should return the messages', function () {
+        expect(this.messages.length).toBe(2);
+        expect(this.messages[0].content).toBe('message dos');
+        expect(this.messages[1].content).toBe('message uno');
+        this.subscription.stopListening();
+      });
     });
   });
 
@@ -116,7 +178,7 @@ describe('Channels', function () {
         beforeEach(function () {
           var finished = false;
           var that = this;
-          this.spire.subscribe('sub_name', 'foo', function (err, sub) {
+          this.spire.subscription('sub_name', 'foo', function (err, sub) {
             that.sub = sub;
             finished = true;
           });
@@ -134,7 +196,7 @@ describe('Channels', function () {
           beforeEach(function () {
             var finished = false;
             var that = this;
-            this.spire.subscribe('sub_name', 'foo', function (err, sub) {
+            this.spire.subscription('sub_name', 'foo', function (err, sub) {
               that.sub2 = sub;
               finished = true;
             });
@@ -199,7 +261,7 @@ describe('Channels', function () {
         var finished2 = false;
         runs(function () {
           var that = this;
-          this.spire.subscribe('new_sub', 'event_channel', function (err, sub) {
+          this.spire.subscription('new_sub', 'event_channel', function (err, sub) {
             that.sub = sub;
             finished2 = true;
           });

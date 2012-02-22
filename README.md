@@ -106,7 +106,7 @@ Publish to a channel:
 
 Create a subscription to a channel:
 
-    fooChannel.subscribe('mySubscription', function (err, subscription) {
+    fooChannel.subscription('mySubscription', function (err, subscription) {
       if (!err) {
         // `subscription` is the new subscription resource
         var mySubscription = subscription;
@@ -115,7 +115,7 @@ Create a subscription to a channel:
 
 or equivalently:
 
-    spire.subscribe('mySubscripiton', 'foo', function (err, subscription) {
+    spire.subscription('mySubscripiton', 'foo', function (err, subscription) {
       if (!err) {
         // `subscription` is the new subscription resource
         var mySubscription = subscription;

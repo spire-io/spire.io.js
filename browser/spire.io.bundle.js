@@ -397,15 +397,6 @@ Spire.prototype.key = function () {
 };
 
 /**
- * Discover api description.
- *
- * @param {function(err, discovered)} cb Callback
- */
-Spire.prototype.discover = function (cb) {
-  this.api.discover(cb);
-};
-
-/**
  * Start the Spire session with the given account key.
  *
  * @example
@@ -422,12 +413,10 @@ Spire.prototype.discover = function (cb) {
  */
 Spire.prototype.start = function (key, cb) {
   var spire = this;
-  this.discover(function () {
-    spire.api.createSession(key, function (err, session) {
-      if (err) return cb(err);
-      spire.session = session;
-      cb(null);
-    });
+  this.api.createSession(key, function (err, session) {
+    if (err) return cb(err);
+    spire.session = session;
+    cb(null);
   });
 };
 
@@ -449,12 +438,10 @@ Spire.prototype.start = function (key, cb) {
  */
 Spire.prototype.login = function (email, password, cb) {
   var spire = this;
-  this.discover(function () {
-    spire.api.login(email, password, function (err, session) {
-      if (err) return cb(err);
-      spire.session = session;
-      cb(null);
-    });
+  this.api.login(email, password, function (err, session) {
+    if (err) return cb(err);
+    spire.session = session;
+    cb(null);
   });
 };
 
@@ -483,12 +470,10 @@ Spire.prototype.login = function (email, password, cb) {
  */
 Spire.prototype.register = function (user, cb) {
   var spire = this;
-  this.discover(function () {
-    spire.api.createAccount(user, function (err, session) {
-      if (err) return cb(err);
-      spire.session = session;
-      cb(null);
-    });
+  this.api.createAccount(user, function (err, session) {
+    if (err) return cb(err);
+    spire.session = session;
+    cb(null);
   });
 };
 
@@ -512,6 +497,10 @@ Spire.prototype.register = function (user, cb) {
  * @param {function (err)} cb Callback
  */
 Spire.prototype.update = function (user, cb) {
+  if (!this.session) {
+    return cb(new Error("You must log in to spire to do this."));
+  }
+
   this.session.resources.account.update(user, cb);
 };
 
@@ -530,10 +519,7 @@ Spire.prototype.update = function (user, cb) {
  * @param {function (err)} cb Callback
  */
 Spire.prototype.passwordResetRequest = function (email, cb) {
-  var spire = this;
-  this.discover(function () {
-    spire.api.passwordResetRequest(email, cb);
-  });
+  this.api.passwordResetRequest(email, cb);
 };
 
 /**
@@ -553,6 +539,10 @@ Spire.prototype.passwordResetRequest = function (email, cb) {
  * @param {function(err, channel)} cb Callback
  */
 Spire.prototype.channel = function (name, cb) {
+  if (!this.session) {
+    return cb(new Error("You must start spire before you can do this."));
+  }
+
   if (this.session._channels[name]) {
     return cb(null, this.session._channels[name]);
   }
@@ -576,6 +566,10 @@ Spire.prototype.channel = function (name, cb) {
  * @param {function (err, channels)} cb Callback
  */
 Spire.prototype.channels = function (cb) {
+  if (!this.session) {
+    return cb(new Error("You must start spire before you can do this."));
+  }
+
   this.spire.session.channels(cb);
 };
 
@@ -596,6 +590,10 @@ Spire.prototype.channels = function (cb) {
  * @param {function (err, channels)} cb Callback
  */
 Spire.prototype.channels$ = function (cb) {
+  if (!this.session) {
+    return cb(new Error("You must start spire before you can do this."));
+  }
+
   this.spire.session.channels$(cb);
 };
 
@@ -656,6 +654,10 @@ Spire.prototype.subscription = function (name, channelOrChannels, cb) {
  * @param {function (err, subscriptions)} cb Callback
  */
 Spire.prototype.subscriptions = function (cb) {
+  if (!this.session) {
+    return cb(new Error("You must start spire before you can do this."));
+  }
+
   this.session.subscriptions(cb);
 };
 
@@ -676,6 +678,10 @@ Spire.prototype.subscriptions = function (cb) {
  * @param {function (err, subscriptions)} cb Callback
  */
 Spire.prototype.subscriptions$ = function (cb) {
+  if (!this.session) {
+    return cb(new Error("You must start spire before you can do this."));
+  }
+
   this.session.subscriptions$(cb);
 };
 
@@ -764,10 +770,7 @@ Spire.prototype.publish = function (channelName, message, cb) {
  * @param {function (err, account)} cb Callback
  */
 Spire.prototype.accountFromUrlAndCapability = function (creds, cb) {
-  var api = this.api;
-  this.discover(function () {
-    api.accountFromUrlAndCapability(creds, cb);
-  });
+  this.api.accountFromUrlAndCapability(creds, cb);
 };
 
 /**
@@ -794,17 +797,14 @@ Spire.prototype.accountFromUrlAndCapability = function (creds, cb) {
  * @param {function (err, channel)} cb Callback
  */
 Spire.prototype.channelFromUrlAndCapability = function (creds, cb) {
-  var api = this.api;
-  this.discover(function () {
-    api.channelFromUrlAndCapability(creds, cb);
-  });
+  this.api.channelFromUrlAndCapability(creds, cb);
 };
 
 /**
  * Get Subscription from url and capability.
  * Use this method to get a subscription without starting a spire session.
  *
- * If you have a spire session, you should use <code>spire.subscribe</code>.
+ * If you have a spire session, you should use <code>spire.subscription</code>.
  *
  * @example
  * var spire = new Spire();
@@ -823,10 +823,7 @@ Spire.prototype.channelFromUrlAndCapability = function (creds, cb) {
  * @param {function (err, subscription)} cb Callback
  */
 Spire.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
-  var api = this.api;
-  this.discover(function () {
-    api.subscriptionFromUrlAndCapability(creds, cb);
-  });
+  this.subscriptionFromUrlAndCapability(creds, cb);
 };
 
 /**
@@ -851,13 +848,10 @@ Spire.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
  * @param {function (err)} cb Callback
  */
 Spire.prototype._startSessionFromUrlAndCapability = function (creds, cb) {
-  var spire = this;
-  this.discover(function () {
-    spire.api.sessionFromUrlAndCapability(creds, function (err, session) {
-      if (err) return cb(err);
-      spire.session = session;
-      cb(null);
-    });
+  this.api.sessionFromUrlAndCapability(creds, function (err, session) {
+    if (err) return cb(err);
+    spire.session = session;
+    cb(null);
   });
 };
 
@@ -875,6 +869,10 @@ Spire.prototype.CREATION_RETRY_LIMIT = 5;
  * @param {function (err, channel)} cb Callback
  */
 Spire.prototype._findOrCreateChannel = function (name, cb) {
+  if (!this.session) {
+    return cb(new Error("You must start spire before you can do that."));
+  }
+
   var spire = this;
   var creationCount = 0;
 
@@ -911,6 +909,10 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
  * @param {function (err, subscription)} cb Callback
  */
 Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
+  if (!this.session) {
+    return cb(new Error("You must start spire before you can do that."));
+  }
+
   var spire = this;
   var creationCount = 0;
 
@@ -1730,10 +1732,13 @@ API.prototype.discover = function (cb) {
  */
 API.prototype.createSession = function (key, cb) {
   var api = this;
-  this.request('create_session', key, function (err, sessionData) {
+  this.discover(function (err) {
     if (err) return cb(err);
-    session = new Session(api.spire, sessionData);
-    cb(null, session);
+    api.request('create_session', key, function (err, sessionData) {
+      if (err) return cb(err);
+      session = new Session(api.spire, sessionData);
+      cb(null, session);
+    });
   });
 };
 
@@ -1746,10 +1751,13 @@ API.prototype.createSession = function (key, cb) {
  */
 API.prototype.login = function (email, password, cb) {
   var api = this;
-  this.request('login', email, password, function (err, sessionData) {
+  this.discover(function (err) {
     if (err) return cb(err);
-    session = new Session(api.spire, sessionData);
-    cb(null, session);
+    api.request('login', email, password, function (err, sessionData) {
+      if (err) return cb(err);
+      session = new Session(api.spire, sessionData);
+      cb(null, session);
+    });
   });
 };
 
@@ -1764,10 +1772,13 @@ API.prototype.login = function (email, password, cb) {
  */
 API.prototype.createAccount = function (info, cb) {
   var api = this;
-  this.request('create_account', info, function (err, sessionData) {
+  this.discover(function (err) {
     if (err) return cb(err);
-    session = new Session(api.spire, sessionData);
-    cb(null, session);
+    api.request('create_account', info, function (err, sessionData) {
+      if (err) return cb(err);
+      session = new Session(api.spire, sessionData);
+      cb(null, session);
+    });
   });
 };
 
@@ -1778,7 +1789,11 @@ API.prototype.createAccount = function (info, cb) {
  * @param {function (err)} cb Callback
  */
 API.prototype.passwordResetRequest = function (email, cb) {
-  this.request('password_reset', email, cb);
+  var api = this;
+  this.discover(function (err) {
+    if (err) return cb(err);
+    api.request('password_reset', email, cb);
+  });
 };
 
 /**
@@ -1788,10 +1803,13 @@ API.prototype.passwordResetRequest = function (email, cb) {
  */
 API.prototype.billing = function (cb) {
   var api = this;
-  this.request('billing', function (err, billingData) {
+  this.discover(function (err) {
     if (err) return cb(err);
-    var billing = new Billing(api.spire, billingData);
-    cb(null, billing);
+    api.request('billing', function (err, billingData) {
+      if (err) return cb(err);
+      var billing = new Billing(api.spire, billingData);
+      cb(null, billing);
+    });
   });
 };
 
@@ -1804,8 +1822,12 @@ API.prototype.billing = function (cb) {
  * @param {function (err, account)} cb Callback
  */
 API.prototype.accountFromUrlAndCapability = function (creds, cb) {
-  var account = new Account(this.spire, creds);
-  account.get(cb);
+  var api = this;
+  this.discover(function (err) {
+    if (err) return cb(err);
+    var account = new Account(api.spire, creds);
+    account.get(cb);
+  });
 };
 
 /**
@@ -1819,6 +1841,7 @@ API.prototype.accountFromUrlAndCapability = function (creds, cb) {
 API.prototype.updateAccountWithUrlAndCapability = function (accountData, cb) {
   var api = this;
   this.discover(function (err) {
+    if (err) return cb(err);
     api.request('update_account', accountData, function (err, acc) {
       if (err) return cb(err);
       var account = new Account(api.spire, acc);
@@ -1826,6 +1849,7 @@ API.prototype.updateAccountWithUrlAndCapability = function (accountData, cb) {
     });
   });
 };
+
 /**
  * Get Channel from url and capability.
  *
@@ -1835,8 +1859,12 @@ API.prototype.updateAccountWithUrlAndCapability = function (accountData, cb) {
  * @param {function (err, channel)} cb Callback
  */
 API.prototype.channelFromUrlAndCapability = function (creds, cb) {
-  var channel = new Channel(this.spire, creds);
-  channel.get(cb);
+  var api = this;
+  this.discover(function (err) {
+    if (err) return cb(err);
+    var channel = new Channel(api.spire, creds);
+    channel.get(cb);
+  });
 };
 
 /**
@@ -1848,8 +1876,12 @@ API.prototype.channelFromUrlAndCapability = function (creds, cb) {
  * @param {function (err, subscription)} cb Callback
  */
 API.prototype.sessionFromUrlAndCapability = function (creds, cb) {
-  var session = new Session(this.spire, creds);
-  session.get(cb);
+  var api = this;
+  this.discover(function (err) {
+    if (err) return cb(err);
+    var session = new Session(api.spire, creds);
+    session.get(cb);
+  });
 };
 
 /**
@@ -1861,8 +1893,12 @@ API.prototype.sessionFromUrlAndCapability = function (creds, cb) {
  * @param {function (err, subscription)} cb Callback
  */
 API.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
-  var subscription = new Subscription(this.spire, creds);
-  subscription.get(cb);
+  var api = this;
+  this.discover(function (err) {
+    if (err) return cb(err);
+    var subscription = new Subscription(api.spire, creds);
+    subscription.get(cb);
+  });
 };
 
 /**
@@ -1872,6 +1908,14 @@ API.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
  * @returns {string} MIME type of the resource
  */
 API.prototype.mediaType = function(resourceName){
+  if (!this.schema) {
+    throw "No description object.  Run `spire.api.discover` first.";
+  }
+
+  if (!this.schema[resourceName]) {
+    throw "No schema for resource " + resourceName;
+  }
+
   return this.schema[resourceName].mediaType;
 };
 
@@ -2010,6 +2054,7 @@ Resource.defineRequest(API.prototype, 'update_account', function (data) {
     }
   };
 });
+
 });
 
 require.define("/spire/api/resource.js", function (require, module, exports, __dirname, __filename) {
@@ -2241,7 +2286,17 @@ Resource.prototype.key = function () {
  * @returns {string} Schema
  */
 Resource.prototype.schema = function (name) {
-  return this.spire.api.schema[name || this.resourceName];
+  name = name || this.resourceName;
+
+  if (!this.spire.api.schema) {
+    throw "No description object.  Run `spire.api.discover` first.";
+  }
+
+  if (!this.spire.api.schema[name]) {
+    throw "No schema for resource " + name;
+  }
+
+  return this.spire.api.schema[name];
 };
 
 /**
@@ -6142,7 +6197,11 @@ Subscription.prototype.retrieveMessages = function (options, cb) {
  options.orderBy = options.orderBy || 'desc';
 
   this.request('messages', options, function (err, messagesData) {
-    if (err) return cb(err);
+    if (err) {
+      subscription.emit('error', err);
+      return cb(err);
+    }
+
     var messages = messagesData.messages;
     if (messages.length) {
       if (options.orderBy === 'asc') {

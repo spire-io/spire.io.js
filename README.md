@@ -46,7 +46,7 @@ Once Spire is started, you can start subscribing and publishing to channels.
 
 ### Subscribe to a Channel
 
-To subscribe to a channel:
+Subscribe to a channel:
 
     spire.subcribe('channel name', function (messages) {
       for (var i = 0; i < messages.length; i++) {
@@ -54,7 +54,7 @@ To subscribe to a channel:
       }
     });
 
-To subscribe to multiple channels:
+Subscribe to multiple channels:
 
     spire.subcribe(['channel one', 'channel two'], function (messages) {
       for (var i = 0; i < messages.length; i++) {
@@ -66,7 +66,7 @@ To subscribe to multiple channels:
 
 ### Publish to a Channel
 
-To publish to a channel
+Publish to a channel:
 
     // 'message' can be a string or any JSON-serilazable object.
     spire.publish('channel name', message, function (err) {

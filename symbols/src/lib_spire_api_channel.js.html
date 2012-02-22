@@ -42,59 +42,61 @@
 <span class='line'> 36</span> </span><span class="COMM">/**
 <span class='line'> 37</span>  * Publishes a message to the channel.
 <span class='line'> 38</span>  *
-<span class='line'> 39</span>  * @example
-<span class='line'> 40</span>  * spire.channel('myChannel', function (err, channel) {
-<span class='line'> 41</span>  *   channel.publish('hello world', function (err, message) {
-<span class='line'> 42</span>  *     if (!err) {
-<span class='line'> 43</span>  *       // Message has been published.
-<span class='line'> 44</span>  *     }
-<span class='line'> 45</span>  *   });
-<span class='line'> 46</span>  * });
-<span class='line'> 47</span>  *
-<span class='line'> 48</span>  * @param {string} message Message to publish
-<span class='line'> 49</span>  * @param {function (err, message)} cb Callback
-<span class='line'> 50</span>  */</span><span class="WHIT">
-<span class='line'> 51</span> </span><span class="NAME">Channel.prototype.publish</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">message</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 52</span> </span><span class="WHIT">  </span><span class="NAME">this.request</span><span class="PUNC">(</span><span class="STRN">'publish'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">content</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">message</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 53</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 54</span> 
-<span class='line'> 55</span> </span><span class="COMM">/**
-<span class='line'> 56</span>  * Gets a subscription to a channel, creating it if necessary.
-<span class='line'> 57</span>  *
-<span class='line'> 58</span>  * @example
-<span class='line'> 59</span>  * spire.channel('myChannel', function (err, channel) {
-<span class='line'> 60</span>  *   channel.subscribe('mySubscription', function (err, subscription) {
-<span class='line'> 61</span>  *     if (!err) {
-<span class='line'> 62</span>  *       // `subscription` is the new subscription.
-<span class='line'> 63</span>  *     }
-<span class='line'> 64</span>  *   });
-<span class='line'> 65</span>  * });
-<span class='line'> 66</span>  *
-<span class='line'> 67</span>  * @param {string} subName Subscription name
-<span class='line'> 68</span>  * @param {function (err, subscription)} cb Callback
-<span class='line'> 69</span>  */</span><span class="WHIT">
-<span class='line'> 70</span> </span><span class="NAME">Channel.prototype.subscribe</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">subName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 71</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 72</span> </span><span class="WHIT">    </span><span class="NAME">cb</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">subName</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 73</span> </span><span class="WHIT">    </span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 74</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 75</span> </span><span class="WHIT">  </span><span class="NAME">this.spire.subscribe</span><span class="PUNC">(</span><span class="NAME">subName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.name</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 76</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 77</span> 
-<span class='line'> 78</span> </span><span class="COMM">/**
-<span class='line'> 79</span>  * Requests
-<span class='line'> 80</span>  *
-<span class='line'> 81</span> <span class='line'> 82</span>  * These define API calls and have no side effects.  They can be run by calling
-<span class='line'> 83</span>  *     this.request(&lt;request name>);
-<span class='line'> 84</span>  */</span><span class="WHIT">
-<span class='line'> 85</span> 
-<span class='line'> 86</span> </span><span class="COMM">/**
-<span class='line'> 87</span>  * @name publish
-<span class='line'> 88</span>  * @ignore
-<span class='line'> 89</span>  * Publishes a message to the channel.
-<span class='line'> 90</span>  */</span><span class="WHIT">
-<span class='line'> 91</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Channel.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'publish'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">message</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 92</span> <span class='line'> 93</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 39</span>  * The messages can be a string, or any json'able object.
+<span class='line'> 40</span>  *
+<span class='line'> 41</span>  * @example
+<span class='line'> 42</span>  * spire.channel('myChannel', function (err, channel) {
+<span class='line'> 43</span>  *   channel.publish('hello world', function (err, message) {
+<span class='line'> 44</span>  *     if (!err) {
+<span class='line'> 45</span>  *       // Message has been published.
+<span class='line'> 46</span>  *     }
+<span class='line'> 47</span>  *   });
+<span class='line'> 48</span>  * });
+<span class='line'> 49</span>  *
+<span class='line'> 50</span>  * @param {string|object} message Message to publish
+<span class='line'> 51</span>  * @param {function (err, message)} cb Callback
+<span class='line'> 52</span>  */</span><span class="WHIT">
+<span class='line'> 53</span> </span><span class="NAME">Channel.prototype.publish</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">message</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 54</span> </span><span class="WHIT">  </span><span class="NAME">this.request</span><span class="PUNC">(</span><span class="STRN">'publish'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">content</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">message</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 56</span> 
+<span class='line'> 57</span> </span><span class="COMM">/**
+<span class='line'> 58</span>  * Gets a subscription to a channel, creating it if necessary.
+<span class='line'> 59</span>  *
+<span class='line'> 60</span>  * @example
+<span class='line'> 61</span>  * spire.channel('myChannel', function (err, channel) {
+<span class='line'> 62</span>  *   channel.subscription('mySubscription', function (err, subscription) {
+<span class='line'> 63</span>  *     if (!err) {
+<span class='line'> 64</span>  *       // `subscription` is the new subscription.
+<span class='line'> 65</span>  *     }
+<span class='line'> 66</span>  *   });
+<span class='line'> 67</span>  * });
+<span class='line'> 68</span>  *
+<span class='line'> 69</span>  * @param {string} subName Subscription name
+<span class='line'> 70</span>  * @param {function (err, subscription)} cb Callback
+<span class='line'> 71</span>  */</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="NAME">Channel.prototype.subscription</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">subName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">    </span><span class="NAME">cb</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">subName</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">    </span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 77</span> </span><span class="WHIT">  </span><span class="NAME">this.spire.subscription</span><span class="PUNC">(</span><span class="NAME">subName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.name</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 79</span> 
+<span class='line'> 80</span> </span><span class="COMM">/**
+<span class='line'> 81</span>  * Requests
+<span class='line'> 82</span>  *
+<span class='line'> 83</span>  * These define API calls and have no side effects.  They can be run by calling
+<span class='line'> 84</span>  *     this.request(&lt;request name>);
+<span class='line'> 85</span>  */</span><span class="WHIT">
+<span class='line'> 86</span> 
+<span class='line'> 87</span> </span><span class="COMM">/**
+<span class='line'> 88</span>  * @name publish
+<span class='line'> 89</span>  * @ignore
+<span class='line'> 90</span>  * Publishes a message to the channel.
+<span class='line'> 91</span>  */</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Channel.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'publish'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">message</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.spire</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 94</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 95</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'post'</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'> 96</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.url</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">

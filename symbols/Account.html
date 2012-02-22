@@ -65,7 +65,7 @@
 			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
 			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
 			Generated on:
-			<time datetime='2012-1-16' pubdate>2012-1-16 13:44</time>
+			<time datetime='2012-1-21' pubdate>2012-1-21 16:52</time>
 		</footer>
 	</div>
 </div>
@@ -159,7 +159,9 @@
 												<td class="nameDescription">
 													<div class="fixedFont"><b><a href="../symbols/Account.html#reset">reset</a></b>(cb)
 													</div>
-													<div class="description">Resets the account</div>
+													<div class="description">Resets the account
+
+Note that this passes a session to the callback, and not an account.</div>
 												</td>
 											</tr>
 										
@@ -273,6 +275,9 @@
 										
 										<div class="description">
 											Resets the account
+
+Note that this passes a session to the callback, and not an account.
+This is because many of the session urls will have changed.
 											
 											
 											
@@ -286,7 +291,7 @@
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
+														<span class="light fixedFont">{function (err|session)}</span> <b>cb</b>
 														
 													</dt>
 													<dd>Callback</dd>

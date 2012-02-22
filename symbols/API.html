@@ -65,7 +65,7 @@
 			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
 			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
 			Generated on:
-			<time datetime='2012-1-16' pubdate>2012-1-16 13:44</time>
+			<time datetime='2012-1-21' pubdate>2012-1-21 16:52</time>
 		</footer>
 	</div>
 </div>
@@ -276,9 +276,31 @@
 											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/API.html#sessionFromUrlAndCapability">sessionFromUrlAndCapability</a></b>(creds, cb)
+													</div>
+													<div class="description">Get Session from url and capability.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item12'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
 													<div class="fixedFont"><b><a href="../symbols/API.html#subscriptionFromUrlAndCapability">subscriptionFromUrlAndCapability</a></b>(creds, cb)
 													</div>
 													<div class="description">Get Subscription from url and capability.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item13'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/API.html#updateAccountWithUrlAndCapability">updateAccountWithUrlAndCapability</a></b>(account, cb)
+													</div>
+													<div class="description">Update Account from url and capability.</div>
 												</td>
 											</tr>
 										
@@ -970,6 +992,64 @@ we only make the request once and cache the result for subsequent calls.
 									<li 
 										 class='item11'
 									>
+										<div class="fixedFont heading" id="sessionFromUrlAndCapability">
+											<span class='lighter'>
+											
+											</span>
+											
+											
+											
+											<b>sessionFromUrlAndCapability</b>(creds, cb)
+										</div>
+										
+										<div class="description">
+											Get Session from url and capability.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{object}</span> <b>creds</b>
+														
+													</dt>
+													<dd>Url and Capability</dd>
+												
+													<dt>
+														<span class="light fixedFont">{string}</span> <b>creds.url</b>
+														
+													</dt>
+													<dd>Url</dd>
+												
+													<dt>
+														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+														
+													</dt>
+													<dd>Capability</dd>
+												
+													<dt>
+														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+														
+													</dt>
+													<dd>Callback</dd>
+												
+											</dl>
+										
+										
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item12'
+									>
 										<div class="fixedFont heading" id="subscriptionFromUrlAndCapability">
 											<span class='lighter'>
 											
@@ -1014,6 +1094,64 @@ we only make the request once and cache the result for subsequent calls.
 												
 													<dt>
 														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+														
+													</dt>
+													<dd>Callback</dd>
+												
+											</dl>
+										
+										
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item13'
+									>
+										<div class="fixedFont heading" id="updateAccountWithUrlAndCapability">
+											<span class='lighter'>
+											
+											</span>
+											
+											
+											
+											<b>updateAccountWithUrlAndCapability</b>(account, cb)
+										</div>
+										
+										<div class="description">
+											Update Account from url and capability.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{object}</span> <b>account</b>
+														
+													</dt>
+													<dd>Must contain at least Url and Capability</dd>
+												
+													<dt>
+														<span class="light fixedFont">{string}</span> <b>creds.url</b>
+														
+													</dt>
+													<dd>Url</dd>
+												
+													<dt>
+														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+														
+													</dt>
+													<dd>Capability</dd>
+												
+													<dt>
+														<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
 														
 													</dt>
 													<dd>Callback</dd>

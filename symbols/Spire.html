@@ -65,7 +65,7 @@
 			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
 			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
 			Generated on:
-			<time datetime='2012-1-16' pubdate>2012-1-16 13:44</time>
+			<time datetime='2012-1-21' pubdate>2012-1-21 16:52</time>
 		</footer>
 	</div>
 </div>
@@ -290,6 +290,17 @@
 											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Spire.html#publish">publish</a></b>(channelName, message, cb)
+													</div>
+													<div class="description">Publish to a channel.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item10'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
 													<div class="fixedFont"><b><a href="../symbols/Spire.html#register">register</a></b>(user, cb)
 													</div>
 													<div class="description">Registers for a new spire account, and authenticates as the newly created account</div>
@@ -297,7 +308,7 @@
 											</tr>
 										
 											<tr
-												 class='item10'
+												 class='item11'
 											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
@@ -308,18 +319,29 @@
 											</tr>
 										
 											<tr
-												 class='item11'
+												 class='item12'
 											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#subscribe">subscribe</a></b>(Subscription, channelOrChannels, cb)
+													<div class="fixedFont"><b><a href="../symbols/Spire.html#subscribe">subscribe</a></b>(channelOrChannels, options, listener, cb)
+													</div>
+													<div class="description">Creates an new subscription to a channel or channels, and adds a listener.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item13'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/Spire.html#subscription">subscription</a></b>(Subscription, channelOrChannels, cb)
 													</div>
 													<div class="description">Gets a subscription to the given channels.</div>
 												</td>
 											</tr>
 										
 											<tr
-												 class='item12'
+												 class='item14'
 											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
@@ -330,7 +352,7 @@
 											</tr>
 										
 											<tr
-												 class='item13'
+												 class='item15'
 											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
@@ -341,7 +363,7 @@
 											</tr>
 										
 											<tr
-												 class='item14'
+												 class='item16'
 											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
@@ -352,7 +374,7 @@
 											</tr>
 										
 											<tr
-												 class='item15'
+												 class='item17'
 											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
@@ -1009,6 +1031,69 @@ spire.passwordResetRequest(your_email, function (err) {
 									<li 
 										 class='item9'
 									>
+										<div class="fixedFont heading" id="publish">
+											<span class='lighter'>
+											
+											</span>
+											
+											
+											
+											<b>publish</b>(channelName, message, cb)
+										</div>
+										
+										<div class="description">
+											Publish to a channel.
+
+Creates the channel if necessary.
+											
+											
+											
+											
+										</div>
+										
+										
+											
+												<pre class="code">var spire = new Spire();
+spire.publish('my_channel', 'my message', function (err, message) {
+  if (!err) {
+    //  Message sent successfully
+  }
+});</pre>
+											
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{string}</span> <b>channelName</b>
+														
+													</dt>
+													<dd>Channel name</dd>
+												
+													<dt>
+														<span class="light fixedFont">{object|string}</span> <b>message</b>
+														
+													</dt>
+													<dd>Message</dd>
+												
+													<dt>
+														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+														
+													</dt>
+													<dd>Callback</dd>
+												
+											</dl>
+										
+										
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item10'
+									>
 										<div class="fixedFont heading" id="register">
 											<span class='lighter'>
 											
@@ -1086,7 +1171,7 @@ spire.register({
 									</li>
 								
 									<li 
-										 class='item10'
+										 class='item11'
 									>
 										<div class="fixedFont heading" id="start">
 											<span class='lighter'>
@@ -1109,7 +1194,7 @@ spire.register({
 										
 											
 												<pre class="code">var spire = new Spire();
-spire.stark(your_api_key, function (err, session) {
+spire.start(your_api_key, function (err, session) {
   if (!err) {
     // You now have a spire session.
     // Start creating channels and subscripions.
@@ -1142,7 +1227,7 @@ spire.stark(your_api_key, function (err, session) {
 									</li>
 								
 									<li 
-										 class='item11'
+										 class='item12'
 									>
 										<div class="fixedFont heading" id="subscribe">
 											<span class='lighter'>
@@ -1151,7 +1236,76 @@ spire.stark(your_api_key, function (err, session) {
 											
 											
 											
-											<b>subscribe</b>(Subscription, channelOrChannels, cb)
+											<b>subscribe</b>(channelOrChannels, options, listener, cb)
+										</div>
+										
+										<div class="description">
+											Creates an new subscription to a channel or channels, and adds a listener.
+											
+											
+											
+											
+										</div>
+										
+										
+											
+												<pre class="code">var spire = new Spire();
+spire.start(your_api_key, function (err, session) {
+  spire.subscribe('myChannel', options, function (messages) {
+    // `messages` is array of messages sent to the channel
+  }, function (err) {
+  // `err` will be non-null if there was a problem creating the subscription.
+});</pre>
+											
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{array or string}</span> <b>channelOrChannels</b>
+														
+													</dt>
+													<dd>Either a single channel name, or an array of
+  channel names to subscribe to</dd>
+												
+													<dt>
+														<span class="light fixedFont">{object}</span> <b>options</b>
+														<i>Optional</i>
+													</dt>
+													<dd>Options to pass to the listener</dd>
+												
+													<dt>
+														<span class="light fixedFont">{function (messages)}</span> <b>listener</b>
+														
+													</dt>
+													<dd>Listener that will get called with each batch of messages</dd>
+												
+													<dt>
+														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+														<i>Optional</i>
+													</dt>
+													<dd>Callback</dd>
+												
+											</dl>
+										
+										
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item13'
+									>
+										<div class="fixedFont heading" id="subscription">
+											<span class='lighter'>
+											
+											</span>
+											
+											
+											
+											<b>subscription</b>(Subscription, channelOrChannels, cb)
 										</div>
 										
 										<div class="description">
@@ -1167,7 +1321,7 @@ subscription if necessary.
 											
 												<pre class="code">var spire = new Spire();
 spire.start(your_api_key, function (err, session) {
-  spire.subscribe('mySubscription', ['foo', 'bar'], function (err, subscription) {
+  spire.subscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
     if (!err) {
       // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
     }
@@ -1207,7 +1361,7 @@ spire.start(your_api_key, function (err, session) {
 									</li>
 								
 									<li 
-										 class='item12'
+										 class='item14'
 									>
 										<div class="fixedFont heading" id="subscriptionFromUrlAndCapability">
 											<span class='lighter'>
@@ -1280,7 +1434,7 @@ spire.subscriptionFromUrlAndCapability({
 									</li>
 								
 									<li 
-										 class='item13'
+										 class='item15'
 									>
 										<div class="fixedFont heading" id="subscriptions">
 											<span class='lighter'>
@@ -1332,7 +1486,7 @@ spire.start(your_api_key, function (err, session) {
 									</li>
 								
 									<li 
-										 class='item14'
+										 class='item16'
 									>
 										<div class="fixedFont heading" id="subscriptions$">
 											<span class='lighter'>
@@ -1384,7 +1538,7 @@ spire.start(your_api_key, function (err, session) {
 									</li>
 								
 									<li 
-										 class='item15'
+										 class='item17'
 									>
 										<div class="fixedFont heading" id="update">
 											<span class='lighter'>

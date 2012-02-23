@@ -184,4 +184,46 @@ describe('Accounts and Session', function () {
       }); // Delete your account
     }); // Registration with valid email and password
   }); // Registration and authentication
+
+  describe('Account GET then PUT Capability test', function () {
+    beforeEach(function () {
+      this.email1 = helpers.randomEmail();
+      this.email2 = helpers.randomEmail();
+      this.spire = createSpire();
+      this.key = null;
+      var finished = false;
+
+      var that = this;
+
+      var register = function (cb) {
+        that.spire.register({
+          email: that.email1,
+          password: 'foobarbaz'
+        }, cb);
+      };
+
+      runs(function () {
+        register(function (err) {
+          that.spire.session.account(function (err, account) {
+            account.get(function (err, account) {
+              account.update({
+                email: that.email2
+              }, function (err, account) {
+                that.account = account;
+                finished = true
+              });
+            });
+          });
+        });
+      });
+
+      waitsFor(function () {
+        return finished;
+      }, 'get and put to account', 10000);
+    });
+
+    it('should be an account', function () {
+      expect(this.account.data.email).toBe(this.email2);
+    });
+  }); // Account GET then PUT capability test
 }); // Accounts and sessions

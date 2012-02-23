@@ -617,9 +617,8 @@ Spire.prototype.channels$ = function (cb) {
  * @param {function (err, subscription)} cb Callback
  */
 Spire.prototype.subscription = function (name, channelOrChannels, cb) {
-  var channelNames = (typeof channelOrChannels === 'string')
-    ? [channelOrChannels]
-    : channelOrChannels;
+  var channelNames = (typeof channelOrChannels === 'string') ?
+    [channelOrChannels] : channelOrChannels;
 
   var spire = this;
   async.forEach(
@@ -1965,7 +1964,7 @@ Resource.defineRequest(API.prototype, 'create_session', function (key) {
       'Accept': this.mediaType('session')
     },
     content: {key: key}
-  }
+  };
 });
 
 /**
@@ -1986,7 +1985,7 @@ Resource.defineRequest(API.prototype, 'login', function (email, password) {
       email: email,
       password: password
     }
-  }
+  };
 });
 
 /**
@@ -2002,7 +2001,7 @@ Resource.defineRequest(API.prototype, 'create_account', function (account) {
       'Content-Type': this.mediaType('account'),
       'Accept': this.mediaType('session')
     },
-    content: account,
+    content: account
   };
 });
 
@@ -2101,7 +2100,7 @@ var _ = require('underscore')
 function Resource (spire, data) {
   this.spire = spire;
   this.data = data;
-};
+}
 
 Resource.prototype = new EventEmitter();
 
@@ -2152,7 +2151,7 @@ Resource.defineRequest = function (obj, name, fn) {
     var args = Array.prototype.slice.call(arguments);
     var callback = args.pop();
 
-    var req = fn.apply(this, args)
+    var req = fn.apply(this, args);
 
     shred.request(req)
       .on('error', function (res) {
@@ -2222,7 +2221,7 @@ Resource.prototype.update = function (data, cb) {
  *
  * @param {function (err, resource)} cd Callback
  */
-Resource.prototype.delete = function (data, cb) {
+Resource.prototype['delete'] = function (data, cb) {
   var resource = this;
   this.request('delete', data, function (err, data) {
     if (err) return cb(err);
@@ -5381,7 +5380,7 @@ function Account (spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'account';
-};
+}
 
 Account.prototype = new Resource();
 
@@ -5517,7 +5516,7 @@ function Billing (spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'billing';
-};
+}
 
 Billing.prototype = new Resource();
 
@@ -5545,7 +5544,7 @@ function Channel (spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'channel';
-};
+}
 
 Channel.prototype = new Resource();
 
@@ -5626,7 +5625,7 @@ Resource.defineRequest(Channel.prototype, 'publish', function (message) {
       'Accept': this.mediaType('message'),
       'Content-Type': this.mediaType('message')
     },
-    content: message,
+    content: message
   };
 });
 
@@ -5678,7 +5677,7 @@ function Session (spire, data) {
 
 	this._storeResources();
 
-};
+}
 
 Session.prototype = new Resource();
 
@@ -5738,7 +5737,7 @@ Session.prototype.account$ = function (cb) {
   this.request('account', function (err, account) {
     if (err) return cb(err);
     session._account = new Account(session.spire, account);
-    cb(null, session._account)
+    cb(null, session._account);
   });
 };
 
@@ -5760,7 +5759,7 @@ Session.prototype.resetAccount = function (cb) {
     if (err) return cb(err);
 		session.data = sessionData;
 		session._storeResources();
-    cb(null, session)
+    cb(null, session);
   });
 };
 
@@ -5804,7 +5803,7 @@ Session.prototype.channels$ = function (cb) {
     _.each(channelsData, function (channel, name) {
       session._memoizeChannel(new Channel(session.spire, channel));
     });
-    cb(null, session._channels)
+    cb(null, session._channels);
   });
 };
 
@@ -5848,7 +5847,7 @@ Session.prototype.subscriptions$ = function (cb) {
     _.each(subscriptions, function (subscription, name) {
       session._memoizeSubscription(new Subscription(session.spire, subscription));
     });
-    cb(null, session._subscriptions)
+    cb(null, session._subscriptions);
   });
 };
 
@@ -6109,7 +6108,7 @@ function Subscription (spire, data) {
 
   this.last = null;
   this.listening = false;
-};
+}
 
 Subscription.prototype = new Resource();
 
@@ -6205,9 +6204,9 @@ Subscription.prototype.retrieveMessages = function (options, cb) {
     var messages = messagesData.messages;
     if (messages.length) {
       if (options.orderBy === 'asc') {
-        subscription.last = _.first(messages).timestamp
+        subscription.last = _.first(messages).timestamp;
       } else {
-        subscription.last = _.last(messages).timestamp
+        subscription.last = _.last(messages).timestamp;
       }
 
       if (subscription.listening) {

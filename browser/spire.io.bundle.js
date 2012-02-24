@@ -377,7 +377,7 @@ var async = require('async')
  * @param {string} opts.version Version of Spire api to use (defaults to '1.0')
  * @param {number} opts.timeout Timeout for requests (defaults to 30 seconds)
  */
-function Spire (opts) {
+function Spire(opts) {
   this.api = new API(this, opts);
   this.session = null;
 }
@@ -876,7 +876,7 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
   var spire = this;
   var creationCount = 0;
 
-  function createChannel () {
+  function createChannel() {
     creationCount++;
     spire.session.createChannel(name, function (err, channel) {
       if (!err) return cb(null, channel);
@@ -888,7 +888,7 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
     });
   }
 
-  function getChannel () {
+  function getChannel() {
     spire.session.channels$(function (err, channels) {
       if (!err && channels[name]) return cb(null, channels[name]);
       if (err && err.status !== 409) return cb(err);
@@ -916,7 +916,7 @@ Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
   var spire = this;
   var creationCount = 0;
 
-  function createSubscription () {
+  function createSubscription() {
     creationCount++;
     spire.session.createSubscription(name, channelNames, function (err, sub) {
       if (!err) return cb(null, sub);
@@ -928,7 +928,7 @@ Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
     });
   }
 
-  function getSubscription () {
+  function getSubscription() {
     spire.session.subscriptions$(function (err, subscriptions) {
       if (!err && subscriptions[name]) return cb(null, subscriptions[name]);
       if (err && err.status !== 409) return cb(err);
@@ -1674,7 +1674,7 @@ var Resource = require('./api/resource')
  * @param {string} [opts.version] Version of the Spire api to use
  * @param {string} [opts.timeout] Timeout for requests
  */
-function API (spire, opts) {
+function API(spire, opts) {
   this.spire = spire;
 
   opts = opts || {};
@@ -1907,7 +1907,7 @@ API.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
  * @param {string} [name] Name of the resource MIME type to return
  * @returns {string} MIME type of the resource
  */
-API.prototype.mediaType = function(resourceName){
+API.prototype.mediaType = function (resourceName) {
   if (!this.schema) {
     throw "No description object.  Run `spire.api.discover` first.";
   }
@@ -1925,7 +1925,7 @@ API.prototype.mediaType = function(resourceName){
  * @param {Resource} resource Resource
  * @returns {string} Authorization header for the resource
  */
-API.prototype.authorization = function(resource){
+API.prototype.authorization = function (resource) {
   return ['Capability', resource.capability].join(' ');
 };
 
@@ -2095,7 +2095,7 @@ var _ = require('underscore')
  * @param {object} spire Spire object
  * @param {object} data Resource data from the spire api
  */
-function Resource (spire, data) {
+function Resource(spire, data) {
   this.spire = spire;
   this.data = data;
 }
@@ -5374,7 +5374,7 @@ var Resource = require('./resource')
  * @param spire {object} Spire object
  * @param data {object} Account data from the spire api
  */
-function Account (spire, data) {
+function Account(spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'account';
@@ -5510,7 +5510,7 @@ var Resource = require('./resource');
  * @param spire {object} Spire object
  * @param data {object} Billing data from the spire api
  */
-function Billing (spire, data) {
+function Billing(spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'billing';
@@ -5538,7 +5538,7 @@ var Resource = require('./resource');
  * @param {object} spire Spire object
  * @param {object} data  Channel data from the spire api
  */
-function Channel (spire, data) {
+function Channel(spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'channel';
@@ -5664,7 +5664,7 @@ var Resource = require('./resource')
  * @param {object} spire Spire object
  * @param {object} data Session data from the spire api
  */
-function Session (spire, data) {
+function Session(spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'session';
@@ -6093,7 +6093,7 @@ var Resource = require('./resource')
  * @param {object} spire Spire object
  * @param {object} data Subscription data from the spire api
  */
-function Subscription (spire, data) {
+function Subscription(spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'subscription';
@@ -6185,7 +6185,7 @@ Subscription.prototype.retrieveMessages = function (options, cb) {
     options = {};
   }
 
- options.orderBy = options.orderBy || 'desc';
+  options.orderBy = options.orderBy || 'desc';
 
   this.request('messages', options, function (err, messagesData) {
     if (err) {

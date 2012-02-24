@@ -377,10 +377,10 @@ var async = require('async')
  * @param {string} opts.version Version of Spire api to use (defaults to '1.0')
  * @param {number} opts.timeout Timeout for requests (defaults to 30 seconds)
  */
-var Spire = function (opts) {
+function Spire (opts) {
   this.api = new API(this, opts);
   this.session = null;
-};
+}
 
 module.exports = Spire;
 
@@ -847,6 +847,7 @@ Spire.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
  * @param {function (err)} cb Callback
  */
 Spire.prototype._startSessionFromUrlAndCapability = function (creds, cb) {
+  var spire = this;
   this.api.sessionFromUrlAndCapability(creds, function (err, session) {
     if (err) return cb(err);
     spire.session = session;
@@ -875,7 +876,7 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
   var spire = this;
   var creationCount = 0;
 
-  var createChannel = function () {
+  function createChannel () {
     creationCount++;
     spire.session.createChannel(name, function (err, channel) {
       if (!err) return cb(null, channel);
@@ -885,15 +886,15 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
       }
       getChannel();
     });
-  };
+  }
 
-  var getChannel = function () {
+  function getChannel () {
     spire.session.channels$(function (err, channels) {
       if (!err && channels[name]) return cb(null, channels[name]);
       if (err && err.status !== 409) return cb(err);
       createChannel();
     });
-  };
+  }
 
   createChannel();
 };
@@ -915,7 +916,7 @@ Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
   var spire = this;
   var creationCount = 0;
 
-  var createSubscription = function () {
+  function createSubscription () {
     creationCount++;
     spire.session.createSubscription(name, channelNames, function (err, sub) {
       if (!err) return cb(null, sub);
@@ -925,15 +926,15 @@ Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
       }
       getSubscription();
     });
-  };
+  }
 
-  var getSubscription = function () {
+  function getSubscription () {
     spire.session.subscriptions$(function (err, subscriptions) {
       if (!err && subscriptions[name]) return cb(null, subscriptions[name]);
       if (err && err.status !== 409) return cb(err);
       createSubscription();
     });
-  };
+  }
 
   createSubscription();
 };
@@ -1673,7 +1674,7 @@ var Resource = require('./api/resource')
  * @param {string} [opts.version] Version of the Spire api to use
  * @param {string} [opts.timeout] Timeout for requests
  */
-var API = function (spire, opts) {
+function API (spire, opts) {
   this.spire = spire;
 
   opts = opts || {};
@@ -1683,7 +1684,7 @@ var API = function (spire, opts) {
 
   this.description = null;
   this.schema = null;
-};
+}
 
 module.exports = API;
 
@@ -1735,7 +1736,7 @@ API.prototype.createSession = function (key, cb) {
     if (err) return cb(err);
     api.request('create_session', key, function (err, sessionData) {
       if (err) return cb(err);
-      session = new Session(api.spire, sessionData);
+      var session = new Session(api.spire, sessionData);
       cb(null, session);
     });
   });
@@ -1754,7 +1755,7 @@ API.prototype.login = function (email, password, cb) {
     if (err) return cb(err);
     api.request('login', email, password, function (err, sessionData) {
       if (err) return cb(err);
-      session = new Session(api.spire, sessionData);
+      var session = new Session(api.spire, sessionData);
       cb(null, session);
     });
   });
@@ -1775,7 +1776,7 @@ API.prototype.createAccount = function (info, cb) {
     if (err) return cb(err);
     api.request('create_account', info, function (err, sessionData) {
       if (err) return cb(err);
-      session = new Session(api.spire, sessionData);
+      var session = new Session(api.spire, sessionData);
       cb(null, session);
     });
   });
@@ -1955,7 +1956,6 @@ Resource.defineRequest(API.prototype, 'discover', function () {
  * @ignore
  */
 Resource.defineRequest(API.prototype, 'create_session', function (key) {
-  var spire = this.spire;
   return {
     method: 'post',
     url: this.description.resources.sessions.url,
@@ -1973,7 +1973,6 @@ Resource.defineRequest(API.prototype, 'create_session', function (key) {
  * @ignore
  */
 Resource.defineRequest(API.prototype, 'login', function (email, password) {
-  var spire = this.spire;
   return {
     method: 'post',
     url: this.description.resources.sessions.url,
@@ -2029,7 +2028,6 @@ Resource.defineRequest(API.prototype, 'billing', function () {
     method: 'get',
     url: this.description.resources.billing.url,
     content: "",
-    query: { email: email },
     headers: {
       'Accept': 'application/json'
     }
@@ -5454,7 +5452,7 @@ Resource.defineRequest(Account.prototype, 'update_billing_subscription', functio
     headers: {
       'Accept': this.mediaType(),
       'Content-Type': this.mediaType(),
-      'Authorization': this.authorization(invioces)
+      'Authorization': this.authorization('invioces')
     }
   };
 });
@@ -5485,7 +5483,7 @@ Resource.defineRequest(Account.prototype, 'billing_invoices_upcoming', function 
   var upcoming = this.data.billing.invoices.upcoming;
   return {
     method: 'get',
-    url: invoices.url.upcoming,
+    url: upcoming,
     headers: {
       'Accept': "application/json",
       'Authorization': "Capability " + upcoming.capability
@@ -5598,7 +5596,7 @@ Channel.prototype.publish = function (message, cb) {
 Channel.prototype.subscription = function (subName, cb) {
   if (!cb) {
     cb = subName;
-    name = null;
+    subName = null;
   }
   this.spire.subscription(subName, this.name(), cb);
 };
@@ -5616,7 +5614,6 @@ Channel.prototype.subscription = function (subName, cb) {
  * Publishes a message to the channel.
  */
 Resource.defineRequest(Channel.prototype, 'publish', function (message) {
-  var spire = this.spire;
   return {
     method: 'post',
     url: this.url(),
@@ -5955,7 +5952,6 @@ Resource.defineRequest(Session.prototype, 'account', function () {
  * @ignore
  */
 Resource.defineRequest(Session.prototype, 'channels', function () {
-  var spire = this.spire;
   var collection = this.data.resources.channels;
   return {
     method: 'get',
@@ -5973,7 +5969,6 @@ Resource.defineRequest(Session.prototype, 'channels', function () {
  * @ignore
  */
 Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
-  var spire = this.spire;
   var collection = this.data.resources.channels;
   return {
     method: 'get',
@@ -5992,7 +5987,6 @@ Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
  * @ignore
  */
 Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
-  var spire = this.spire;
   var collection = this.data.resources.channels;
   return {
     method: 'post',
@@ -6012,7 +6006,6 @@ Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
  * @ignore
  */
 Resource.defineRequest(Session.prototype, 'subscriptions', function () {
-  var spire = this.spire;
   var collection = this.data.resources.subscriptions;
   return {
     method: 'get',
@@ -6030,7 +6023,6 @@ Resource.defineRequest(Session.prototype, 'subscriptions', function () {
  * @ignore
  */
 Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls) {
-  var spire = this.spire;
   var collection = this.data.resources.subscriptions;
   return {
     method: 'post',
@@ -6202,19 +6194,12 @@ Subscription.prototype.retrieveMessages = function (options, cb) {
     }
 
     var messages = messagesData.messages;
-    if (messages.length) {
-      if (options.orderBy === 'asc') {
-        subscription.last = _.first(messages).timestamp;
-      } else {
-        subscription.last = _.last(messages).timestamp;
-      }
 
-      if (subscription.listening) {
-        subscription.emit('messages', messages);
-        _.each(messages, function (message) {
-          subscription.emit('message', message);
-        });
-      }
+    if (messages.length && subscription.listening) {
+      subscription.emit('messages', messages);
+      _.each(messages, function (message) {
+        subscription.emit('message', message);
+      });
     }
 
     cb(null, messages);
@@ -6242,17 +6227,12 @@ Subscription.prototype.retrieveMessages = function (options, cb) {
  * @param {function (err, messages)} cb Callback
  */
 Subscription.prototype.poll = function (options, cb) {
-  var subscription = this;
   if (!cb) {
     cb = options;
     options = {};
   }
-
-  // timeout option of 0 means no long poll,
-  // so we force it here.
-  options.last = this.last;
   options.timeout = 0;
-  this.retrieveMessages(options, cb);
+  this.longPoll(options, cb);
 };
 
 /**
@@ -6289,7 +6269,17 @@ Subscription.prototype.longPoll = function (options, cb) {
   // so we force it here.
   options.last = this.last;
   options.timeout = options.timeout || 30;
-  this.retrieveMessages(options, cb);
+  this.retrieveMessages(options, function (err, messages) {
+    if (err) return cb(err);
+    if (messages.length) {
+      if (options.orderBy === 'asc') {
+        subscription.last = _.first(messages).timestamp;
+      } else {
+        subscription.last = _.last(messages).timestamp;
+      }
+    }
+    cb(null, messages);
+  });
 };
 
 /**

@@ -163,7 +163,7 @@ task 'docs', 'generate the inline documentation', ->
   # First do the main 'spire.io.js' file.
   command = [
     'rm -rf docs/*',
-    './node_modules/noc/bin/noc -d=./docs -r=10 -t=node_modules/noc/templates/codeview/ -v lib/'
+    './node_modules/noc/bin/noc -d=./docs -r=10 -t=./jsdoc-templates/jsdoc/ -v lib/'
   ].join(' && ')
 
   exec command, (err, stdout, stderr) ->

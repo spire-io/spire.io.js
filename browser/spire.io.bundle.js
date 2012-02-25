@@ -624,10 +624,7 @@ Spire.prototype.subscription = function (name, channelOrChannels, cb) {
   async.forEach(
     channelNames,
     function (channelName, innerCB) {
-      spire._findOrCreateChannel(channelName, function (err, channel) {
-        if (err) { return cb(err); }
-        innerCB();
-      });
+      spire._findOrCreateChannel(channelName, innerCB);
     },
     function (err) {
       if (err) return cb(err);
@@ -890,13 +887,13 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
 
   function getChannel() {
     spire.session.channels$(function (err, channels) {
-      if (!err && channels[name]) return cb(null, channels[name]);
-      if (err && err.status !== 409) return cb(err);
+      if (err) return cb(err);
+      if (channels[name]) return cb(null, channels[name]);
       createChannel();
     });
   }
 
-  createChannel();
+  getChannel();
 };
 
 /**
@@ -930,13 +927,13 @@ Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
 
   function getSubscription() {
     spire.session.subscriptions$(function (err, subscriptions) {
-      if (!err && subscriptions[name]) return cb(null, subscriptions[name]);
-      if (err && err.status !== 409) return cb(err);
+      if (err) return cb(err);
+      if (subscriptions[name]) return cb(null, subscriptions[name]);
       createSubscription();
     });
   }
 
-  createSubscription();
+  getSubscription();
 };
 
 });

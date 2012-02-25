@@ -1,260 +1,393 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<meta charset="utf-8" />
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
-		<title>Subscription | JsDoc Reference</title>
+		
+		<title>JsDoc Reference - Subscription</title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-		<meta name="mobileoptimized" content="0" />
-	
-		<link rel="stylesheet" href="../css/all.css" media="all" />
-		<link rel="stylesheet" href="../css/handheld.css" media="only screen and (max-width: 660px)" />
-		<link rel="stylesheet" href="../css/handheld.css" media="handheld" />
-		<link rel="stylesheet" href="../css/screen.css" media="screen and (min-width: 661px)" />
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+}
 
-		<script src="../javascript/all.js"></script>
-		<!--[if lt IE 9]>
-			<script src="../javascript/html5.js"></script>
-		<![endif]-->
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
 	</head>
 
 	<body>
-
-<div class="index">
-	<div class="menu">
-		<div class="indexLinks">
-			<a href="../index.html">Classes</a>
-			<a href="../files.html">Files</a>
-		</div>
-	
-		<h2 class="heading1">Classes</h2>
-		
-		<input type="text" name="classFilter" class="classFilter" id="ClassFilter" placeholder="Filter"></input>
-		
-		<nav>
-			<ul class="classList" id="ClassList">
-				
-					<li><a href="../symbols/_global_.html">_global_</a></li>
-				
-					<li><a href="../symbols/Account.html">Account</a></li>
-				
-					<li><a href="../symbols/API.html">API</a></li>
-				
-					<li><a href="../symbols/Billing.html">Billing</a></li>
-				
-					<li><a href="../symbols/Channel.html">Channel</a></li>
-				
-					<li><a href="../symbols/Resource.html">Resource</a></li>
-				
-					<li><a href="../symbols/ResponseError.html">ResponseError</a></li>
-				
-					<li><a href="../symbols/Session.html">Session</a></li>
-				
-					<li><a href="../symbols/Spire.html">Spire</a></li>
-				
-					<li><a href="../symbols/Subscription.html">Subscription</a></li>
-				
-			</ul>
-		</nav>
-	</div>
-	<div class="fineprint" style="clear:both">
-		<footer>
-			
-			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
-			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
-			Generated on:
-			<time datetime='2012-1-22' pubdate>2012-1-22 12:04</time>
-		</footer>
-	</div>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
 </div>
+		<!-- end static/header.html -->
 
-<div class="index indexStatic"></div>
-
-<div class="content">
-	<div class="innerContent">
-		<article>
-			<header>
-				<h1 class="classTitle">
-					
-					Class <span>Subscription</span>
-				</h1>
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/Account.html">Account</a></li>
+	
+	<li><a href="../symbols/API.html">API</a></li>
+	
+	<li><a href="../symbols/Billing.html">Billing</a></li>
+	
+	<li><a href="../symbols/Channel.html">Channel</a></li>
+	
+	<li><a href="../symbols/Resource.html">Resource</a></li>
+	
+	<li><a href="../symbols/ResponseError.html">ResponseError</a></li>
+	
+	<li><a href="../symbols/Session.html">Session</a></li>
+	
+	<li><a href="../symbols/Spire.html">Spire</a></li>
+	
+	<li><a href="../symbols/Subscription.html">Subscription</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
 				
-				<div class="intro">
-					<p class="description summary">
-						Subscription Resource
-					</p>
-						
-					
-						<ul class="summary">
-							
-							
-							
-								<li>Defined in: <a href="../symbols/src/lib_spire_api_subscription.js.html">subscription.js</a></li>
-							
-							<li>Extends <span class="fixedFont">
-								<a href="../symbols/Resource.html">Resource</a></span></li>
-							
-						</ul>
-					
-				</div>
-			</header>
+				Class Subscription
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				<br />Extends
+					<a href="../symbols/Resource.html">Resource</a>.<br />
+				
 			
+				Subscription Resource
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/lib_spire_api_subscription.js.html">subscription.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
 			
-				<section>
-					<div class="props">
-						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Subscription.">
-							<caption class="sectionTitle">Class Summary</caption>
-							<thead>
-								<tr>
-									<th scope="col">Constructor Attributes</th>
-									<th scope="col">Constructor Name and Description</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class="attributes">&nbsp;</td>
-									<td class="nameDescription" >
-										<div class="fixedFont">
-											<b><a href="../symbols/Subscription.html#constructor">Subscription</a></b>(spire, data)
-										</div>
-										<div class="description">Represents a subscription in the spire api.</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</section>
-			
-			
-			
-	<!--
-	#### METHODS SUMMARY
-	-->
-			
-				<section>
-					
-					
-					<div class="props">
-						<h2 class="sectionTitle">Method Summary</h2>
-						
-						
-							<nav>
-								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class Subscription.">
-									<thead>
-										<tr>
-											<th scope="col">Method Attributes</th>
-											<th scope="col">Method Name and Description</th>
-										</tr>
-									</thead>
-									
-									<tbody>
-										
-										
-											<tr
-												 class='item0'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Subscription.html#longPoll">longPoll</a></b>(options, cb)
-													</div>
-													<div class="description">Gets new messages for the subscription.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item1'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Subscription.html#name">name</a></b>()
-													</div>
-													<div class="description">Gets the name of the subscription.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item2'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Subscription.html#poll">poll</a></b>(options, cb)
-													</div>
-													<div class="description">Gets new messages for the subscription.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item3'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Subscription.html#retrieveMessages">retrieveMessages</a></b>(options, cb)
-													</div>
-													<div class="description">Gets messages for the subscription.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item4'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Subscription.html#startListening">startListening</a></b>(options, cb)
-													</div>
-													<div class="description">Starts long polling for the subscription.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item5'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Subscription.html#stopListening">stopListening</a></b>()
-													</div>
-													<div class="description">Stops listening on the subscription.</div>
-												</td>
-											</tr>
-										
-									</tbody>
-								</table>
-							</nav>
-						
-					
-						
-							<nav>
-								<dl class="inheritsList" id="MethodsListInherited">
-								<dt>Methods borrowed from class <span class='fixedFont'><a href="../symbols/Resource.html">Resource</a></span>: </dt><dd><span class='fixedFont'><a href="../symbols/Resource.html#authorization">authorization</a></span></dd> <dd><span class='fixedFont'><a href="../symbols/Resource.html#capability">capability</a></span></dd> <dd><span class='fixedFont'><a href="../symbols/Resource.html#delete">delete</a></span></dd> <dd><span class='fixedFont'><a href="../symbols/Resource.html#get">get</a></span></dd> <dd><span class='fixedFont'><a href="../symbols/Resource.html#key">key</a></span></dd> <dd><span class='fixedFont'><a href="../symbols/Resource.html#mediaType">mediaType</a></span></dd> <dd><span class='fixedFont'><a href="../symbols/Resource.html#request">request</a></span></dd> <dd><span class='fixedFont'><a href="../symbols/Resource.html#schema">schema</a></span></dd> <dd><span class='fixedFont'><a href="../symbols/Resource.html#update">update</a></span></dd> <dd><span class='fixedFont'><a href="../symbols/Resource.html#url">url</a></span></dd>
-								</dl>
-							</nav>
-						
-					</div>
-				</section>
-			
-			
-	<!--
-	#### EVENTS SUMMARY
-	-->
-			
-	<!--
-	#### CONSTRUCTOR DETAILS
-	-->
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle" id="constructor">
-								Class Detail
-							</h2>
-							
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Subscription.">
+				<caption>Class Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b>Subscription</b>(spire, data)
+								<b><a href="../symbols/Subscription.html#constructor">Subscription</a></b>(spire, data)
 							</div>
-							
-							<div class="description">
-								Represents a subscription in the spire api.
+							<div class="description">Represents a subscription in the spire api.</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class Subscription.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Subscription.html#get">get</a></b>
+								</div>
+								<div class="description">Alias for subscription.retreiveMessages.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+				<dl class="inheritsList">
+				
+				</dl>
+				
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class Subscription.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Subscription.html#longPoll">longPoll</a></b>(options, cb)
+								</div>
+								<div class="description">Gets new messages for the subscription.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Subscription.html#name">name</a></b>()
+								</div>
+								<div class="description">Gets the name of the subscription.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Subscription.html#poll">poll</a></b>(options, cb)
+								</div>
+								<div class="description">Gets new messages for the subscription.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Subscription.html#retrieveMessages">retrieveMessages</a></b>(options, cb)
+								</div>
+								<div class="description">Gets messages for the subscription.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Subscription.html#startListening">startListening</a></b>(options, cb)
+								</div>
+								<div class="description">Starts long polling for the subscription.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Subscription.html#stopListening">stopListening</a></b>()
+								</div>
+								<div class="description">Stops listening on the subscription.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+				<dl class="inheritsList">
+				<dt>Methods borrowed from class <a href="../symbols/Resource.html">Resource</a>: </dt><dd><a href="../symbols/Resource.html#authorization">authorization</a>, <a href="../symbols/Resource.html#capability">capability</a>, <a href="../symbols/Resource.html#key">key</a>, <a href="../symbols/Resource.html#mediaType">mediaType</a>, <a href="../symbols/Resource.html#request">request</a>, <a href="../symbols/Resource.html#schema">schema</a>, <a href="../symbols/Resource.html#update">update</a>, <a href="../symbols/Resource.html#url">url</a></dd>
+				</dl>
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Class Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>Subscription</b>(spire, data)
+				</div>
+				
+				<div class="description">
+					Represents a subscription in the spire api.
 
 <p>There are a few ways to get messages from a subscription.
 
@@ -286,68 +419,85 @@ listen for new messages on the subscription.
 
 <p>The `messages` event fires first and contains the all the messages that were
 received in a single request.  The `message` event fires once per message.
-								
-							</div>
-							
-							
+					
+				</div>
+				
+				
+				
+				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
 						
-							
-								<dl class="detailList params">
-									<dt class="heading">Parameters:</dt>
-									
-										<dt>
-											<span class="light fixedFont">{object}</span>  <b>spire</b>
-											
-										</dt>
-										<dd>Spire object</dd>
-									
-										<dt>
-											<span class="light fixedFont">{object}</span>  <b>data</b>
-											
-										</dt>
-										<dd>Subscription data from the spire api</dd>
-									
-								</dl>
-							
-							
-							
-						</div>
+							<dt>
+								<span class="light fixedFont">{object}</span>  <b>spire</b>
+								
+							</dt>
+								<dd>Spire object</dd>
+						
+							<dt>
+								<span class="light fixedFont">{object}</span>  <b>data</b>
+								
+							</dt>
+								<dd>Subscription data from the spire api</dd>
+						
+						</dl>
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="get"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>get</b>
+					
 					</div>
-				</section>
+					<div class="description">
+						Alias for subscription.retreiveMessages.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
 			
-	<!--
-	#### FIELD DETAILS
-	-->
+
+<!-- ============================== method details ========================= -->		
 			
-	<!--
-	#### METHOD DETAILS
-	-->		
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle">
-								Method Detail
-							</h2>
-							
-							<ul class="methodDetail" id="MethodDetail">
-								
-								
-									<li 
-										 class='item0'
-									>
-										<div class="fixedFont heading" id="longPoll">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>longPoll</b>(options, cb)
-										</div>
-										
-										<div class="description">
-											Gets new messages for the subscription.
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="longPoll"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>longPoll</b>(options, cb)
+					
+					</div>
+					<div class="description">
+						Gets new messages for the subscription.
 
 <p>This method defaults to a 30 second timeout, so the request will wait up to
 30 seconds for a new message to come in.  You can increase the wait time with
@@ -355,294 +505,262 @@ the <code>options.timeout</code> paraameter.
 
 <p>This method only makes one request.  Use `subscription.startListening` to
 poll repeatedly.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">subscription.longPoll({ timeout: 60 }, function (err, messages) {
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">subscription.longPoll({ timeout: 60 }, function (err, messages) {
   if (!err) {
     // `messages` is an array of messages (possably empty)
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>options</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional options argument</dd>
-												
-													<dt>
-														<span class="light fixedFont">{number}</span> <b>options.delay</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional delay</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional ordering ('asc' or 'desc')</dd>
-												
-													<dt>
-														<span class="light fixedFont">{number}</span> <b>options.timeout</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional timeout</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item1'
-									>
-										<div class="fixedFont heading" id="name">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{string}</span>
-											
-											<b>name</b>()
-										</div>
-										
-										<div class="description">
-											Gets the name of the subscription.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{string}</span> Name</dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item2'
-									>
-										<div class="fixedFont heading" id="poll">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>poll</b>(options, cb)
-										</div>
-										
-										<div class="description">
-											Gets new messages for the subscription.  This method forces a 0 second
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>options</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional options argument</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.delay</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional delay</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional ordering ('asc' or 'desc')</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.timeout</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional timeout</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="name"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{string}</span>
+					<b>name</b>()
+					
+					</div>
+					<div class="description">
+						Gets the name of the subscription.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{string}</span> Name</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="poll"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>poll</b>(options, cb)
+					
+					</div>
+					<div class="description">
+						Gets new messages for the subscription.  This method forces a 0 second
 timeout, so the request will come back immediately, but may have an empty
 array of messages if there are no new ones.
 
 <p>This method only makes one request.  Use
 <code>subscription.startListening</code> to poll repeatedly.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">subscription.poll(function (err, messages) {
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">subscription.poll(function (err, messages) {
   if (!err) {
     // `messages` is an array of messages (possably empty)
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>options</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional options argument</dd>
-												
-													<dt>
-														<span class="light fixedFont">{number}</span> <b>options.delay</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional delay</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional ordering ('asc' or 'desc')</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item3'
-									>
-										<div class="fixedFont heading" id="retrieveMessages">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>retrieveMessages</b>(options, cb)
-										</div>
-										
-										<div class="description">
-											Gets messages for the subscription.
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>options</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional options argument</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.delay</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional delay</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional ordering ('asc' or 'desc')</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="retrieveMessages"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>retrieveMessages</b>(options, cb)
+					
+					</div>
+					<div class="description">
+						Gets messages for the subscription.
 
 <p>This method only makes one request.  Use
 <code>subscription.startListening</code> to poll repeatedly.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">subscription.retrieveMessages(function (err, messages) {
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">subscription.retrieveMessages(function (err, messages) {
   if (!err) {
     // `messages` is an array of messages (possably empty)
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>options</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional options argument</dd>
-												
-													<dt>
-														<span class="light fixedFont">{number}</span> <b>options.last</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional last message</dd>
-												
-													<dt>
-														<span class="light fixedFont">{number}</span> <b>options.delay</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional delay</dd>
-												
-													<dt>
-														<span class="light fixedFont">{number}</span> <b>options.timeout</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional timeout</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional ordering ('asc' or 'desc')</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item4'
-									>
-										<div class="fixedFont heading" id="startListening">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>startListening</b>(options, cb)
-										</div>
-										
-										<div class="description">
-											Starts long polling for the subscription.
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>options</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional options argument</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.last</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional last message</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.delay</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional delay</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.timeout</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional timeout</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional ordering ('asc' or 'desc')</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="startListening"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>startListening</b>(options, cb)
+					
+					</div>
+					<div class="description">
+						Starts long polling for the subscription.
 
 <p>The <code>message</code> and <code>messages</code> events will fire when a
 request comes back with messages.  The <code>message</code> event will fire
 once per message, while the <code>messages</code> event fires every time a
 request comes back with more than one message.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">subscription.addListener('message', function (message) {
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">subscription.addListener('message', function (message) {
   console.log('Message received: ' + message.content);
 });
 
@@ -656,103 +774,98 @@ subscription.startListening();
 setTimout(function () {
   subscription.stopListening();
  }, 100000);</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>options</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional options argument</dd>
-												
-													<dt>
-														<span class="light fixedFont">{number}</span> <b>options.last</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional last message</dd>
-												
-													<dt>
-														<span class="light fixedFont">{number}</span> <b>options.delay</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional delay</dd>
-												
-													<dt>
-														<span class="light fixedFont">{number}</span> <b>options.timeout</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional timeout</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional ordering ('asc' or 'desc')</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item5'
-									>
-										<div class="fixedFont heading" id="stopListening">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>stopListening</b>()
-										</div>
-										
-										<div class="description">
-											Stops listening on the subscription.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-										
-									</li>
-								
-							</ul>
-						</div>
-					</div>
-				</section>
-			
-			
-	<!--
-	#### EVENT DETAILS
-	-->		
-			
-		</article>
-	</div>
-</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>options</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional options argument</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.last</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional last message</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.delay</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional delay</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.timeout</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional timeout</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional ordering ('asc' or 'desc')</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
 
-		<script type="text/javascript">
-			wbos.CssTools.MediaQueryFallBack.LoadCss('../css/screen.css', '../css/handheld.css', 660)
-			codeview.classFilter.Init()
-		</script>
+					<hr />
+				
+					<a name="stopListening"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>stopListening</b>()
+					
+					</div>
+					<div class="description">
+						Stops listening on the subscription.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Feb 25 2012 11:03:20 GMT-0800 (PST)
+		</div>
 	</body>
 </html>
-

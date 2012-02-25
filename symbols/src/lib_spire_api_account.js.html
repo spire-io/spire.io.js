@@ -22,11 +22,11 @@
 <span class='line'> 15</span>  * @param spire {object} Spire object
 <span class='line'> 16</span>  * @param data {object} Account data from the spire api
 <span class='line'> 17</span>  */</span><span class="WHIT">
-<span class='line'> 18</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">Account</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">spire</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">Account</span><span class="PUNC">(</span><span class="NAME">spire</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 19</span> </span><span class="WHIT">  </span><span class="NAME">this.spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 20</span> </span><span class="WHIT">  </span><span class="NAME">this.data</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 21</span> </span><span class="WHIT">  </span><span class="NAME">this.resourceName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'account'</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 22</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'> 23</span> 
 <span class='line'> 24</span> </span><span class="NAME">Account.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Resource</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 25</span> 
@@ -100,7 +100,7 @@
 <span class='line'> 93</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 94</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'> 95</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'> 96</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="NAME">invioces</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="STRN">'invioces'</span><span class="PUNC">)</span><span class="WHIT">
 <span class='line'> 97</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'> 98</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 99</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -131,7 +131,7 @@
 <span class='line'>124</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">upcoming</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.data.billing.invoices.upcoming</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>125</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>126</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>127</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">invoices.url.upcoming</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">upcoming</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>128</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>129</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"application/json"</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>130</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"Capability "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">upcoming.capability</span><span class="WHIT">

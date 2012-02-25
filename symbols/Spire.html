@@ -1,534 +1,588 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<meta charset="utf-8" />
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
-		<title>Spire | JsDoc Reference</title>
+		
+		<title>JsDoc Reference - Spire</title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-		<meta name="mobileoptimized" content="0" />
-	
-		<link rel="stylesheet" href="../css/all.css" media="all" />
-		<link rel="stylesheet" href="../css/handheld.css" media="only screen and (max-width: 660px)" />
-		<link rel="stylesheet" href="../css/handheld.css" media="handheld" />
-		<link rel="stylesheet" href="../css/screen.css" media="screen and (min-width: 661px)" />
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+}
 
-		<script src="../javascript/all.js"></script>
-		<!--[if lt IE 9]>
-			<script src="../javascript/html5.js"></script>
-		<![endif]-->
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
 	</head>
 
 	<body>
-
-<div class="index">
-	<div class="menu">
-		<div class="indexLinks">
-			<a href="../index.html">Classes</a>
-			<a href="../files.html">Files</a>
-		</div>
-	
-		<h2 class="heading1">Classes</h2>
-		
-		<input type="text" name="classFilter" class="classFilter" id="ClassFilter" placeholder="Filter"></input>
-		
-		<nav>
-			<ul class="classList" id="ClassList">
-				
-					<li><a href="../symbols/_global_.html">_global_</a></li>
-				
-					<li><a href="../symbols/Account.html">Account</a></li>
-				
-					<li><a href="../symbols/API.html">API</a></li>
-				
-					<li><a href="../symbols/Billing.html">Billing</a></li>
-				
-					<li><a href="../symbols/Channel.html">Channel</a></li>
-				
-					<li><a href="../symbols/Resource.html">Resource</a></li>
-				
-					<li><a href="../symbols/ResponseError.html">ResponseError</a></li>
-				
-					<li><a href="../symbols/Session.html">Session</a></li>
-				
-					<li><a href="../symbols/Spire.html">Spire</a></li>
-				
-					<li><a href="../symbols/Subscription.html">Subscription</a></li>
-				
-			</ul>
-		</nav>
-	</div>
-	<div class="fineprint" style="clear:both">
-		<footer>
-			
-			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
-			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
-			Generated on:
-			<time datetime='2012-1-22' pubdate>2012-1-22 12:04</time>
-		</footer>
-	</div>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
 </div>
+		<!-- end static/header.html -->
 
-<div class="index indexStatic"></div>
-
-<div class="content">
-	<div class="innerContent">
-		<article>
-			<header>
-				<h1 class="classTitle">
-					
-					Class <span>Spire</span>
-				</h1>
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/Account.html">Account</a></li>
+	
+	<li><a href="../symbols/API.html">API</a></li>
+	
+	<li><a href="../symbols/Billing.html">Billing</a></li>
+	
+	<li><a href="../symbols/Channel.html">Channel</a></li>
+	
+	<li><a href="../symbols/Resource.html">Resource</a></li>
+	
+	<li><a href="../symbols/ResponseError.html">ResponseError</a></li>
+	
+	<li><a href="../symbols/Session.html">Session</a></li>
+	
+	<li><a href="../symbols/Spire.html">Spire</a></li>
+	
+	<li><a href="../symbols/Subscription.html">Subscription</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
 				
-				<div class="intro">
-					<p class="description summary">
-						<strong>Spire API Client</strong>
-					</p>
-						
+				Class Spire
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				
+			
+				<strong>Spire API Client</strong>
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/lib_spire.io.js.html">spire.io.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Spire.">
+				<caption>Class Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/Spire.html#constructor">Spire</a></b>(opts)
+							</div>
+							<div class="description">Spire API Client</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class Spire.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
 					
-						<ul class="summary">
-							
-							
-							
-								<li>Defined in: <a href="../symbols/src/lib_spire.io.js.html">spire.io.js</a></li>
-							
-							
-						</ul>
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/Spire.html#CREATION_RETRY_LIMIT">CREATION_RETRY_LIMIT</a></b>
+								</div>
+								<div class="description">Number of times to retry creating a channel or subscription before giving up.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class Spire.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#accountFromUrlAndCapability">accountFromUrlAndCapability</a></b>(creds, cb)
+								</div>
+								<div class="description">Get Account from url and capability.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#channel">channel</a></b>(name, cb)
+								</div>
+								<div class="description">Gets a channel (creates if necessary).</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#channelFromUrlAndCapability">channelFromUrlAndCapability</a></b>(creds, cb)
+								</div>
+								<div class="description">Get Channel from url and capability.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#channels">channels</a></b>(cb)
+								</div>
+								<div class="description">Gets a list of all channels.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#channels$">channels$</a></b>(cb)
+								</div>
+								<div class="description">Gets a list of all channels.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#key">key</a></b>()
+								</div>
+								<div class="description">Get the account key.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#login">login</a></b>(email, password, cb)
+								</div>
+								<div class="description">Start the Spire session with the given username and password.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#passwordResetRequest">passwordResetRequest</a></b>(email, cb)
+								</div>
+								<div class="description">Requests a password reset for email.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#publish">publish</a></b>(channelName, message, cb)
+								</div>
+								<div class="description">Publish to a channel.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#register">register</a></b>(user, cb)
+								</div>
+								<div class="description">Registers for a new spire account, and authenticates as the newly created account</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#start">start</a></b>(key, cb)
+								</div>
+								<div class="description">Start the Spire session with the given account key.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscribe">subscribe</a></b>(channelOrChannels, options, listener, cb)
+								</div>
+								<div class="description">Creates an new subscription to a channel or channels, and adds a listener.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscription">subscription</a></b>(Subscription, channelOrChannels, cb)
+								</div>
+								<div class="description">Gets a subscription to the given channels.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptionFromUrlAndCapability">subscriptionFromUrlAndCapability</a></b>(creds, cb)
+								</div>
+								<div class="description">Get Subscription from url and capability.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptions">subscriptions</a></b>(cb)
+								</div>
+								<div class="description">Get the subscriptions for an account.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptions$">subscriptions$</a></b>(cb)
+								</div>
+								<div class="description">Get the subscriptions for an account.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#update">update</a></b>(user, cb)
+								</div>
+								<div class="description">Updates your account info.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Class Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>Spire</b>(opts)
+				</div>
+				
+				<div class="description">
+					Spire API Client
 					
 				</div>
-			</header>
-			
-			
-				<section>
-					<div class="props">
-						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Spire.">
-							<caption class="sectionTitle">Class Summary</caption>
-							<thead>
-								<tr>
-									<th scope="col">Constructor Attributes</th>
-									<th scope="col">Constructor Name and Description</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class="attributes">&nbsp;</td>
-									<td class="nameDescription" >
-										<div class="fixedFont">
-											<b><a href="../symbols/Spire.html#constructor">Spire</a></b>(opts)
-										</div>
-										<div class="description">Spire API Client</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</section>
-			
-			
-			
 				
-				<section>
+				
+				
+				<pre class="code">var spire = new Spire();</pre>
+				
+				
+				
+				
 					
-						<nav>
-							<div class="props">
-								<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class Spire.">
-									<caption class="sectionTitle">Field Summary</caption>
-									
-									<thead>
-										<tr>
-											<th scope="col">Field Attributes</th>
-											<th scope="col">Field Name and Description</th>
-										</tr>
-									</thead>
-									
-									<tbody>
-										
-											<tr>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">
-													<b><a href="../symbols/Spire.html#CREATION_RETRY_LIMIT">CREATION_RETRY_LIMIT</a></b>
-													</div>
-													<div class="description">Number of times to retry creating a channel or subscription before giving up.</div>
-												</td>
-											</tr>
-										
-									</tbody>
-								</table>
-							</div>
-						</nav>
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{object}</span>  <b>opts</b>
+								
+							</dt>
+								<dd>Options for Spire</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opts.url</b>
+								
+							</dt>
+								<dd>Spire url do use (defaults to 'https://api.spire.io')</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opts.version</b>
+								
+							</dt>
+								<dd>Version of Spire api to use (defaults to '1.0')</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>opts.timeout</b>
+								
+							</dt>
+								<dd>Timeout for requests (defaults to 30 seconds)</dd>
+						
+						</dl>
 					
 					
 					
-				</section>
+					
+					
+					
+					
+
+			</div>
 			
-	<!--
-	#### METHODS SUMMARY
-	-->
+
+<!-- ============================== field details ========================== -->		
 			
-				<section>
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="CREATION_RETRY_LIMIT"> </a>
+					<div class="fixedFont">
 					
 					
-					<div class="props">
-						<h2 class="sectionTitle">Method Summary</h2>
-						
-						
-							<nav>
-								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class Spire.">
-									<thead>
-										<tr>
-											<th scope="col">Method Attributes</th>
-											<th scope="col">Method Name and Description</th>
-										</tr>
-									</thead>
-									
-									<tbody>
-										
-										
-											<tr
-												 class='item0'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#accountFromUrlAndCapability">accountFromUrlAndCapability</a></b>(creds, cb)
-													</div>
-													<div class="description">Get Account from url and capability.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item1'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#channel">channel</a></b>(name, cb)
-													</div>
-													<div class="description">Gets a channel (creates if necessary).</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item2'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#channelFromUrlAndCapability">channelFromUrlAndCapability</a></b>(creds, cb)
-													</div>
-													<div class="description">Get Channel from url and capability.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item3'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#channels">channels</a></b>(cb)
-													</div>
-													<div class="description">Gets a list of all channels.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item4'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#channels$">channels$</a></b>(cb)
-													</div>
-													<div class="description">Gets a list of all channels.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item5'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#key">key</a></b>()
-													</div>
-													<div class="description">Get the account key.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item6'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#login">login</a></b>(email, password, cb)
-													</div>
-													<div class="description">Start the Spire session with the given username and password.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item7'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#passwordResetRequest">passwordResetRequest</a></b>(email, cb)
-													</div>
-													<div class="description">Requests a password reset for email.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item8'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#publish">publish</a></b>(channelName, message, cb)
-													</div>
-													<div class="description">Publish to a channel.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item9'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#register">register</a></b>(user, cb)
-													</div>
-													<div class="description">Registers for a new spire account, and authenticates as the newly created account</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item10'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#start">start</a></b>(key, cb)
-													</div>
-													<div class="description">Start the Spire session with the given account key.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item11'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#subscribe">subscribe</a></b>(channelOrChannels, options, listener, cb)
-													</div>
-													<div class="description">Creates an new subscription to a channel or channels, and adds a listener.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item12'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#subscription">subscription</a></b>(Subscription, channelOrChannels, cb)
-													</div>
-													<div class="description">Gets a subscription to the given channels.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item13'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptionFromUrlAndCapability">subscriptionFromUrlAndCapability</a></b>(creds, cb)
-													</div>
-													<div class="description">Get Subscription from url and capability.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item14'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptions">subscriptions</a></b>(cb)
-													</div>
-													<div class="description">Get the subscriptions for an account.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item15'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptions$">subscriptions$</a></b>(cb)
-													</div>
-													<div class="description">Get the subscriptions for an account.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item16'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/Spire.html#update">update</a></b>(user, cb)
-													</div>
-													<div class="description">Updates your account info.</div>
-												</td>
-											</tr>
-										
-									</tbody>
-								</table>
-							</nav>
-						
+					<b>CREATION_RETRY_LIMIT</b>
 					
+					</div>
+					<div class="description">
+						Number of times to retry creating a channel or subscription before giving up.
+						
 						
 					</div>
-				</section>
-			
-			
-	<!--
-	#### EVENTS SUMMARY
-	-->
-			
-	<!--
-	#### CONSTRUCTOR DETAILS
-	-->
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle" id="constructor">
-								Class Detail
-							</h2>
-							
-							<div class="fixedFont">
-								<b>Spire</b>(opts)
-							</div>
-							
-							<div class="description">
-								Spire API Client
-								
-							</div>
-							
-							
-								
-									<pre class="code">var spire = new Spire();</pre>
-								
-							
+					
+					
+
 						
-							
-								<dl class="detailList params">
-									<dt class="heading">Parameters:</dt>
-									
-										<dt>
-											<span class="light fixedFont">{object}</span>  <b>opts</b>
-											
-										</dt>
-										<dd>Options for Spire</dd>
-									
-										<dt>
-											<span class="light fixedFont">{string}</span>  <b>opts.url</b>
-											
-										</dt>
-										<dd>Spire url do use (defaults to 'https://api.spire.io')</dd>
-									
-										<dt>
-											<span class="light fixedFont">{string}</span>  <b>opts.version</b>
-											
-										</dt>
-										<dd>Version of Spire api to use (defaults to '1.0')</dd>
-									
-										<dt>
-											<span class="light fixedFont">{number}</span>  <b>opts.timeout</b>
-											
-										</dt>
-										<dd>Timeout for requests (defaults to 30 seconds)</dd>
-									
-								</dl>
-							
-							
-							
-						</div>
+						
+						
+						
+
+					
+				
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="accountFromUrlAndCapability"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>accountFromUrlAndCapability</b>(creds, cb)
+					
 					</div>
-				</section>
-			
-	<!--
-	#### FIELD DETAILS
-	-->
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle">
-								Field Detail
-							</h2>
-							
-							
-								<div class="fixedFont heading" id="CREATION_RETRY_LIMIT">
-									<span class='lighter'>
-									
-									</span>
-									
-									
-									
-									<b>CREATION_RETRY_LIMIT</b>							
-								</div>
-								
-								<div class="description">
-									Number of times to retry creating a channel or subscription before giving up.
-									
-									
-									
-								</div>
-								
-								
-									
-								
-								
-							
-						</div>
-					</div>
-				</section>
-			
-	<!--
-	#### METHOD DETAILS
-	-->		
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle">
-								Method Detail
-							</h2>
-							
-							<ul class="methodDetail" id="MethodDetail">
-								
-								
-									<li 
-										 class='item0'
-									>
-										<div class="fixedFont heading" id="accountFromUrlAndCapability">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>accountFromUrlAndCapability</b>(creds, cb)
-										</div>
-										
-										<div class="description">
-											Get Account from url and capability.
+					<div class="description">
+						Get Account from url and capability.
 
 Use this method to get the account without starting a spire session.
 
 If you have a spire session, you should use <code>spire.session.account</code>.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.accountFromUrlAndCapability({
   url: account_url,
   capability: account_capability
@@ -537,68 +591,64 @@ spire.accountFromUrlAndCapability({
     // ...
   }
 })</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>creds</b>
-														
-													</dt>
-													<dd>Url and Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.url</b>
-														
-													</dt>
-													<dd>Url</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-														
-													</dt>
-													<dd>Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item1'
-									>
-										<div class="fixedFont heading" id="channel">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>channel</b>(name, cb)
-										</div>
-										
-										<div class="description">
-											Gets a channel (creates if necessary).
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>creds</b>
+									
+								</dt>
+								<dd>Url and Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.url</b>
+									
+								</dt>
+								<dd>Url</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									
+								</dt>
+								<dd>Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="channel"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>channel</b>(name, cb)
+					
+					</div>
+					<div class="description">
+						Gets a channel (creates if necessary).
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.start(your_api_key, function (err, session) {
   spire.channel('foo', function (err, channel) {
     if (!err) {
@@ -606,60 +656,56 @@ spire.start(your_api_key, function (err, session) {
     }
   });
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>name</b>
-														
-													</dt>
-													<dd>Channel name to get or create</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function(err|channel)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item2'
-									>
-										<div class="fixedFont heading" id="channelFromUrlAndCapability">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>channelFromUrlAndCapability</b>(creds, cb)
-										</div>
-										
-										<div class="description">
-											Get Channel from url and capability.
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>name</b>
+									
+								</dt>
+								<dd>Channel name to get or create</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function(err|channel)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="channelFromUrlAndCapability"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>channelFromUrlAndCapability</b>(creds, cb)
+					
+					</div>
+					<div class="description">
+						Get Channel from url and capability.
 
 Use this method to get a channel without starting a spire session.
 
 If you have a spire session, you should use <code>spire.channel</code>.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.channelFromUrlAndCapability({
   url: channel_url,
   capability: channel_capability
@@ -668,69 +714,65 @@ spire.channelFromUrlAndCapability({
     // ...
   }
 })</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>creds</b>
-														
-													</dt>
-													<dd>Url and Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.url</b>
-														
-													</dt>
-													<dd>Url</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-														
-													</dt>
-													<dd>Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item3'
-									>
-										<div class="fixedFont heading" id="channels">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>channels</b>(cb)
-										</div>
-										
-										<div class="description">
-											Gets a list of all channels.  Will return cached data if it is available,
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>creds</b>
+									
+								</dt>
+								<dd>Url and Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.url</b>
+									
+								</dt>
+								<dd>Url</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									
+								</dt>
+								<dd>Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="channels"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>channels</b>(cb)
+					
+					</div>
+					<div class="description">
+						Gets a list of all channels.  Will return cached data if it is available,
 otherwise will make a request.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.start(your_api_key, function (err, session) {
   spire.channels(function (err, channels) {
     if (!err) {
@@ -738,51 +780,47 @@ spire.start(your_api_key, function (err, session) {
     }
   });
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item4'
-									>
-										<div class="fixedFont heading" id="channels$">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>channels$</b>(cb)
-										</div>
-										
-										<div class="description">
-											Gets a list of all channels.  Ignores any cached data, and forces the
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="channels$"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>channels$</b>(cb)
+					
+					</div>
+					<div class="description">
+						Gets a list of all channels.  Ignores any cached data, and forces the
 request.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.start(your_api_key, function (err, session) {
   spire.channels$(function (err, channels) {
     if (!err) {
@@ -790,280 +828,246 @@ spire.start(your_api_key, function (err, session) {
     }
   });
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item5'
-									>
-										<div class="fixedFont heading" id="key">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{string}</span>
-											
-											<b>key</b>()
-										</div>
-										
-										<div class="description">
-											Get the account key.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{string}</span> Account key</dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item6'
-									>
-										<div class="fixedFont heading" id="login">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>login</b>(email, password, cb)
-										</div>
-										
-										<div class="description">
-											Start the Spire session with the given username and password.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="key"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{string}</span>
+					<b>key</b>()
+					
+					</div>
+					<div class="description">
+						Get the account key.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{string}</span> Account key</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="login"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>login</b>(email, password, cb)
+					
+					</div>
+					<div class="description">
+						Start the Spire session with the given username and password.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.login(your_email, your_password, function (err) {
   if (!err) {
     // You now have a spire session.
     // Start creating channels and subscripions.
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>email</b>
-														
-													</dt>
-													<dd>Email</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>password</b>
-														
-													</dt>
-													<dd>Password</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function(err)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item7'
-									>
-										<div class="fixedFont heading" id="passwordResetRequest">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>passwordResetRequest</b>(email, cb)
-										</div>
-										
-										<div class="description">
-											Requests a password reset for email.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>email</b>
+									
+								</dt>
+								<dd>Email</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>password</b>
+									
+								</dt>
+								<dd>Password</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="passwordResetRequest"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>passwordResetRequest</b>(email, cb)
+					
+					</div>
+					<div class="description">
+						Requests a password reset for email.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.passwordResetRequest(your_email, function (err) {
   if (!err) {
     // A password reset email has been sent.
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>email</b>
-														
-													</dt>
-													<dd>Email</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item8'
-									>
-										<div class="fixedFont heading" id="publish">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>publish</b>(channelName, message, cb)
-										</div>
-										
-										<div class="description">
-											Publish to a channel.
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>email</b>
+									
+								</dt>
+								<dd>Email</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="publish"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>publish</b>(channelName, message, cb)
+					
+					</div>
+					<div class="description">
+						Publish to a channel.
 
 Creates the channel if necessary.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.publish('my_channel', 'my message', function (err, message) {
   if (!err) {
     //  Message sent successfully
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>channelName</b>
-														
-													</dt>
-													<dd>Channel name</dd>
-												
-													<dt>
-														<span class="light fixedFont">{object|string}</span> <b>message</b>
-														
-													</dt>
-													<dd>Message</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item9'
-									>
-										<div class="fixedFont heading" id="register">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>register</b>(user, cb)
-										</div>
-										
-										<div class="description">
-											Registers for a new spire account, and authenticates as the newly created account
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>channelName</b>
+									
+								</dt>
+								<dd>Channel name</dd>
+							
+								<dt>
+									<span class="light fixedFont">{object|string}</span> <b>message</b>
+									
+								</dt>
+								<dd>Message</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="register"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>register</b>(user, cb)
+					
+					</div>
+					<div class="description">
+						Registers for a new spire account, and authenticates as the newly created account
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.register({
   email: your_email,
   password: your_password,
@@ -1075,200 +1079,188 @@ spire.register({
     // Start creating channels and subscripions.
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>user</b>
-														
-													</dt>
-													<dd>User info</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>user.email</b>
-														
-													</dt>
-													<dd>Email</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>user.password</b>
-														
-													</dt>
-													<dd>Password</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>user.password_confirmation</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional password confirmation</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item10'
-									>
-										<div class="fixedFont heading" id="start">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>start</b>(key, cb)
-										</div>
-										
-										<div class="description">
-											Start the Spire session with the given account key.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>user</b>
+									
+								</dt>
+								<dd>User info</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>user.email</b>
+									
+								</dt>
+								<dd>Email</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>user.password</b>
+									
+								</dt>
+								<dd>Password</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>user.password_confirmation</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional password confirmation</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="start"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>start</b>(key, cb)
+					
+					</div>
+					<div class="description">
+						Start the Spire session with the given account key.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.start(your_api_key, function (err, session) {
   if (!err) {
     // You now have a spire session.
     // Start creating channels and subscripions.
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>key</b>
-														
-													</dt>
-													<dd>The acccount key</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function(err)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item11'
-									>
-										<div class="fixedFont heading" id="subscribe">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>subscribe</b>(channelOrChannels, options, listener, cb)
-										</div>
-										
-										<div class="description">
-											Creates an new subscription to a channel or channels, and adds a listener.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>key</b>
+									
+								</dt>
+								<dd>The acccount key</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="subscribe"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>subscribe</b>(channelOrChannels, options, listener, cb)
+					
+					</div>
+					<div class="description">
+						Creates an new subscription to a channel or channels, and adds a listener.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.start(your_api_key, function (err, session) {
   spire.subscribe('myChannel', options, function (messages) {
     // `messages` is array of messages sent to the channel
   }, function (err) {
   // `err` will be non-null if there was a problem creating the subscription.
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{array or string}</span> <b>channelOrChannels</b>
-														
-													</dt>
-													<dd>Either a single channel name, or an array of
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{array or string}</span> <b>channelOrChannels</b>
+									
+								</dt>
+								<dd>Either a single channel name, or an array of
   channel names to subscribe to</dd>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>options</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Options to pass to the listener</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (messages)}</span> <b>listener</b>
-														
-													</dt>
-													<dd>Listener that will get called with each batch of messages</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item12'
-									>
-										<div class="fixedFont heading" id="subscription">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>subscription</b>(Subscription, channelOrChannels, cb)
-										</div>
-										
-										<div class="description">
-											Gets a subscription to the given channels.  Creates the channels and the
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>options</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Options to pass to the listener</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (messages)}</span> <b>listener</b>
+									
+								</dt>
+								<dd>Listener that will get called with each batch of messages</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="subscription"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>subscription</b>(Subscription, channelOrChannels, cb)
+					
+					</div>
+					<div class="description">
+						Gets a subscription to the given channels.  Creates the channels and the
 subscription if necessary.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.start(your_api_key, function (err, session) {
   spire.subscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
     if (!err) {
@@ -1276,66 +1268,62 @@ spire.start(your_api_key, function (err, session) {
     }
   });
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>Subscription</b>
-														
-													</dt>
-													<dd>name</dd>
-												
-													<dt>
-														<span class="light fixedFont">{array or string}</span> <b>channelOrChannels</b>
-														
-													</dt>
-													<dd>Either a single channel name, or an array of
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>Subscription</b>
+									
+								</dt>
+								<dd>name</dd>
+							
+								<dt>
+									<span class="light fixedFont">{array or string}</span> <b>channelOrChannels</b>
+									
+								</dt>
+								<dd>Either a single channel name, or an array of
   channel names to subscribe to</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item13'
-									>
-										<div class="fixedFont heading" id="subscriptionFromUrlAndCapability">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>subscriptionFromUrlAndCapability</b>(creds, cb)
-										</div>
-										
-										<div class="description">
-											Get Subscription from url and capability.
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="subscriptionFromUrlAndCapability"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>subscriptionFromUrlAndCapability</b>(creds, cb)
+					
+					</div>
+					<div class="description">
+						Get Subscription from url and capability.
 Use this method to get a subscription without starting a spire session.
 
 If you have a spire session, you should use <code>spire.subscription</code>.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.subscriptionFromUrlAndCapability({
   url: subscription_url,
   capability: subscription_capability
@@ -1344,69 +1332,65 @@ spire.subscriptionFromUrlAndCapability({
     // ...
   }
 })</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>creds</b>
-														
-													</dt>
-													<dd>Url and Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.url</b>
-														
-													</dt>
-													<dd>Url</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-														
-													</dt>
-													<dd>Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item14'
-									>
-										<div class="fixedFont heading" id="subscriptions">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>subscriptions</b>(cb)
-										</div>
-										
-										<div class="description">
-											Get the subscriptions for an account.  Will return cached data if it is
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>creds</b>
+									
+								</dt>
+								<dd>Url and Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.url</b>
+									
+								</dt>
+								<dd>Url</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									
+								</dt>
+								<dd>Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="subscriptions"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>subscriptions</b>(cb)
+					
+					</div>
+					<div class="description">
+						Get the subscriptions for an account.  Will return cached data if it is
 available, otherwise makes a request.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.start(your_api_key, function (err, session) {
   spire.subscriptions(function (err, subscriptions) {
     if (!err) {
@@ -1414,51 +1398,47 @@ spire.start(your_api_key, function (err, session) {
     }
   });
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|subscriptions)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item15'
-									>
-										<div class="fixedFont heading" id="subscriptions$">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>subscriptions$</b>(cb)
-										</div>
-										
-										<div class="description">
-											Get the subscriptions for an account.  Ignores any cached data and always
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscriptions)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="subscriptions$"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>subscriptions$</b>(cb)
+					
+					</div>
+					<div class="description">
+						Get the subscriptions for an account.  Ignores any cached data and always
 makes a request.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.start(your_api_key, function (err, session) {
   spire.subscriptions$(function (err, subscriptions) {
     if (!err) {
@@ -1466,50 +1446,46 @@ spire.start(your_api_key, function (err, session) {
     }
   });
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|subscriptions)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item16'
-									>
-										<div class="fixedFont heading" id="update">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>update</b>(user, cb)
-										</div>
-										
-										<div class="description">
-											Updates your account info.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">var spire = new Spire();
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscriptions)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="update"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>update</b>(user, cb)
+					
+					</div>
+					<div class="description">
+						Updates your account info.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">var spire = new Spire();
 spire.update({
   email: your_new_email
 }, function (err, account) {
@@ -1517,68 +1493,67 @@ spire.update({
     // Your account has been updated.
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>user</b>
-														
-													</dt>
-													<dd>User info</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>user.email</b>
-														
-													</dt>
-													<dd>Email</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>user.password</b>
-														
-													</dt>
-													<dd>Password</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>user.password_confirmation</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional password confirmation</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										
-									</li>
-								
-							</ul>
-						</div>
-					</div>
-				</section>
-			
-			
-	<!--
-	#### EVENT DETAILS
-	-->		
-			
-		</article>
-	</div>
-</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>user</b>
+									
+								</dt>
+								<dd>User info</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>user.email</b>
+									
+								</dt>
+								<dd>Email</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>user.password</b>
+									
+								</dt>
+								<dd>Password</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>user.password_confirmation</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional password confirmation</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
 
-		<script type="text/javascript">
-			wbos.CssTools.MediaQueryFallBack.LoadCss('../css/screen.css', '../css/handheld.css', 660)
-			codeview.classFilter.Init()
-		</script>
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Feb 25 2012 11:03:19 GMT-0800 (PST)
+		</div>
 	</body>
 </html>
-

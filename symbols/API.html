@@ -1,1186 +1,1166 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<meta charset="utf-8" />
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
-		<title>API | JsDoc Reference</title>
+		
+		<title>JsDoc Reference - API</title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-		<meta name="mobileoptimized" content="0" />
-	
-		<link rel="stylesheet" href="../css/all.css" media="all" />
-		<link rel="stylesheet" href="../css/handheld.css" media="only screen and (max-width: 660px)" />
-		<link rel="stylesheet" href="../css/handheld.css" media="handheld" />
-		<link rel="stylesheet" href="../css/screen.css" media="screen and (min-width: 661px)" />
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+}
 
-		<script src="../javascript/all.js"></script>
-		<!--[if lt IE 9]>
-			<script src="../javascript/html5.js"></script>
-		<![endif]-->
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
 	</head>
 
 	<body>
-
-<div class="index">
-	<div class="menu">
-		<div class="indexLinks">
-			<a href="../index.html">Classes</a>
-			<a href="../files.html">Files</a>
-		</div>
-	
-		<h2 class="heading1">Classes</h2>
-		
-		<input type="text" name="classFilter" class="classFilter" id="ClassFilter" placeholder="Filter"></input>
-		
-		<nav>
-			<ul class="classList" id="ClassList">
-				
-					<li><a href="../symbols/_global_.html">_global_</a></li>
-				
-					<li><a href="../symbols/Account.html">Account</a></li>
-				
-					<li><a href="../symbols/API.html">API</a></li>
-				
-					<li><a href="../symbols/Billing.html">Billing</a></li>
-				
-					<li><a href="../symbols/Channel.html">Channel</a></li>
-				
-					<li><a href="../symbols/Resource.html">Resource</a></li>
-				
-					<li><a href="../symbols/ResponseError.html">ResponseError</a></li>
-				
-					<li><a href="../symbols/Session.html">Session</a></li>
-				
-					<li><a href="../symbols/Spire.html">Spire</a></li>
-				
-					<li><a href="../symbols/Subscription.html">Subscription</a></li>
-				
-			</ul>
-		</nav>
-	</div>
-	<div class="fineprint" style="clear:both">
-		<footer>
-			
-			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
-			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
-			Generated on:
-			<time datetime='2012-1-22' pubdate>2012-1-22 12:04</time>
-		</footer>
-	</div>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
 </div>
+		<!-- end static/header.html -->
 
-<div class="index indexStatic"></div>
-
-<div class="content">
-	<div class="innerContent">
-		<article>
-			<header>
-				<h1 class="classTitle">
-					
-					Class <span>API</span>
-				</h1>
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/Account.html">Account</a></li>
+	
+	<li><a href="../symbols/API.html">API</a></li>
+	
+	<li><a href="../symbols/Billing.html">Billing</a></li>
+	
+	<li><a href="../symbols/Channel.html">Channel</a></li>
+	
+	<li><a href="../symbols/Resource.html">Resource</a></li>
+	
+	<li><a href="../symbols/ResponseError.html">ResponseError</a></li>
+	
+	<li><a href="../symbols/Session.html">Session</a></li>
+	
+	<li><a href="../symbols/Spire.html">Spire</a></li>
+	
+	<li><a href="../symbols/Subscription.html">Subscription</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
 				
-				<div class="intro">
-					<p class="description summary">
-						Collection of API methods
-					</p>
-						
+				Class API
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				
+			
+				Collection of API methods
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/lib_spire_api.js.html">api.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class API.">
+				<caption>Class Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/API.html#constructor">API</a></b>(spire, opts)
+							</div>
+							<div class="description">Abstraction for the Spire API</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class API.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
 					
-						<ul class="summary">
-							
-							
-							
-								<li>Defined in: <a href="../symbols/src/lib_spire_api.js.html">api.js</a></li>
-							
-							
-						</ul>
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#accountFromUrlAndCapability">accountFromUrlAndCapability</a></b>(creds, cb)
+								</div>
+								<div class="description">Get Account from url and capability.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#authorization">authorization</a></b>(resource)
+								</div>
+								<div class="description">Returns the Authorization header for the resource.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#billing">billing</a></b>(cb)
+								</div>
+								<div class="description">Get billing information for the account.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#channelFromUrlAndCapability">channelFromUrlAndCapability</a></b>(creds, cb)
+								</div>
+								<div class="description">Get Channel from url and capability.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#createAccount">createAccount</a></b>(user, cb)
+								</div>
+								<div class="description">Register for a new spire account, and authenticates as the newly created account</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#createSession">createSession</a></b>(key, cb)
+								</div>
+								<div class="description">Creates a spire session from an account key.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#discover">discover</a></b>(cb)
+								</div>
+								<div class="description">Discovers urls from Spire API.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#login">login</a></b>(email, password, cb)
+								</div>
+								<div class="description">Logs in with the given email and password.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#mediaType">mediaType</a></b>(name)
+								</div>
+								<div class="description">Returns the MIME type for resourceName.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#passwordResetRequest">passwordResetRequest</a></b>(email, cb)
+								</div>
+								<div class="description">Request a password reset for email.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#request">request</a></b>()
+								</div>
+								<div class="description">Make requests to the api.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#sessionFromUrlAndCapability">sessionFromUrlAndCapability</a></b>(creds, cb)
+								</div>
+								<div class="description">Get Session from url and capability.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#subscriptionFromUrlAndCapability">subscriptionFromUrlAndCapability</a></b>(creds, cb)
+								</div>
+								<div class="description">Get Subscription from url and capability.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/API.html#updateAccountWithUrlAndCapability">updateAccountWithUrlAndCapability</a></b>(account, cb)
+								</div>
+								<div class="description">Update Account from url and capability.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Class Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>API</b>(spire, opts)
+				</div>
+				
+				<div class="description">
+					Abstraction for the Spire API
 					
 				</div>
-			</header>
-			
-			
-				<section>
-					<div class="props">
-						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class API.">
-							<caption class="sectionTitle">Class Summary</caption>
-							<thead>
-								<tr>
-									<th scope="col">Constructor Attributes</th>
-									<th scope="col">Constructor Name and Description</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class="attributes">&nbsp;</td>
-									<td class="nameDescription" >
-										<div class="fixedFont">
-											<b><a href="../symbols/API.html#constructor">API</a></b>(spire, opts)
-										</div>
-										<div class="description">Abstraction for the Spire API</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</section>
-			
-			
-			
-	<!--
-	#### METHODS SUMMARY
-	-->
-			
-				<section>
+				
+				
+				
+				<pre class="code">var api = new API(options);</pre>
+				
+				
+				
+				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{object}</span>  <b>spire</b>
+								
+							</dt>
+								<dd>Spire object</dd>
+						
+							<dt>
+								<span class="light fixedFont">{object}</span>  <b>opts</b>
+								<i>Optional</i>
+							</dt>
+								<dd>Options</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opts.url</b>
+								<i>Optional</i>
+							</dt>
+								<dd>Spire api url</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opts.version</b>
+								<i>Optional</i>
+							</dt>
+								<dd>Version of the Spire api to use</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opts.timeout</b>
+								<i>Optional</i>
+							</dt>
+								<dd>Timeout for requests</dd>
+						
+						</dl>
 					
 					
-					<div class="props">
-						<h2 class="sectionTitle">Method Summary</h2>
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="accountFromUrlAndCapability"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>accountFromUrlAndCapability</b>(creds, cb)
+					
+					</div>
+					<div class="description">
+						Get Account from url and capability.
 						
 						
-							<nav>
-								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class API.">
-									<thead>
-										<tr>
-											<th scope="col">Method Attributes</th>
-											<th scope="col">Method Name and Description</th>
-										</tr>
-									</thead>
-									
-									<tbody>
-										
-										
-											<tr
-												 class='item0'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#accountFromUrlAndCapability">accountFromUrlAndCapability</a></b>(creds, cb)
-													</div>
-													<div class="description">Get Account from url and capability.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item1'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#authorization">authorization</a></b>(resource)
-													</div>
-													<div class="description">Returns the Authorization header for the resource.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item2'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#billing">billing</a></b>(cb)
-													</div>
-													<div class="description">Get billing information for the account.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item3'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#channelFromUrlAndCapability">channelFromUrlAndCapability</a></b>(creds, cb)
-													</div>
-													<div class="description">Get Channel from url and capability.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item4'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#createAccount">createAccount</a></b>(user, cb)
-													</div>
-													<div class="description">Register for a new spire account, and authenticates as the newly created account</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item5'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#createSession">createSession</a></b>(key, cb)
-													</div>
-													<div class="description">Creates a spire session from an account key.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item6'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#discover">discover</a></b>(cb)
-													</div>
-													<div class="description">Discovers urls from Spire API.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item7'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#login">login</a></b>(email, password, cb)
-													</div>
-													<div class="description">Logs in with the given email and password.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item8'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#mediaType">mediaType</a></b>(name)
-													</div>
-													<div class="description">Returns the MIME type for resourceName.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item9'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#passwordResetRequest">passwordResetRequest</a></b>(email, cb)
-													</div>
-													<div class="description">Request a password reset for email.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item10'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#request">request</a></b>()
-													</div>
-													<div class="description">Make requests to the api.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item11'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#sessionFromUrlAndCapability">sessionFromUrlAndCapability</a></b>(creds, cb)
-													</div>
-													<div class="description">Get Session from url and capability.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item12'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#subscriptionFromUrlAndCapability">subscriptionFromUrlAndCapability</a></b>(creds, cb)
-													</div>
-													<div class="description">Get Subscription from url and capability.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item13'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/API.html#updateAccountWithUrlAndCapability">updateAccountWithUrlAndCapability</a></b>(account, cb)
-													</div>
-													<div class="description">Update Account from url and capability.</div>
-												</td>
-											</tr>
-										
-									</tbody>
-								</table>
-							</nav>
-						
+					</div>
+					
+					
 					
 						
-					</div>
-				</section>
-			
-			
-	<!--
-	#### EVENTS SUMMARY
-	-->
-			
-	<!--
-	#### CONSTRUCTOR DETAILS
-	-->
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle" id="constructor">
-								Class Detail
-							</h2>
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
 							
-							<div class="fixedFont">
-								<b>API</b>(spire, opts)
-							</div>
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>creds</b>
+									
+								</dt>
+								<dd>Url and Capability</dd>
 							
-							<div class="description">
-								Abstraction for the Spire API
-								
-							</div>
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.url</b>
+									
+								</dt>
+								<dd>Url</dd>
 							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									
+								</dt>
+								<dd>Capability</dd>
 							
-								
-									<pre class="code">var api = new API(options);</pre>
-								
+								<dt>
+									<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
 							
+							</dl>
 						
-							
-								<dl class="detailList params">
-									<dt class="heading">Parameters:</dt>
-									
-										<dt>
-											<span class="light fixedFont">{object}</span>  <b>spire</b>
-											
-										</dt>
-										<dd>Spire object</dd>
-									
-										<dt>
-											<span class="light fixedFont">{object}</span>  <b>opts</b>
-											<i>Optional</i>
-										</dt>
-										<dd>Options</dd>
-									
-										<dt>
-											<span class="light fixedFont">{string}</span>  <b>opts.url</b>
-											<i>Optional</i>
-										</dt>
-										<dd>Spire api url</dd>
-									
-										<dt>
-											<span class="light fixedFont">{string}</span>  <b>opts.version</b>
-											<i>Optional</i>
-										</dt>
-										<dd>Version of the Spire api to use</dd>
-									
-										<dt>
-											<span class="light fixedFont">{string}</span>  <b>opts.timeout</b>
-											<i>Optional</i>
-										</dt>
-										<dd>Timeout for requests</dd>
-									
-								</dl>
-							
-							
-							
-						</div>
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="authorization"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{string}</span>
+					<b>authorization</b>(resource)
+					
 					</div>
-				</section>
-			
-	<!--
-	#### FIELD DETAILS
-	-->
-			
-	<!--
-	#### METHOD DETAILS
-	-->		
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle">
-								Method Detail
-							</h2>
+					<div class="description">
+						Returns the Authorization header for the resource.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
 							
-							<ul class="methodDetail" id="MethodDetail">
-								
-								
-									<li 
-										 class='item0'
-									>
-										<div class="fixedFont heading" id="accountFromUrlAndCapability">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>accountFromUrlAndCapability</b>(creds, cb)
-										</div>
-										
-										<div class="description">
-											Get Account from url and capability.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>creds</b>
-														
-													</dt>
-													<dd>Url and Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.url</b>
-														
-													</dt>
-													<dd>Url</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-														
-													</dt>
-													<dd>Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item1'
-									>
-										<div class="fixedFont heading" id="authorization">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{string}</span>
-											
-											<b>authorization</b>(resource)
-										</div>
-										
-										<div class="description">
-											Returns the Authorization header for the resource.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{<a href="../symbols/Resource.html">Resource</a>}</span> <b>resource</b>
-														
-													</dt>
-													<dd>Resource</dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{string}</span> Authorization header for the resource</dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item2'
-									>
-										<div class="fixedFont heading" id="billing">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>billing</b>(cb)
-										</div>
-										
-										<div class="description">
-											Get billing information for the account.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|billingResource)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item3'
-									>
-										<div class="fixedFont heading" id="channelFromUrlAndCapability">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>channelFromUrlAndCapability</b>(creds, cb)
-										</div>
-										
-										<div class="description">
-											Get Channel from url and capability.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>creds</b>
-														
-													</dt>
-													<dd>Url and Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.url</b>
-														
-													</dt>
-													<dd>Url</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-														
-													</dt>
-													<dd>Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item4'
-									>
-										<div class="fixedFont heading" id="createAccount">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>createAccount</b>(user, cb)
-										</div>
-										
-										<div class="description">
-											Register for a new spire account, and authenticates as the newly created account
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>user</b>
-														
-													</dt>
-													<dd>User info</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>user.email</b>
-														
-													</dt>
-													<dd>Email</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>user.password</b>
-														
-													</dt>
-													<dd>Password</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>user.password_confirmation</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Optional password confirmation</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item5'
-									>
-										<div class="fixedFont heading" id="createSession">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>createSession</b>(key, cb)
-										</div>
-										
-										<div class="description">
-											Creates a spire session from an account key.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>key</b>
-														
-													</dt>
-													<dd>The acccount key</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function(err)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item6'
-									>
-										<div class="fixedFont heading" id="discover">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>discover</b>(cb)
-										</div>
-										
-										<div class="description">
-											Discovers urls from Spire API.  Since this description does not change often,
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Resource.html">Resource</a>}</span> <b>resource</b>
+									
+								</dt>
+								<dd>Resource</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{string}</span> Authorization header for the resource</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="billing"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>billing</b>(cb)
+					
+					</div>
+					<div class="description">
+						Get billing information for the account.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|billingResource)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="channelFromUrlAndCapability"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>channelFromUrlAndCapability</b>(creds, cb)
+					
+					</div>
+					<div class="description">
+						Get Channel from url and capability.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>creds</b>
+									
+								</dt>
+								<dd>Url and Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.url</b>
+									
+								</dt>
+								<dd>Url</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									
+								</dt>
+								<dd>Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="createAccount"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>createAccount</b>(user, cb)
+					
+					</div>
+					<div class="description">
+						Register for a new spire account, and authenticates as the newly created account
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>user</b>
+									
+								</dt>
+								<dd>User info</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>user.email</b>
+									
+								</dt>
+								<dd>Email</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>user.password</b>
+									
+								</dt>
+								<dd>Password</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>user.password_confirmation</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional password confirmation</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="createSession"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>createSession</b>(key, cb)
+					
+					</div>
+					<div class="description">
+						Creates a spire session from an account key.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>key</b>
+									
+								</dt>
+								<dd>The acccount key</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="discover"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>discover</b>(cb)
+					
+					</div>
+					<div class="description">
+						Discovers urls from Spire API.  Since this description does not change often,
 we only make the request once and cache the result for subsequent calls.
-											
-											
-											
-											
-										</div>
-										
-										
-											
-												<pre class="code">api.discover(function (err, discovered) {
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">api.discover(function (err, discovered) {
   if (!err) {
     // ...
   }
 });</pre>
-											
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{function(err|discovered)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item7'
-									>
-										<div class="fixedFont heading" id="login">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>login</b>(email, password, cb)
-										</div>
-										
-										<div class="description">
-											Logs in with the given email and password.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>email</b>
-														
-													</dt>
-													<dd>Email</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>password</b>
-														
-													</dt>
-													<dd>Password</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function(err)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item8'
-									>
-										<div class="fixedFont heading" id="mediaType">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{string}</span>
-											
-											<b>mediaType</b>(name)
-										</div>
-										
-										<div class="description">
-											Returns the MIME type for resourceName.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>name</b>
-														<i>Optional</i>
-													</dt>
-													<dd>Name of the resource MIME type to return</dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{string}</span> MIME type of the resource</dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item9'
-									>
-										<div class="fixedFont heading" id="passwordResetRequest">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>passwordResetRequest</b>(email, cb)
-										</div>
-										
-										<div class="description">
-											Request a password reset for email.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>email</b>
-														
-													</dt>
-													<dd>Email</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item10'
-									>
-										<div class="fixedFont heading" id="request">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>request</b>()
-										</div>
-										
-										<div class="description">
-											Make requests to the api.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">See:</dt>
-													
-														<dd>Resourse.prototype.request</dd>
-													
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item11'
-									>
-										<div class="fixedFont heading" id="sessionFromUrlAndCapability">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>sessionFromUrlAndCapability</b>(creds, cb)
-										</div>
-										
-										<div class="description">
-											Get Session from url and capability.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>creds</b>
-														
-													</dt>
-													<dd>Url and Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.url</b>
-														
-													</dt>
-													<dd>Url</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-														
-													</dt>
-													<dd>Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item12'
-									>
-										<div class="fixedFont heading" id="subscriptionFromUrlAndCapability">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>subscriptionFromUrlAndCapability</b>(creds, cb)
-										</div>
-										
-										<div class="description">
-											Get Subscription from url and capability.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>creds</b>
-														
-													</dt>
-													<dd>Url and Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.url</b>
-														
-													</dt>
-													<dd>Url</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-														
-													</dt>
-													<dd>Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item13'
-									>
-										<div class="fixedFont heading" id="updateAccountWithUrlAndCapability">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>updateAccountWithUrlAndCapability</b>(account, cb)
-										</div>
-										
-										<div class="description">
-											Update Account from url and capability.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{object}</span> <b>account</b>
-														
-													</dt>
-													<dd>Must contain at least Url and Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.url</b>
-														
-													</dt>
-													<dd>Url</dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-														
-													</dt>
-													<dd>Capability</dd>
-												
-													<dt>
-														<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
-														
-													</dt>
-													<dd>Callback</dd>
-												
-											</dl>
-										
-										
-										
-										
-									</li>
-								
-							</ul>
-						</div>
-					</div>
-				</section>
-			
-			
-	<!--
-	#### EVENT DETAILS
-	-->		
-			
-		</article>
-	</div>
-</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function(err|discovered)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
 
-		<script type="text/javascript">
-			wbos.CssTools.MediaQueryFallBack.LoadCss('../css/screen.css', '../css/handheld.css', 660)
-			codeview.classFilter.Init()
-		</script>
+					<hr />
+				
+					<a name="login"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>login</b>(email, password, cb)
+					
+					</div>
+					<div class="description">
+						Logs in with the given email and password.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>email</b>
+									
+								</dt>
+								<dd>Email</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>password</b>
+									
+								</dt>
+								<dd>Password</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mediaType"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{string}</span>
+					<b>mediaType</b>(name)
+					
+					</div>
+					<div class="description">
+						Returns the MIME type for resourceName.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>name</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Name of the resource MIME type to return</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{string}</span> MIME type of the resource</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="passwordResetRequest"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>passwordResetRequest</b>(email, cb)
+					
+					</div>
+					<div class="description">
+						Request a password reset for email.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>email</b>
+									
+								</dt>
+								<dd>Email</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="request"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>request</b>()
+					
+					</div>
+					<div class="description">
+						Make requests to the api.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							
+								<dd>Resourse.prototype.request</dd>
+							
+							</dl>
+						
+
+					<hr />
+				
+					<a name="sessionFromUrlAndCapability"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>sessionFromUrlAndCapability</b>(creds, cb)
+					
+					</div>
+					<div class="description">
+						Get Session from url and capability.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>creds</b>
+									
+								</dt>
+								<dd>Url and Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.url</b>
+									
+								</dt>
+								<dd>Url</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									
+								</dt>
+								<dd>Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="subscriptionFromUrlAndCapability"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>subscriptionFromUrlAndCapability</b>(creds, cb)
+					
+					</div>
+					<div class="description">
+						Get Subscription from url and capability.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>creds</b>
+									
+								</dt>
+								<dd>Url and Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.url</b>
+									
+								</dt>
+								<dd>Url</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									
+								</dt>
+								<dd>Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="updateAccountWithUrlAndCapability"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>updateAccountWithUrlAndCapability</b>(account, cb)
+					
+					</div>
+					<div class="description">
+						Update Account from url and capability.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>account</b>
+									
+								</dt>
+								<dd>Must contain at least Url and Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.url</b>
+									
+								</dt>
+								<dd>Url</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									
+								</dt>
+								<dd>Capability</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Feb 25 2012 11:03:19 GMT-0800 (PST)
+		</div>
 	</body>
 </html>
-

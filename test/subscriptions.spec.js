@@ -1,5 +1,6 @@
 describe('Subscriptions', function(){
   beforeEach(function(){
+    var finished = false;
     runs(function(){
       this.spire = createSpire();
 
@@ -20,22 +21,50 @@ describe('Subscriptions', function(){
     waitsFor(function () {
       return finished;
     }, 'Session registration or start', 10000);
-
   });
 
   describe('Create a subscription using spire.subscriptionFromUrlAndCapability', function() {
-    runs(function(){
-      var algernon = this;
-      // Our friend Algernon here doesn't assert anything, I just wanted to
-      // make sure this method didn't crash like it used to
-      this.spire.channel('constantinople', function(err, channel){
-        channel.subscription('istanbul', function(err, subscription){
-          algernon.subscriptionData = subscription.data;
-          algernon.spire.subscriptionFromUrlAndCapability(algernon.subscriptionData, function(err, subscription){
-            algernon.subscriptionResource = subscription;
+    beforeEach(function () {
+      var finished = false;
+      runs(function(){
+        var algernon = this;
+        // Our friend Algernon here doesn't assert anything, I just wanted to
+        // make sure this method didn't crash like it used to
+        this.spire.subscription('constantinople', 'istanbul', function (err, subscription) {
+          algernon.url = subscription.url();
+          var creds = {
+            url: subscription.url(),
+            capability: subscription.data.capability
+          };
+          algernon.spire.subscriptionFromUrlAndCapability(creds, function(err, subscription){
+            algernon.err = err;
+            algernon.subscription = subscription;
+            subscription.retrieveMessages({ timeout: 0 }, function (err, messages) {
+              algernon.messagesErr = err;
+              algernon.messages = messages;
+              finished = true;
+            });
           });
         });
       });
+
+      waitsFor(function () {
+        return finished;
+      }, 'subscriptionFromUrlAndCapability and retreiveMessages', 10000);
+    });
+
+    it('should have a subscription', function () {
+      expect(this.subscription).toBeTruthy();
+      expect(this.err).toBeFalsy();
+    });
+
+    it('should have the correct url', function () {
+      expect(this.subscription.url()).toBe(this.url);
+    });
+
+    it('should make a successfull request for messages', function () {
+      expect(this.messagesErr).toBeFalsy();
+      expect(this.messages).toEqual([]);
     });
   });
 });

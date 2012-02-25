@@ -1710,7 +1710,9 @@ API.prototype.discover = function (cb) {
   var api = this;
 
   if (this.description) {
-    return cb(null, this.description);
+    return process.nextTick(function () {
+      cb(null, api.description);
+    });
   }
 
   this.request('discover', function (err, description) {
@@ -1894,7 +1896,9 @@ API.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
   this.discover(function (err) {
     if (err) return cb(err);
     var subscription = new Subscription(api.spire, creds);
-    subscription.get(cb);
+    process.nextTick(function () {
+      cb(null, subscription);
+    });
   });
 };
 
@@ -2150,7 +2154,7 @@ Resource.defineRequest = function (obj, name, fn) {
 
     shred.request(req)
       .on('error', function (res) {
-        var error = new ResponseError(res);
+        var error = new ResponseError(res, req);
         callback(error);
       })
       .on('success', function (res) {
@@ -5340,11 +5344,13 @@ require.define("/spire/api/response_error.js", function (require, module, export
  * @class HTTP Response Error
  * @constructor
  * @param {object} response Response HTTP client
+ * @param {object} request Request description
  */
-var ResponseError = function (response) {
+var ResponseError = function (response, request) {
   this.message = 'ResponseError: ' + response.status;
   this.response = response;
   this.status = response.status;
+  this.request = request;
 };
 
 ResponseError.prototype = new Error();
@@ -6202,6 +6208,11 @@ Subscription.prototype.retrieveMessages = function (options, cb) {
     cb(null, messages);
   });
 };
+
+/**
+ * Alias for subscription.retreiveMessages.
+ */
+Subscription.prototype.get = Subscription.prototype.retreiveMessages;
 
 /**
  * Gets new messages for the subscription.  This method forces a 0 second

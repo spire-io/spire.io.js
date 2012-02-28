@@ -32,9 +32,9 @@ Register a new spire account:
       }
     });
 
-Or start spire with an account key:
+Or start spire with an account secret:
 
-    spire.start(your_account, function (err, session) {
+    spire.start(your_account_secret, function (err, session) {
         if (!err) {
           // You now have a Spire session
         }

@@ -1,5 +1,5 @@
 { "name": "spire.io.js"
-, "version": "0.3.6"
+, "version": "0.3.7"
 , "description": "A JS client for spire.io messaging API.  Runs in node and the browser."
 , "keywords": ["messaging", "spire", "spire.io", "browser"]
 , "homepage": "https://github.com/spire-io/spire.io.js"

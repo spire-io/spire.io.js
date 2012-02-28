@@ -372,14 +372,21 @@ var async = require('async')
  * var spire = new Spire();
  *
  * @constructor
- * @param {object} opts Options for Spire
- * @param {string} opts.url Spire url do use (defaults to 'https://api.spire.io')
+ * @param {object} [opts] Options for Spire
+ * @param {string} [key] The account API key.  If you do you not set this, you
+ * must call one of:
+ *   * `spire.start(key, callback)`
+ *   * `spire.login(email, password, callback)` or
+ *   * `spire.register(user, callback)
+ *   before you can start creating channels.
+ * @param {string} [opts.url] Spire url do use (defaults to 'https://api.spire.io')
  * @param {string} opts.version Version of Spire api to use (defaults to '1.0')
  * @param {number} opts.timeout Timeout for requests (defaults to 30 seconds)
  */
 function Spire(opts) {
   this.api = new API(this, opts);
   this.session = null;
+  this._opts_key = opts.key;
 }
 
 module.exports = Spire;
@@ -390,6 +397,7 @@ module.exports = Spire;
  * @returns {string} Account key
  */
 Spire.prototype.key = function () {
+  this._ensureSession();
   if (this.session && this.session.resources && this.session.resources.account) {
     return this.session.resources.account.key();
   }
@@ -497,11 +505,11 @@ Spire.prototype.register = function (user, cb) {
  * @param {function (err)} cb Callback
  */
 Spire.prototype.update = function (user, cb) {
-  if (!this.session) {
-    return cb(new Error("You must log in to spire to do this."));
-  }
-
-  this.session.resources.account.update(user, cb);
+  var spire = this;
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
+    spire.session.resources.account.update(user, cb);
+  });
 };
 
 /**
@@ -539,14 +547,15 @@ Spire.prototype.passwordResetRequest = function (email, cb) {
  * @param {function(err, channel)} cb Callback
  */
 Spire.prototype.channel = function (name, cb) {
-  if (!this.session) {
-    return cb(new Error("You must start spire before you can do this."));
-  }
+  var spire = this;
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
 
-  if (this.session._channels[name]) {
-    return cb(null, this.session._channels[name]);
-  }
-  this._findOrCreateChannel(name, cb);
+    if (spire.session._channels[name]) {
+      return cb(null, spire.session._channels[name]);
+    }
+    spire._findOrCreateChannel(name, cb);
+  });
 };
 
 /**
@@ -566,11 +575,11 @@ Spire.prototype.channel = function (name, cb) {
  * @param {function (err, channels)} cb Callback
  */
 Spire.prototype.channels = function (cb) {
-  if (!this.session) {
-    return cb(new Error("You must start spire before you can do this."));
-  }
-
-  this.spire.session.channels(cb);
+  var spire = this;
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
+    spire.session.channels(cb);
+  });
 };
 
 /**
@@ -590,11 +599,11 @@ Spire.prototype.channels = function (cb) {
  * @param {function (err, channels)} cb Callback
  */
 Spire.prototype.channels$ = function (cb) {
-  if (!this.session) {
-    return cb(new Error("You must start spire before you can do this."));
-  }
-
-  this.spire.session.channels$(cb);
+  var spire = this;
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
+    spire.session.channels$(cb);
+  });
 };
 
 /**
@@ -621,16 +630,19 @@ Spire.prototype.subscription = function (name, channelOrChannels, cb) {
     [channelOrChannels] : channelOrChannels;
 
   var spire = this;
-  async.forEach(
-    channelNames,
-    function (channelName, innerCB) {
-      spire._findOrCreateChannel(channelName, innerCB);
-    },
-    function (err) {
-      if (err) return cb(err);
-      spire._findOrCreateSubscription(name, channelNames, cb);
-    }
-  );
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
+    async.forEach(
+      channelNames,
+      function (channelName, innerCB) {
+        spire._findOrCreateChannel(channelName, innerCB);
+      },
+      function (err) {
+        if (err) return cb(err);
+        spire._findOrCreateSubscription(name, channelNames, cb);
+      }
+    );
+  });
 };
 
 /**
@@ -650,11 +662,11 @@ Spire.prototype.subscription = function (name, channelOrChannels, cb) {
  * @param {function (err, subscriptions)} cb Callback
  */
 Spire.prototype.subscriptions = function (cb) {
-  if (!this.session) {
-    return cb(new Error("You must start spire before you can do this."));
-  }
-
-  this.session.subscriptions(cb);
+  var spire = this;
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
+    spire.session.subscriptions(cb);
+  });
 };
 
 /**
@@ -674,11 +686,11 @@ Spire.prototype.subscriptions = function (cb) {
  * @param {function (err, subscriptions)} cb Callback
  */
 Spire.prototype.subscriptions$ = function (cb) {
-  if (!this.session) {
-    return cb(new Error("You must start spire before you can do this."));
-  }
-
-  this.session.subscriptions$(cb);
+  var spire = this;
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
+    spire.session.subscriptions$(cb);
+  });
 };
 
 /**
@@ -704,6 +716,8 @@ Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) 
     cb = listener;
     listener = options;
   }
+
+  this._ensureSession(cb);
 
   cb = cb || function () {};
 
@@ -736,9 +750,12 @@ Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) 
  */
 Spire.prototype.publish = function (channelName, message, cb) {
   var spire = this;
-  spire.channel(channelName, function (err, channel) {
-    if (err) { return cb(err); }
-    channel.publish(message, cb);
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
+    spire.channel(channelName, function (err, channel) {
+      if (err) { return cb(err); }
+      channel.publish(message, cb);
+    });
   });
 };
 
@@ -893,7 +910,10 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
     });
   }
 
-  getChannel();
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
+    getChannel();
+  });
 };
 
 /**
@@ -933,8 +953,45 @@ Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
     });
   }
 
-  getSubscription();
+  this._ensureSession(function (err) {
+    if (err) return cb(err);
+    getSubscription();
+  });
 };
+
+function NoSessionError(message) {
+  this.name = "No Session Error";
+  this.message = message ||
+    "You need a Spire session to do that.\n" +
+    "Call one of:\n" +
+    "spire.start(callback)\n" +
+    "spire.login(email, password, callback)\n" +
+    "spire.register(user, callback)\n";
+}
+
+NoSessionError.prototype = new Error();
+NoSessionError.constructor = NoSessionError;
+
+Spire.prototype._ensureSession = function (cb) {
+  if (this.session) {
+    if (cb) return cb(null);
+    return;
+  }
+
+  if (!this._opts_key) {
+    var noSessionError = new NoSessionError();
+    if (cb) return cb(noSessionError);
+    throw noSessionError;
+  }
+
+  if (!cb) {
+    throw new NoSessionError();
+  }
+
+  this.start(this._opts_key, cb);
+};
+
+
 
 });
 
@@ -5778,7 +5835,7 @@ Session.prototype.resetAccount = function (cb) {
  * @param {function (err, channels)} cb Callback
  */
 Session.prototype.channels = function (cb) {
-  if (this._channels) return cb(null, this._channels);
+  if (!_.isEmpty(this._channels)) return cb(null, this._channels);
   this.channels$(cb);
 };
 
@@ -5822,7 +5879,7 @@ Session.prototype.channels$ = function (cb) {
  * @param {function (err, channels)} cb Callback
  */
 Session.prototype.subscriptions = function (cb) {
-  if (this._subscriptions) return cb(null, this._subscriptions);
+  if (!_.isEmpty(this._subscriptions)) return cb(null, this._subscriptions);
   this.subscriptions$(cb);
 };
 

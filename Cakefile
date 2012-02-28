@@ -84,47 +84,51 @@ task 'test:server', 'launch a server for the browser tests', (o)->
       res.sendfile libSrc
 
   app.get '/', (req, res)->
-    index = [
-      '<html>'
-      '<head>'
-      '  <title>spire.io.js | specs</title>'
-      '  <link rel="shortcut icon"'
-      '    type="image/png" href="jasmine/favicon.png" />'
-      '  <link href="jasmine/jasmine.css" rel="stylesheet"/>'
-      '  <script src="jasmine/jasmine.js"></script>'
-      '  <script src="jasmine/jasmine-html.js"></script>'
-      '  <script src="jasmine/sinon.helpers.js"></script>'
-      '  <script src="jasmine/jasmine-sinon.helpers.js"></script>'
-      ''
-      '  <script src="spire.io.bundle.js"></script>'
-      '  <script src="jasmine/helpers.js"></script>'
-      '  ' + tests.join('\n  ')
-      '</head>'
-      ''
-      '<body>'
-      '  <p>'
-      '    commit: <a href="' + link + '">' + sha + '</a>'
-      '  </p>'
-      '  <p>'
-      '    --api-url <a href="' + o['api-url'] + '">' + o['api-url'] + '</a>'
-      '  </p>'
-      '  <p>'
-      '    --files ' + _.compact(testFiles).join(', ')
-      '  </p>'
-      '  <script type="text/javascript">'
-      '    var Spire = require("./spire.io.js");'
-      '    var opts = {};'
-      '    opts.url = "' + o['api-url'] + '";'
-      '    function createSpire() {'
-      '      return new Spire(opts);'
-      '    };'
-      '    var jasmineEnv = jasmine.getEnv();'
-      '    jasmineEnv.reporter = new jasmine.TrivialReporter();'
-      '    jasmineEnv.execute();'
-      '  </script>'
-      '</body>'
-      '</html>'
-    ].join '\n'
+    index = """
+      <html>
+      <head>
+        <title>spire.io.js | specs</title>
+        <link rel="shortcut icon"
+          type="image/png" href="jasmine/favicon.png" />
+        <link href="jasmine/jasmine.css" rel="stylesheet"/>
+        <script src="jasmine/jasmine.js"></script>
+        <script src="jasmine/jasmine-html.js"></script>
+        <script src="jasmine/sinon.helpers.js"></script>
+        <script src="jasmine/jasmine-sinon.helpers.js"></script>
+
+        <script src="spire.io.bundle.js"></script>
+        <script src="jasmine/helpers.js"></script>
+        #{tests.join('\n  ')}
+      </head>
+
+      <body>
+        <p>
+          commit: <a href="link">#{sha}</a>
+        </p>
+        <p>
+          --api-url <a href="#{o['api-url']}">#{o['api-url']}</a>
+        </p>
+        <p>
+          --files #{_.compact(testFiles).join(', ')}
+        </p>
+        <script type="text/javascript">
+          var _Spire = require("./spire.io.js");
+          function Spire(opts) {
+            opts = opts || {};
+            opts.url = "#{o['api-url']}";
+            return new _Spire(opts);
+          };
+          function createSpire() {
+            return new Spire();
+          };
+          var jasmineEnv = jasmine.getEnv();
+          jasmineEnv.reporter = new jasmine.TrivialReporter();
+          jasmineEnv.execute();
+        </script>
+      </body>
+      </html>
+    """
+
     res.header 'Content-Type', 'text/html'
     res.send(index);
 

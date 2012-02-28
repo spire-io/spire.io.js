@@ -35,9 +35,8 @@ Register a new spire account:
 Or start spire with an account key:
 
     spire.start(your_account, function (err, session) {
-      spire.channel('foo', function (err, channel) {
         if (!err) {
-          // `channel` is the channel named "foo".
+          // You now have a Spire session
         }
       });
     });

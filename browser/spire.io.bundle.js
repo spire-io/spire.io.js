@@ -373,14 +373,14 @@ var async = require('async')
  *
  * @example
  * var spire = new Spire({
- *   key: my_account_key
+ *   secret: my_account_secret
  * });
  *
  * @constructor
  * @param {object} [opts] Options for Spire
- * @param {string} [key] The account API key.  If you do you not set this, you
+ * @param {string} [secret] The account API secret.  If you do you not set this, you
  * must call one of:
- *   * `spire.start(key, callback)`
+ *   * `spire.start(secret, callback)`
  *   * `spire.login(email, password, callback)` or
  *   * `spire.register(user, callback)
  *   before you can start creating channels.
@@ -391,42 +391,42 @@ var async = require('async')
 function Spire(opts) {
   this.api = new API(this, opts);
   this.session = null;
-  this._opts_key = opts.key;
+  this._opts_secret = opts.secret;
 }
 
 module.exports = Spire;
 
 /**
- * Get the account key.
+ * Get the account secret.
  *
- * @returns {string} Account key
+ * @returns {string} Account secret
  */
-Spire.prototype.key = function () {
+Spire.prototype.secret = function () {
   this._ensureSession();
   if (this.session && this.session.resources && this.session.resources.account) {
-    return this.session.resources.account.key();
+    return this.session.resources.account.secret();
   }
   return null;
 };
 
 /**
- * Start the Spire session with the given account key.
+ * Start the Spire session with the given account secret.
  *
  * @example
  * var spire = new Spire();
- * spire.start(your_api_key, function (err, session) {
+ * spire.start(your_api_secret, function (err, session) {
  *   if (!err) {
  *     // You now have a spire session.
  *     // Start creating channels and subscripions.
  *   }
  * });
  *
- * @param {string} key The acccount key
+ * @param {string} secret The acccount secret
  * @param {function(err)} cb Callback
  */
-Spire.prototype.start = function (key, cb) {
+Spire.prototype.start = function (secret, cb) {
   var spire = this;
-  this.api.createSession(key, function (err, session) {
+  this.api.createSession(secret, function (err, session) {
     if (err) return cb(err);
     spire.session = session;
     cb(null);
@@ -540,7 +540,7 @@ Spire.prototype.passwordResetRequest = function (email, cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.start(your_api_key, function (err, session) {
+ * spire.start(your_api_secret, function (err, session) {
  *   spire.channel('foo', function (err, channel) {
  *     if (!err) {
  *       // `channel` is the channel named "foo".
@@ -569,7 +569,7 @@ Spire.prototype.channel = function (name, cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.start(your_api_key, function (err, session) {
+ * spire.start(your_api_secret, function (err, session) {
  *   spire.channels(function (err, channels) {
  *     if (!err) {
  *       // `channels` is a hash of all the account's channels
@@ -593,7 +593,7 @@ Spire.prototype.channels = function (cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.start(your_api_key, function (err, session) {
+ * spire.start(your_api_secret, function (err, session) {
  *   spire.channels$(function (err, channels) {
  *     if (!err) {
  *       // `channels` is a hash of all the account's channels
@@ -617,7 +617,7 @@ Spire.prototype.channels$ = function (cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.start(your_api_key, function (err, session) {
+ * spire.start(your_api_secret, function (err, session) {
  *   spire.subscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
  *     if (!err) {
  *       // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
@@ -656,7 +656,7 @@ Spire.prototype.subscription = function (name, channelOrChannels, cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.start(your_api_key, function (err, session) {
+ * spire.start(your_api_secret, function (err, session) {
  *   spire.subscriptions(function (err, subscriptions) {
  *     if (!err) {
  *       // `subscriptions` is a hash of all the account's subscriptions
@@ -680,7 +680,7 @@ Spire.prototype.subscriptions = function (cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.start(your_api_key, function (err, session) {
+ * spire.start(your_api_secret, function (err, session) {
  *   spire.subscriptions$(function (err, subscriptions) {
  *     if (!err) {
  *       // `subscriptions` is a hash of all the account's subscriptions
@@ -703,7 +703,7 @@ Spire.prototype.subscriptions$ = function (cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.start(your_api_key, function (err, session) {
+ * spire.start(your_api_secret, function (err, session) {
  *   spire.subscribe('myChannel', options, function (messages) {
  *     // `messages` is array of messages sent to the channel
  *   }, function (err) {
@@ -983,7 +983,7 @@ Spire.prototype._ensureSession = function (cb) {
     return;
   }
 
-  if (!this._opts_key) {
+  if (!this._opts_secret) {
     var noSessionError = new NoSessionError();
     if (cb) return cb(noSessionError);
     throw noSessionError;
@@ -993,7 +993,7 @@ Spire.prototype._ensureSession = function (cb) {
     throw new NoSessionError();
   }
 
-  this.start(this._opts_key, cb);
+  this.start(this._opts_secret, cb);
 };
 
 
@@ -1786,16 +1786,16 @@ API.prototype.discover = function (cb) {
 };
 
 /**
- * Creates a spire session from an account key.
+ * Creates a spire session from an account secret.
  *
- * @param {string} key The acccount key
+ * @param {string} secret The acccount secret
  * @param {function(err)} cb Callback
  */
-API.prototype.createSession = function (key, cb) {
+API.prototype.createSession = function (secret, cb) {
   var api = this;
   this.discover(function (err) {
     if (err) return cb(err);
-    api.request('create_session', key, function (err, sessionData) {
+    api.request('create_session', secret, function (err, sessionData) {
       if (err) return cb(err);
       var session = new Session(api.spire, sessionData);
       cb(null, session);
@@ -2014,11 +2014,11 @@ Resource.defineRequest(API.prototype, 'discover', function () {
 });
 
 /**
- * Posts to sessions url with the accont key.
+ * Posts to sessions url with the accont secret.
  * @name create_session
  * @ignore
  */
-Resource.defineRequest(API.prototype, 'create_session', function (key) {
+Resource.defineRequest(API.prototype, 'create_session', function (secret) {
   return {
     method: 'post',
     url: this.description.resources.sessions.url,
@@ -2026,7 +2026,7 @@ Resource.defineRequest(API.prototype, 'create_session', function (key) {
       'Content-Type': this.mediaType('account'),
       'Accept': this.mediaType('session')
     },
-    content: {key: key}
+    content: {secret: secret}
   };
 });
 
@@ -2328,15 +2328,6 @@ Resource.prototype.authorization = function (resource) {
     cap = this.capability();
   }
   return "Capability " + cap;
-};
-
-/**
- * Returns the resource key.
- *
- * @returns {string} Key
- */
-Resource.prototype.key = function () {
-  return this.data.key;
 };
 
 /**
@@ -5450,6 +5441,13 @@ Account.prototype = new Resource();
 module.exports = Account;
 
 /**
+ * Gets the account secret
+ */
+Account.prototype.secret = function () {
+  return this.data.secret;
+};
+
+/**
  * Resets the account
  *
  * Note that this passes a session to the callback, and not an account.
@@ -5489,7 +5487,7 @@ Account.prototype.updateBillingSubscription = function (info, cb) {
 
 /**
  * Reset your account
- * @name reset_key
+ * @name reset
  * @ignore
  */
 Resource.defineRequest(Account.prototype, 'reset', function () {

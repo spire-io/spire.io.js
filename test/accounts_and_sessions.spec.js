@@ -2,6 +2,94 @@ var noop = function () {};
 
 describe('Accounts and Session', function () {
   describe('Registration and Authentication', function () {
+    describe('With no authentication', function () {
+      beforeEach(function () {
+        this.spire = new Spire();
+      });
+
+      describe('Calling session-dependant sync functions', function () {
+        it('should throw NoSessionErrors', function () {
+          expect(function () {
+            return this.spire.key();
+          }).toThrow();
+
+          expect(function () {
+            return this.spire.subscribe('chan');
+          }).toThrow();
+        });
+      });
+
+      describe('Calling session-dependant async functions', function () {
+        it('should pass NoSessionErrors to callbacks', function () {
+          this.spire.channel('blah', function (err) {
+            expect(err).toBeTruthy;
+          });
+
+          this.spire.channels$(function (err) {
+            expect(err).toBeTruthy;
+          });
+
+          this.spire.subscribe('chan', {}, function () {}, function (err) {
+            expect(err).toBeTruthy;
+          });
+
+          this.spire.subscriptions$(function (err) {
+            expect(err).toBeTruthy;
+          });
+        });
+      });
+    });
+
+    describe('With key passed to Spire constructor', function () {
+      beforeEach(function () {
+        var that = this;
+        var finished = false;
+        runs(function () {
+          helpers.getApiKey(function (err, key) {
+            if (err) throw err;
+            that.spire = new Spire({ key: key });
+            finished = true;
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 'Registration', 10000);
+      });
+
+      describe('Subscribing', function () {
+        it('should not throw error', function () {
+          //this.spire.subscribe('chan');
+        });
+      });
+
+      describe('Getting channels', function () {
+        beforeEach(function () {
+          var finished = false;
+          var that = this;
+          runs(function () {
+            this.spire.channels(function(err, channels) {
+              that.err = err
+              that.channels = channels;
+              finished = true;
+            });
+          });
+
+          waitsFor(function () {
+            return finished;
+          }, 'Getting channels', 10000);
+        });
+
+        it('Should not err', function () {
+          expect(this.err).toBeFalsy();
+        });
+
+        it('Should return channels', function () {
+          expect(this.channels).toBeDefined()
+        });
+      });
+    });
+
     describe('Registration with a valid email and password', function () {
       beforeEach(function () {
         this.email = helpers.randomEmail();

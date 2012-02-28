@@ -17,6 +17,18 @@ helpers.randomEmail = function(){
   return 'test-' + (new Date().getTime()) + '@spire.io';
 };
 
+helpers.getApiKey = function (cb) {
+  var email = helpers.randomEmail();
+  var spire = new Spire();
+  spire.register({
+    email: email,
+    password: 'password'
+  }, function (err) {
+    if (err) return cb(err);
+    cb(null, spire.key());
+  });
+};
+
 beforeEach(function(){
   this.addMatchers({
     toBeAResource: function(expected){

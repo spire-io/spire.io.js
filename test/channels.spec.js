@@ -7,8 +7,8 @@ describe('Channels', function () {
     runs(function () {
       this.spire = createSpire();
 
-      if (this.key) {
-        this.spire.start(this.key, function (err) {
+      if (this.secret) {
+        this.spire.start(this.secret, function (err) {
           finished = true;
         });
       } else {
@@ -150,7 +150,7 @@ describe('Channels', function () {
       });
 
       it('should be the same channel as before', function () {
-        expect(this.channel2.key).toEqual(this.channel.key);
+        expect(this.channel2.url()).toEqual(this.channel.url());
       });
     }); // Creating a channel with the same name
 

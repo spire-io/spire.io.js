@@ -4,8 +4,8 @@ describe('Subscriptions', function(){
     runs(function(){
       this.spire = createSpire();
 
-      if (this.key) {
-        this.spire.start(this.key, function (err) {
+      if (this.secret) {
+        this.spire.start(this.secret, function (err) {
           finished = true;
         });
       } else {

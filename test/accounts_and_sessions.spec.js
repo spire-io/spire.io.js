@@ -10,7 +10,7 @@ describe('Accounts and Session', function () {
       describe('Calling session-dependant sync functions', function () {
         it('should throw NoSessionErrors', function () {
           expect(function () {
-            return this.spire.key();
+            return this.spire.secret();
           }).toThrow();
 
           expect(function () {
@@ -40,14 +40,14 @@ describe('Accounts and Session', function () {
       });
     });
 
-    describe('With key passed to Spire constructor', function () {
+    describe('With secret passed to Spire constructor', function () {
       beforeEach(function () {
         var that = this;
         var finished = false;
         runs(function () {
-          helpers.getApiKey(function (err, key) {
+          helpers.getApiKey(function (err, secret) {
             if (err) throw err;
-            that.spire = new Spire({ key: key });
+            that.spire = new Spire({ secret: secret });
             finished = true;
           });
         });
@@ -94,7 +94,7 @@ describe('Accounts and Session', function () {
       beforeEach(function () {
         this.email = helpers.randomEmail();
         this.spire = createSpire();
-        this.key = null;
+        this.secret = null;
         var finished = false;
         runs(function () {
           this.spire.register({
@@ -109,9 +109,9 @@ describe('Accounts and Session', function () {
           return finished;
         }, 'spire.register', 10000);
 
-        // Save the key for later
+        // Save the secret for later
         runs(function () {
-          this.key = this.spire.key();
+          this.secret = this.spire.secret();
         });
       });
 
@@ -228,21 +228,21 @@ describe('Accounts and Session', function () {
         }); // Change your password
       }); // Log in the with given email and password
 
-      describe('Log in using the account key', function () {
+      describe('Log in using the account secret', function () {
         beforeEach(function () {
-          var key = this.key;
+          var secret = this.secret;
           this.spire = createSpire();
           finished = false;
 
           runs(function () {
-            this.spire.start(key, function (e) {
+            this.spire.start(secret, function (e) {
               finished = true;
             });
           });
 
           waitsFor(function () {
             return finished;
-          }, 'log in using account key', 10000);
+          }, 'log in using account secret', 10000);
         });
 
         it('should have a session', function () {
@@ -253,13 +253,13 @@ describe('Accounts and Session', function () {
         it('should have a session without an account resource', function () {
           expect(this.spire.session.resources.account).toBeFalsy();
         });
-      }); // Log in using the account key
+      }); // Log in using the account secret
 
-      describe('Reset your account key', function () {
+      describe('Reset your account secret', function () {
         it('should invalidate existing sessions', noop);
-        it('should invalidate the original account key', noop);
-        it('should allow you to log in with the new account key', noop);
-      }); // Reset your account key
+        it('should invalidate the original account secret', noop);
+        it('should allow you to log in with the new account secret', noop);
+      }); // Reset your account secret
 
       describe('Close a session', function () {
         it('should invalidate the session tht was closed', noop);
@@ -267,7 +267,7 @@ describe('Accounts and Session', function () {
 
       describe('Delete your account', function () {
         it('should invalidate existing sessions', noop);
-        it('should invalidate the original account key', noop);
+        it('should invalidate the original account secret', noop);
         it('should invalidate email and password', noop);
       }); // Delete your account
     }); // Registration with valid email and password
@@ -278,7 +278,7 @@ describe('Accounts and Session', function () {
       this.email1 = helpers.randomEmail();
       this.email2 = helpers.randomEmail();
       this.spire = createSpire();
-      this.key = null;
+      this.secret = null;
       var finished = false;
 
       var that = this;

@@ -15,8 +15,8 @@ describe('Long polling', function () {
         });
       };
 
-      if (this.key) {
-        this.spire.start(this.key, createChannelAndSub);
+      if (this.secret) {
+        this.spire.start(this.secret, createChannelAndSub);
       } else {
         this.spire.register({
           email: helpers.randomEmail(),

@@ -25,7 +25,7 @@ helpers.getApiKey = function (cb) {
     password: 'password'
   }, function (err) {
     if (err) return cb(err);
-    cb(null, spire.key());
+    cb(null, spire.secret());
   });
 };
 

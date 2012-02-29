@@ -1884,14 +1884,14 @@ API.prototype.accountFromUrlAndCapabilities = function (creds, cb) {
 };
 
 /**
- * Update Account from url and capabilities.
+ * Update Account from url and capability.
  *
- * @param {object} account Must contain at least Url and Capabilities
+ * @param {object} account Must contain at least Url and Capability
  * @param {string} creds.url Url
- * @param {string} creds.capabilities Capabilities
+ * @param {string} creds.capability Capability
  * @param {function (err, account)} cb Callback
  */
-API.prototype.updateAccountWithUrlAndCapabilities = function (accountData, cb) {
+API.prototype.updateAccountWithUrlAndCapability = function (accountData, cb) {
   var api = this;
   this.discover(function (err) {
     if (err) return cb(err);
@@ -2101,7 +2101,7 @@ Resource.defineRequest(API.prototype, 'update_account', function (data) {
     url: data.url,
     content: data,
     headers: {
-      'Authorization': "Capability " + data.capabilities.update,
+      'Authorization': "Capability " + data.capability,
       'Accept': this.mediaType('account'),
       'Content-Type': this.mediaType('account')
     }

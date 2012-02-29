@@ -37,14 +37,14 @@
 <span class='line'> 30</span>  *
 <span class='line'> 31</span>  * @example
 <span class='line'> 32</span>  * var spire = new Spire({
-<span class='line'> 33</span>  *   key: my_account_key
+<span class='line'> 33</span>  *   secret: my_account_secret
 <span class='line'> 34</span>  * });
 <span class='line'> 35</span>  *
 <span class='line'> 36</span>  * @constructor
 <span class='line'> 37</span>  * @param {object} [opts] Options for Spire
-<span class='line'> 38</span>  * @param {string} [key] The account API key.  If you do you not set this, you
+<span class='line'> 38</span>  * @param {string} [secret] The account API secret.  If you do you not set this, you
 <span class='line'> 39</span>  * must call one of:
-<span class='line'> 40</span>  *   * `spire.start(key, callback)`
+<span class='line'> 40</span>  *   * `spire.start(secret, callback)`
 <span class='line'> 41</span>  *   * `spire.login(email, password, callback)` or
 <span class='line'> 42</span>  *   * `spire.register(user, callback)
 <span class='line'> 43</span>  *   before you can start creating channels.
@@ -55,42 +55,42 @@
 <span class='line'> 48</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">Spire</span><span class="PUNC">(</span><span class="NAME">opts</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 49</span> </span><span class="WHIT">  </span><span class="NAME">this.api</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">API</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">opts</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 50</span> </span><span class="WHIT">  </span><span class="NAME">this.session</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 51</span> </span><span class="WHIT">  </span><span class="NAME">this._opts_key</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">opts.key</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">  </span><span class="NAME">this._opts_secret</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">opts.secret</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 52</span> </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'> 53</span> 
 <span class='line'> 54</span> </span><span class="NAME">module.exports</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Spire</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 55</span> 
 <span class='line'> 56</span> </span><span class="COMM">/**
-<span class='line'> 57</span>  * Get the account key.
+<span class='line'> 57</span>  * Get the account secret.
 <span class='line'> 58</span>  *
-<span class='line'> 59</span>  * @returns {string} Account key
+<span class='line'> 59</span>  * @returns {string} Account secret
 <span class='line'> 60</span>  */</span><span class="WHIT">
-<span class='line'> 61</span> </span><span class="NAME">Spire.prototype.key</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="NAME">Spire.prototype.secret</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 62</span> </span><span class="WHIT">  </span><span class="NAME">this._ensureSession</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 63</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.session</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.session.resources</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.session.resources.account</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 64</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.session.resources.account.key</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.session.resources.account.secret</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 65</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'> 66</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 67</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 68</span> 
 <span class='line'> 69</span> </span><span class="COMM">/**
-<span class='line'> 70</span>  * Start the Spire session with the given account key.
+<span class='line'> 70</span>  * Start the Spire session with the given account secret.
 <span class='line'> 71</span>  *
 <span class='line'> 72</span>  * @example
 <span class='line'> 73</span>  * var spire = new Spire();
-<span class='line'> 74</span>  * spire.start(your_api_key, function (err, session) {
+<span class='line'> 74</span>  * spire.start(your_api_secret, function (err, session) {
 <span class='line'> 75</span>  *   if (!err) {
 <span class='line'> 76</span>  *     // You now have a spire session.
 <span class='line'> 77</span>  *     // Start creating channels and subscripions.
 <span class='line'> 78</span>  *   }
 <span class='line'> 79</span>  * });
 <span class='line'> 80</span>  *
-<span class='line'> 81</span>  * @param {string} key The acccount key
+<span class='line'> 81</span>  * @param {string} secret The acccount secret
 <span class='line'> 82</span>  * @param {function(err)} cb Callback
 <span class='line'> 83</span>  */</span><span class="WHIT">
-<span class='line'> 84</span> </span><span class="NAME">Spire.prototype.start</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="NAME">Spire.prototype.start</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">secret</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 85</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 86</span> </span><span class="WHIT">  </span><span class="NAME">this.api.createSession</span><span class="PUNC">(</span><span class="NAME">key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">  </span><span class="NAME">this.api.createSession</span><span class="PUNC">(</span><span class="NAME">secret</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 87</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 88</span> </span><span class="WHIT">    </span><span class="NAME">spire.session</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">session</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 89</span> </span><span class="WHIT">    </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -204,7 +204,7 @@
 <span class='line'>197</span>  *
 <span class='line'>198</span>  * @example
 <span class='line'>199</span>  * var spire = new Spire();
-<span class='line'>200</span>  * spire.start(your_api_key, function (err, session) {
+<span class='line'>200</span>  * spire.start(your_api_secret, function (err, session) {
 <span class='line'>201</span>  *   spire.channel('foo', function (err, channel) {
 <span class='line'>202</span>  *     if (!err) {
 <span class='line'>203</span>  *       // `channel` is the channel named "foo".
@@ -233,7 +233,7 @@
 <span class='line'>226</span>  *
 <span class='line'>227</span>  * @example
 <span class='line'>228</span>  * var spire = new Spire();
-<span class='line'>229</span>  * spire.start(your_api_key, function (err, session) {
+<span class='line'>229</span>  * spire.start(your_api_secret, function (err, session) {
 <span class='line'>230</span>  *   spire.channels(function (err, channels) {
 <span class='line'>231</span>  *     if (!err) {
 <span class='line'>232</span>  *       // `channels` is a hash of all the account's channels
@@ -257,7 +257,7 @@
 <span class='line'>250</span>  *
 <span class='line'>251</span>  * @example
 <span class='line'>252</span>  * var spire = new Spire();
-<span class='line'>253</span>  * spire.start(your_api_key, function (err, session) {
+<span class='line'>253</span>  * spire.start(your_api_secret, function (err, session) {
 <span class='line'>254</span>  *   spire.channels$(function (err, channels) {
 <span class='line'>255</span>  *     if (!err) {
 <span class='line'>256</span>  *       // `channels` is a hash of all the account's channels
@@ -281,7 +281,7 @@
 <span class='line'>274</span>  *
 <span class='line'>275</span>  * @example
 <span class='line'>276</span>  * var spire = new Spire();
-<span class='line'>277</span>  * spire.start(your_api_key, function (err, session) {
+<span class='line'>277</span>  * spire.start(your_api_secret, function (err, session) {
 <span class='line'>278</span>  *   spire.subscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
 <span class='line'>279</span>  *     if (!err) {
 <span class='line'>280</span>  *       // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
@@ -320,7 +320,7 @@
 <span class='line'>313</span>  *
 <span class='line'>314</span>  * @example
 <span class='line'>315</span>  * var spire = new Spire();
-<span class='line'>316</span>  * spire.start(your_api_key, function (err, session) {
+<span class='line'>316</span>  * spire.start(your_api_secret, function (err, session) {
 <span class='line'>317</span>  *   spire.subscriptions(function (err, subscriptions) {
 <span class='line'>318</span>  *     if (!err) {
 <span class='line'>319</span>  *       // `subscriptions` is a hash of all the account's subscriptions
@@ -344,7 +344,7 @@
 <span class='line'>337</span>  *
 <span class='line'>338</span>  * @example
 <span class='line'>339</span>  * var spire = new Spire();
-<span class='line'>340</span>  * spire.start(your_api_key, function (err, session) {
+<span class='line'>340</span>  * spire.start(your_api_secret, function (err, session) {
 <span class='line'>341</span>  *   spire.subscriptions$(function (err, subscriptions) {
 <span class='line'>342</span>  *     if (!err) {
 <span class='line'>343</span>  *       // `subscriptions` is a hash of all the account's subscriptions
@@ -367,7 +367,7 @@
 <span class='line'>360</span>  *
 <span class='line'>361</span>  * @example
 <span class='line'>362</span>  * var spire = new Spire();
-<span class='line'>363</span>  * spire.start(your_api_key, function (err, session) {
+<span class='line'>363</span>  * spire.start(your_api_secret, function (err, session) {
 <span class='line'>364</span>  *   spire.subscribe('myChannel', options, function (messages) {
 <span class='line'>365</span>  *     // `messages` is array of messages sent to the channel
 <span class='line'>366</span>  *   }, function (err) {
@@ -449,216 +449,216 @@
 <span class='line'>442</span>  * @param {object} creds Url and Capability
 <span class='line'>443</span>  * @param {string} creds.url Url
 <span class='line'>444</span>  * @param {string} creds.capability Capability
-<span class='line'>445</span>  * @param {function (err, account)} cb Callback
-<span class='line'>446</span>  */</span><span class="WHIT">
-<span class='line'>447</span> </span><span class="NAME">Spire.prototype.accountFromUrlAndCapability</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>448</span> </span><span class="WHIT">  </span><span class="NAME">this.api.accountFromUrlAndCapability</span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>449</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>450</span> 
-<span class='line'>451</span> </span><span class="COMM">/**
-<span class='line'>452</span>  * Get Channel from url and capability.
-<span class='line'>453</span>  *
-<span class='line'>454</span>  * Use this method to get a channel without starting a spire session.
-<span class='line'>455</span>  *
-<span class='line'>456</span>  * If you have a spire session, you should use &lt;code>spire.channel&lt;/code>.
-<span class='line'>457</span>  *
-<span class='line'>458</span>  * @example
-<span class='line'>459</span>  * var spire = new Spire();
-<span class='line'>460</span>  * spire.channelFromUrlAndCapability({
-<span class='line'>461</span>  *   url: channel_url,
-<span class='line'>462</span>  *   capability: channel_capability
-<span class='line'>463</span>  * }, function (err, channel) {
-<span class='line'>464</span>  *   if (!err) {
-<span class='line'>465</span>  *     // ...
-<span class='line'>466</span>  *   }
-<span class='line'>467</span>  * })
-<span class='line'>468</span>  *
-<span class='line'>469</span>  * @param {object} creds Url and Capability
-<span class='line'>470</span>  * @param {string} creds.url Url
-<span class='line'>471</span>  * @param {string} creds.capability Capability
-<span class='line'>472</span>  * @param {function (err, channel)} cb Callback
-<span class='line'>473</span>  */</span><span class="WHIT">
-<span class='line'>474</span> </span><span class="NAME">Spire.prototype.channelFromUrlAndCapability</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>475</span> </span><span class="WHIT">  </span><span class="NAME">this.api.channelFromUrlAndCapability</span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>476</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>477</span> 
-<span class='line'>478</span> </span><span class="COMM">/**
-<span class='line'>479</span>  * Get Subscription from url and capability.
-<span class='line'>480</span>  * Use this method to get a subscription without starting a spire session.
-<span class='line'>481</span>  *
-<span class='line'>482</span>  * If you have a spire session, you should use &lt;code>spire.subscription&lt;/code>.
-<span class='line'>483</span>  *
-<span class='line'>484</span>  * @example
-<span class='line'>485</span>  * var spire = new Spire();
-<span class='line'>486</span>  * spire.subscriptionFromUrlAndCapability({
-<span class='line'>487</span>  *   url: subscription_url,
-<span class='line'>488</span>  *   capability: subscription_capability
-<span class='line'>489</span>  * }, function (err, subscription) {
-<span class='line'>490</span>  *   if (!err) {
-<span class='line'>491</span>  *     // ...
-<span class='line'>492</span>  *   }
-<span class='line'>493</span>  * })
-<span class='line'>494</span>  *
-<span class='line'>495</span>  * @param {object} creds Url and Capability
-<span class='line'>496</span>  * @param {string} creds.url Url
-<span class='line'>497</span>  * @param {string} creds.capability Capability
-<span class='line'>498</span>  * @param {function (err, subscription)} cb Callback
-<span class='line'>499</span>  */</span><span class="WHIT">
-<span class='line'>500</span> </span><span class="NAME">Spire.prototype.subscriptionFromUrlAndCapability</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>501</span> </span><span class="WHIT">  </span><span class="NAME">this.api.subscriptionFromUrlAndCapability</span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>502</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>503</span> 
-<span class='line'>504</span> </span><span class="COMM">/**
-<span class='line'>505</span>  * Start the Spire session with the url and capability for the session.
-<span class='line'>506</span>  *
-<span class='line'>507</span>  * @example
-<span class='line'>508</span>  * var spire = new Spire();
-<span class='line'>509</span>  * var creds = {
-<span class='line'>510</span>  *   url: session_url,
-<span class='line'>511</span>  *   capability: session_capability
-<span class='line'>512</span>  * };
-<span class='line'>513</span>  * spire._startSessionFromUrlAndCapability(creds, function (err) {
-<span class='line'>514</span>  *   if (!err) {
-<span class='line'>515</span>  *     // You now have a spire session.
-<span class='line'>516</span>  *     // Start creating channels and subscripions.
-<span class='line'>517</span>  *   }
-<span class='line'>518</span>  * });
-<span class='line'>519</span>  *
-<span class='line'>520</span>  * @param {object} creds Url and Capability
-<span class='line'>521</span>  * @param {string} creds.url Url
-<span class='line'>522</span>  * @param {string} creds.capability Capability
-<span class='line'>523</span>  * @param {function (err)} cb Callback
-<span class='line'>524</span>  */</span><span class="WHIT">
-<span class='line'>525</span> </span><span class="NAME">Spire.prototype._startSessionFromUrlAndCapability</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>526</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>527</span> </span><span class="WHIT">  </span><span class="NAME">this.api.sessionFromUrlAndCapability</span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>528</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>529</span> </span><span class="WHIT">    </span><span class="NAME">spire.session</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">session</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>530</span> </span><span class="WHIT">    </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>531</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>532</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>533</span> 
-<span class='line'>534</span> </span><span class="COMM">/**
-<span class='line'>535</span>  * Number of times to retry creating a channel or subscription before giving up.
-<span class='line'>536</span>  */</span><span class="WHIT">
-<span class='line'>537</span> </span><span class="NAME">Spire.prototype.CREATION_RETRY_LIMIT</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">5</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>538</span> 
-<span class='line'>539</span> </span><span class="COMM">/**
-<span class='line'>540</span>  * Returns the channel with name 'name', creating it if necessary.
-<span class='line'>541</span>  * You should use `Spire.prototype.channel` method instead of this one.  This
-<span class='line'>542</span>  * method ignores cached channels.
-<span class='line'>543</span>  *
-<span class='line'>544</span>  * @param {string} name Channel name
-<span class='line'>545</span>  * @param {function (err, channel)} cb Callback
-<span class='line'>546</span>  */</span><span class="WHIT">
-<span class='line'>547</span> </span><span class="NAME">Spire.prototype._findOrCreateChannel</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>548</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>549</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="STRN">"You must start spire before you can do that."</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>550</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>551</span> 
-<span class='line'>552</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>553</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">creationCount</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>554</span> 
-<span class='line'>555</span> </span><span class="WHIT">  </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">createChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>556</span> </span><span class="WHIT">    </span><span class="NAME">creationCount</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>557</span> </span><span class="WHIT">    </span><span class="NAME">spire.session.createChannel</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channel</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>558</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channel</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>559</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err.status</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NUMB">409</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>560</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creationCount</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">spire.CREATION_RETRY_LIMIT</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>561</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="STRN">"Could not create channel: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>562</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>563</span> </span><span class="WHIT">      </span><span class="NAME">getChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>564</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>565</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>566</span> 
-<span class='line'>567</span> </span><span class="WHIT">  </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">getChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>568</span> </span><span class="WHIT">    </span><span class="NAME">spire.session.channels$</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channels</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>569</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>570</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">channels</span><span class="PUNC">[</span><span class="NAME">name</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channels</span><span class="PUNC">[</span><span class="NAME">name</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>571</span> </span><span class="WHIT">      </span><span class="NAME">createChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>572</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>573</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>574</span> 
-<span class='line'>575</span> </span><span class="WHIT">  </span><span class="NAME">this._ensureSession</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>576</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>577</span> </span><span class="WHIT">    </span><span class="NAME">getChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>578</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>579</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>580</span> 
-<span class='line'>581</span> </span><span class="COMM">/**
-<span class='line'>582</span>  * Returns the subvscription with name 'name', creating it if necessary.
-<span class='line'>583</span>  * You should use `Spire.prototype.subscribe` method instead of this one.  This
-<span class='line'>584</span>  * method ignores cached subscriptions, and does not create the channels.
-<span class='line'>585</span>  *
-<span class='line'>586</span>  * @param {string} name Subscription name
-<span class='line'>587</span>  * @param {string} channelNames Channel names
-<span class='line'>588</span>  * @param {function (err, subscription)} cb Callback
-<span class='line'>589</span>  */</span><span class="WHIT">
-<span class='line'>590</span> </span><span class="NAME">Spire.prototype._findOrCreateSubscription</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channelNames</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>591</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>592</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="STRN">"You must start spire before you can do that."</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>593</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>594</span> 
-<span class='line'>595</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>596</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">creationCount</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>597</span> 
-<span class='line'>598</span> </span><span class="WHIT">  </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">createSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>599</span> </span><span class="WHIT">    </span><span class="NAME">creationCount</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>600</span> </span><span class="WHIT">    </span><span class="NAME">spire.session.createSubscription</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channelNames</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">sub</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>601</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">sub</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>602</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err.status</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NUMB">409</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>603</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creationCount</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">spire.CREATION_RETRY_LIMIT</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>604</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="STRN">"Could not create subscription: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>605</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>606</span> </span><span class="WHIT">      </span><span class="NAME">getSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>607</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>608</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>609</span> 
-<span class='line'>610</span> </span><span class="WHIT">  </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">getSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>611</span> </span><span class="WHIT">    </span><span class="NAME">spire.session.subscriptions$</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">subscriptions</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>612</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>613</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">subscriptions</span><span class="PUNC">[</span><span class="NAME">name</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">subscriptions</span><span class="PUNC">[</span><span class="NAME">name</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>614</span> </span><span class="WHIT">      </span><span class="NAME">createSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>615</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>616</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>617</span> 
-<span class='line'>618</span> </span><span class="WHIT">  </span><span class="NAME">this._ensureSession</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>619</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>620</span> </span><span class="WHIT">    </span><span class="NAME">getSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>621</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>622</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>623</span> 
-<span class='line'>624</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">NoSessionError</span><span class="PUNC">(</span><span class="NAME">message</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>625</span> </span><span class="WHIT">  </span><span class="NAME">this.name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"No Session Error"</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>626</span> </span><span class="WHIT">  </span><span class="NAME">this.message</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">message</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'>627</span> </span><span class="WHIT">    </span><span class="STRN">"You need a Spire session to do that.\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
-<span class='line'>628</span> </span><span class="WHIT">    </span><span class="STRN">"Call one of:\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
-<span class='line'>629</span> </span><span class="WHIT">    </span><span class="STRN">"spire.start(callback)\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
-<span class='line'>630</span> </span><span class="WHIT">    </span><span class="STRN">"spire.login(email, password, callback)\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
-<span class='line'>631</span> </span><span class="WHIT">    </span><span class="STRN">"spire.register(user, callback)\n"</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>632</span> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>633</span> 
-<span class='line'>634</span> </span><span class="NAME">NoSessionError.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>635</span> </span><span class="NAME">NoSessionError.constructor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">NoSessionError</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>636</span> 
-<span class='line'>637</span> </span><span class="NAME">Spire.prototype._ensureSession</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>638</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>639</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>640</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>641</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>642</span> 
-<span class='line'>643</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this._opts_key</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>644</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">noSessionError</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">NoSessionError</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>645</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">noSessionError</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>646</span> </span><span class="WHIT">    </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="NAME">noSessionError</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>647</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>648</span> 
-<span class='line'>649</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>650</span> </span><span class="WHIT">    </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">NoSessionError</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>651</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>652</span> 
-<span class='line'>653</span> </span><span class="WHIT">  </span><span class="NAME">this.start</span><span class="PUNC">(</span><span class="NAME">this._opts_key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>654</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>655</span> 
-<span class='line'>656</span> 
-<span class='line'>657</span> </span></pre></body></html>
+<span class='line'>445</span> <span class='line'>446</span>  * @param {function (err, account)} cb Callback
+<span class='line'>447</span>  */</span><span class="WHIT">
+<span class='line'>448</span> </span><span class="NAME">Spire.prototype.accountFromUrlAndCapability</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>449</span> </span><span class="WHIT">  </span><span class="NAME">this.api.accountFromUrlAndCapability</span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>450</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>451</span> 
+<span class='line'>452</span> </span><span class="COMM">/**
+<span class='line'>453</span>  * Get Channel from url and capability.
+<span class='line'>454</span>  *
+<span class='line'>455</span>  * Use this method to get a channel without starting a spire session.
+<span class='line'>456</span>  *
+<span class='line'>457</span>  * If you have a spire session, you should use &lt;code>spire.channel&lt;/code>.
+<span class='line'>458</span>  *
+<span class='line'>459</span>  * @example
+<span class='line'>460</span>  * var spire = new Spire();
+<span class='line'>461</span>  * spire.channelFromUrlAndCapability({
+<span class='line'>462</span>  *   url: channel_url,
+<span class='line'>463</span>  *   capability: channel_capability
+<span class='line'>464</span>  * }, function (err, channel) {
+<span class='line'>465</span>  *   if (!err) {
+<span class='line'>466</span>  *     // ...
+<span class='line'>467</span>  *   }
+<span class='line'>468</span>  * })
+<span class='line'>469</span>  *
+<span class='line'>470</span>  * @param {object} creds Url and Capability
+<span class='line'>471</span>  * @param {string} creds.url Url
+<span class='line'>472</span>  * @param {string} creds.capability Capability
+<span class='line'>473</span>  * @param {function (err, channel)} cb Callback
+<span class='line'>474</span>  */</span><span class="WHIT">
+<span class='line'>475</span> </span><span class="NAME">Spire.prototype.channelFromUrlAndCapability</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>476</span> </span><span class="WHIT">  </span><span class="NAME">this.api.channelFromUrlAndCapability</span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>477</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>478</span> 
+<span class='line'>479</span> </span><span class="COMM">/**
+<span class='line'>480</span>  * Get Subscription from url and capability.
+<span class='line'>481</span>  * Use this method to get a subscription without starting a spire session.
+<span class='line'>482</span>  *
+<span class='line'>483</span>  * If you have a spire session, you should use &lt;code>spire.subscription&lt;/code>.
+<span class='line'>484</span>  *
+<span class='line'>485</span>  * @example
+<span class='line'>486</span>  * var spire = new Spire();
+<span class='line'>487</span>  * spire.subscriptionFromUrlAndCapability({
+<span class='line'>488</span>  *   url: subscription_url,
+<span class='line'>489</span>  *   capability: subscription_capability
+<span class='line'>490</span>  * }, function (err, subscription) {
+<span class='line'>491</span>  *   if (!err) {
+<span class='line'>492</span>  *     // ...
+<span class='line'>493</span>  *   }
+<span class='line'>494</span>  * })
+<span class='line'>495</span>  *
+<span class='line'>496</span>  * @param {object} creds Url and Capability
+<span class='line'>497</span>  * @param {string} creds.url Url
+<span class='line'>498</span>  * @param {string} creds.capability Capability
+<span class='line'>499</span>  * @param {function (err, subscription)} cb Callback
+<span class='line'>500</span>  */</span><span class="WHIT">
+<span class='line'>501</span> </span><span class="NAME">Spire.prototype.subscriptionFromUrlAndCapability</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>502</span> </span><span class="WHIT">  </span><span class="NAME">this.api.subscriptionFromUrlAndCapability</span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>503</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>504</span> 
+<span class='line'>505</span> </span><span class="COMM">/**
+<span class='line'>506</span>  * Start the Spire session with the url and capability for the session.
+<span class='line'>507</span>  *
+<span class='line'>508</span>  * @example
+<span class='line'>509</span> <span class='line'>510</span>  * var spire = new Spire();
+<span class='line'>511</span>  * var creds = {
+<span class='line'>512</span>  *   url: session_url,
+<span class='line'>513</span>  *   capability: session_capability
+<span class='line'>514</span>  * };
+<span class='line'>515</span>  * spire._startSessionFromUrlAndCapability(creds, function (err) {
+<span class='line'>516</span>  *   if (!err) {
+<span class='line'>517</span>  *     // You now have a spire session.
+<span class='line'>518</span>  *     // Start creating channels and subscripions.
+<span class='line'>519</span>  *   }
+<span class='line'>520</span>  * });
+<span class='line'>521</span>  *
+<span class='line'>522</span>  * @param {object} creds Url and Capability
+<span class='line'>523</span>  * @param {string} creds.url Url
+<span class='line'>524</span>  * @param {string} creds.capability Capability
+<span class='line'>525</span>  * @param {function (err)} cb Callback
+<span class='line'>526</span>  */</span><span class="WHIT">
+<span class='line'>527</span> </span><span class="NAME">Spire.prototype._startSessionFromUrlAndCapability</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>528</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>529</span> </span><span class="WHIT">  </span><span class="NAME">this.api.sessionFromUrlAndCapability</span><span class="PUNC">(</span><span class="NAME">creds</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>530</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>531</span> </span><span class="WHIT">    </span><span class="NAME">spire.session</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">session</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>532</span> </span><span class="WHIT">    </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>533</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>534</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>535</span> 
+<span class='line'>536</span> </span><span class="COMM">/**
+<span class='line'>537</span>  * Number of times to retry creating a channel or subscription before giving up.
+<span class='line'>538</span>  */</span><span class="WHIT">
+<span class='line'>539</span> </span><span class="NAME">Spire.prototype.CREATION_RETRY_LIMIT</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">5</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>540</span> 
+<span class='line'>541</span> </span><span class="COMM">/**
+<span class='line'>542</span>  * Returns the channel with name 'name', creating it if necessary.
+<span class='line'>543</span>  * You should use `Spire.prototype.channel` method instead of this one.  This
+<span class='line'>544</span>  * method ignores cached channels.
+<span class='line'>545</span>  *
+<span class='line'>546</span>  * @param {string} name Channel name
+<span class='line'>547</span>  * @param {function (err, channel)} cb Callback
+<span class='line'>548</span>  */</span><span class="WHIT">
+<span class='line'>549</span> </span><span class="NAME">Spire.prototype._findOrCreateChannel</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>550</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>551</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="STRN">"You must start spire before you can do that."</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>552</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>553</span> 
+<span class='line'>554</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>555</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">creationCount</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>556</span> 
+<span class='line'>557</span> </span><span class="WHIT">  </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">createChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>558</span> </span><span class="WHIT">    </span><span class="NAME">creationCount</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>559</span> </span><span class="WHIT">    </span><span class="NAME">spire.session.createChannel</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channel</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>560</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channel</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>561</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err.status</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NUMB">409</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>562</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creationCount</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">spire.CREATION_RETRY_LIMIT</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>563</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="STRN">"Could not create channel: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>564</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>565</span> </span><span class="WHIT">      </span><span class="NAME">getChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>566</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>567</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>568</span> 
+<span class='line'>569</span> </span><span class="WHIT">  </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">getChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>570</span> </span><span class="WHIT">    </span><span class="NAME">spire.session.channels$</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channels</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>571</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>572</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">channels</span><span class="PUNC">[</span><span class="NAME">name</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channels</span><span class="PUNC">[</span><span class="NAME">name</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>573</span> </span><span class="WHIT">      </span><span class="NAME">createChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>574</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>575</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>576</span> 
+<span class='line'>577</span> </span><span class="WHIT">  </span><span class="NAME">this._ensureSession</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>578</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>579</span> </span><span class="WHIT">    </span><span class="NAME">getChannel</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>580</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>581</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>582</span> 
+<span class='line'>583</span> </span><span class="COMM">/**
+<span class='line'>584</span>  * Returns the subvscription with name 'name', creating it if necessary.
+<span class='line'>585</span>  * You should use `Spire.prototype.subscribe` method instead of this one.  This
+<span class='line'>586</span>  * method ignores cached subscriptions, and does not create the channels.
+<span class='line'>587</span>  *
+<span class='line'>588</span>  * @param {string} name Subscription name
+<span class='line'>589</span>  * @param {string} channelNames Channel names
+<span class='line'>590</span>  * @param {function (err, subscription)} cb Callback
+<span class='line'>591</span>  */</span><span class="WHIT">
+<span class='line'>592</span> </span><span class="NAME">Spire.prototype._findOrCreateSubscription</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channelNames</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>593</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>594</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="STRN">"You must start spire before you can do that."</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>595</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>596</span> 
+<span class='line'>597</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">spire</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>598</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">creationCount</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>599</span> 
+<span class='line'>600</span> </span><span class="WHIT">  </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">createSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>601</span> </span><span class="WHIT">    </span><span class="NAME">creationCount</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>602</span> </span><span class="WHIT">    </span><span class="NAME">spire.session.createSubscription</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">channelNames</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">sub</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>603</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">sub</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>604</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err.status</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NUMB">409</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>605</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">creationCount</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">spire.CREATION_RETRY_LIMIT</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>606</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="STRN">"Could not create subscription: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>607</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>608</span> </span><span class="WHIT">      </span><span class="NAME">getSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>609</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>610</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>611</span> 
+<span class='line'>612</span> </span><span class="WHIT">  </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">getSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>613</span> </span><span class="WHIT">    </span><span class="NAME">spire.session.subscriptions$</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">subscriptions</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>614</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>615</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">subscriptions</span><span class="PUNC">[</span><span class="NAME">name</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">subscriptions</span><span class="PUNC">[</span><span class="NAME">name</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>616</span> </span><span class="WHIT">      </span><span class="NAME">createSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>617</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>618</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>619</span> 
+<span class='line'>620</span> </span><span class="WHIT">  </span><span class="NAME">this._ensureSession</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>621</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>622</span> </span><span class="WHIT">    </span><span class="NAME">getSubscription</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>623</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>624</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>625</span> 
+<span class='line'>626</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">NoSessionError</span><span class="PUNC">(</span><span class="NAME">message</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>627</span> </span><span class="WHIT">  </span><span class="NAME">this.name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"No Session Error"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>628</span> </span><span class="WHIT">  </span><span class="NAME">this.message</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">message</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>629</span> </span><span class="WHIT">    </span><span class="STRN">"You need a Spire session to do that.\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>630</span> </span><span class="WHIT">    </span><span class="STRN">"Call one of:\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>631</span> </span><span class="WHIT">    </span><span class="STRN">"spire.start(callback)\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>632</span> </span><span class="WHIT">    </span><span class="STRN">"spire.login(email, password, callback)\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>633</span> </span><span class="WHIT">    </span><span class="STRN">"spire.register(user, callback)\n"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>634</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>635</span> 
+<span class='line'>636</span> </span><span class="NAME">NoSessionError.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>637</span> </span><span class="NAME">NoSessionError.constructor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">NoSessionError</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>638</span> 
+<span class='line'>639</span> </span><span class="NAME">Spire.prototype._ensureSession</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>640</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.session</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>641</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>642</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>643</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>644</span> 
+<span class='line'>645</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this._opts_secret</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>646</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">noSessionError</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">NoSessionError</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>647</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">noSessionError</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>648</span> </span><span class="WHIT">    </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="NAME">noSessionError</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>649</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>650</span> 
+<span class='line'>651</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>652</span> </span><span class="WHIT">    </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">NoSessionError</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>653</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>654</span> 
+<span class='line'>655</span> </span><span class="WHIT">  </span><span class="NAME">this.start</span><span class="PUNC">(</span><span class="NAME">this._opts_secret</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>656</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>657</span> 
+<span class='line'>658</span> <span class='line'>659</span> 
+</span></pre></body></html>

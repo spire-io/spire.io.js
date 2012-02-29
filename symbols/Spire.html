@@ -248,7 +248,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/Spire.html#constructor">Spire</a></b>(opts, key)
+								<b><a href="../symbols/Spire.html#constructor">Spire</a></b>(opts, secret)
 							</div>
 							<div class="description">Spire API Client</div>
 						</td>
@@ -350,15 +350,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#key">key</a></b>()
-								</div>
-								<div class="description">Get the account key.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Spire.html#login">login</a></b>(email, password, cb)
 								</div>
 								<div class="description">Start the Spire session with the given username and password.</div>
@@ -395,9 +386,18 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#start">start</a></b>(key, cb)
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#secret">secret</a></b>()
 								</div>
-								<div class="description">Start the Spire session with the given account key.</div>
+								<div class="description">Get the account secret.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#start">start</a></b>(secret, cb)
+								</div>
+								<div class="description">Start the Spire session with the given account secret.</div>
 							</td>
 						</tr>
 					
@@ -472,7 +472,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>Spire</b>(opts, key)
+						<b>Spire</b>(opts, secret)
 				</div>
 				
 				<div class="description">
@@ -485,7 +485,7 @@ ul.inheritsList
 				<pre class="code">var spire = new Spire();</pre>
 				
 				<pre class="code">var spire = new Spire({
-  key: my_account_key
+  secret: my_account_secret
 });</pre>
 				
 				
@@ -502,12 +502,12 @@ ul.inheritsList
 								<dd>Options for Spire</dd>
 						
 							<dt>
-								<span class="light fixedFont">{string}</span>  <b>key</b>
+								<span class="light fixedFont">{string}</span>  <b>secret</b>
 								<i>Optional</i>
 							</dt>
-								<dd>The account API key.  If you do you not set this, you
+								<dd>The account API secret.  If you do you not set this, you
 must call one of:
-  * `spire.start(key, callback)`
+  * `spire.start(secret, callback)`
   * `spire.login(email, password, callback)` or
   * `spire.register(user, callback)
   before you can start creating channels.</dd>
@@ -664,7 +664,7 @@ spire.accountFromUrlAndCapability({
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.start(your_api_key, function (err, session) {
+spire.start(your_api_secret, function (err, session) {
   spire.channel('foo', function (err, channel) {
     if (!err) {
       // `channel` is the channel named "foo".
@@ -788,7 +788,7 @@ otherwise will make a request.
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.start(your_api_key, function (err, session) {
+spire.start(your_api_secret, function (err, session) {
   spire.channels(function (err, channels) {
     if (!err) {
       // `channels` is a hash of all the account's channels
@@ -836,7 +836,7 @@ request.
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.start(your_api_key, function (err, session) {
+spire.start(your_api_secret, function (err, session) {
   spire.channels$(function (err, channels) {
     if (!err) {
       // `channels` is a hash of all the account's channels
@@ -861,38 +861,6 @@ spire.start(your_api_key, function (err, session) {
 						
 						
 						
-						
-						
-						
-
-					<hr />
-				
-					<a name="key"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{string}</span>
-					<b>key</b>()
-					
-					</div>
-					<div class="description">
-						Get the account key.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{string}</span> Account key</dd>
-							
-							</dl>
 						
 						
 						
@@ -1142,15 +1110,47 @@ spire.register({
 
 					<hr />
 				
+					<a name="secret"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{string}</span>
+					<b>secret</b>()
+					
+					</div>
+					<div class="description">
+						Get the account secret.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{string}</span> Account secret</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="start"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>start</b>(key, cb)
+					<b>start</b>(secret, cb)
 					
 					</div>
 					<div class="description">
-						Start the Spire session with the given account key.
+						Start the Spire session with the given account secret.
 						
 						
 					</div>
@@ -1158,7 +1158,7 @@ spire.register({
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.start(your_api_key, function (err, session) {
+spire.start(your_api_secret, function (err, session) {
   if (!err) {
     // You now have a spire session.
     // Start creating channels and subscripions.
@@ -1172,10 +1172,10 @@ spire.start(your_api_key, function (err, session) {
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>key</b>
+									<span class="light fixedFont">{string}</span> <b>secret</b>
 									
 								</dt>
-								<dd>The acccount key</dd>
+								<dd>The acccount secret</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
@@ -1210,7 +1210,7 @@ spire.start(your_api_key, function (err, session) {
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.start(your_api_key, function (err, session) {
+spire.start(your_api_secret, function (err, session) {
   spire.subscribe('myChannel', options, function (messages) {
     // `messages` is array of messages sent to the channel
   }, function (err) {
@@ -1276,7 +1276,7 @@ subscription if necessary.
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.start(your_api_key, function (err, session) {
+spire.start(your_api_secret, function (err, session) {
   spire.subscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
     if (!err) {
       // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
@@ -1406,7 +1406,7 @@ available, otherwise makes a request.
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.start(your_api_key, function (err, session) {
+spire.start(your_api_secret, function (err, session) {
   spire.subscriptions(function (err, subscriptions) {
     if (!err) {
       // `subscriptions` is a hash of all the account's subscriptions
@@ -1454,7 +1454,7 @@ makes a request.
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.start(your_api_key, function (err, session) {
+spire.start(your_api_secret, function (err, session) {
   spire.subscriptions$(function (err, subscriptions) {
     if (!err) {
       // `subscriptions` is a hash of all the account's subscriptions
@@ -1568,7 +1568,7 @@ spire.update({
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue Feb 28 2012 12:15:07 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 29 2012 10:56:58 GMT-0800 (PST)
 		</div>
 	</body>
 </html>

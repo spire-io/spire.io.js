@@ -41,10 +41,10 @@ beforeEach(function(){
     toBeAPrivilegedResource: function(expected){
       var isDefined = !!this.actual
         , hasURL = !!this.actual.url && typeof this.actual.url === 'string'
-        , hasCapability = !!this.actual.capability
+        , hasCapabilities = !!this.actual.capabilities
       ;
 
-      return isDefined && hasURL && hasCapability
+      return isDefined && hasURL && hasCapabilities
     },
     toIncludeASchemaFor: function(resource, version){
       var hasSchema = !!this.actual.schema
@@ -71,14 +71,14 @@ beforeEach(function(){
 
       return hasResources && hasResource && hasResourceURL;
     },
-    toHaveACapability: function(){
-      var capability = this.actual.capability;
+    toHaveCapabilities: function(){
+      var capabilities = this.actual.capabilities;
 
-      return !!capability && typeof capability === 'string'
+      return !!capabilities;
     },
     toBeAResourceObject: function(){
       // Hacky way to check for resource methods
-      return !!this.actual.resourceName && !!this.actual.url() && !!this.actual.capability();
+      return !!this.actual.resourceName && !!this.actual.url() && !!this.actual.capabilities();
     },
   });
 });

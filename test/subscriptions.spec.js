@@ -23,7 +23,7 @@ describe('Subscriptions', function(){
     }, 'Session registration or start', 10000);
   });
 
-  describe('Create a subscription using spire.subscriptionFromUrlAndCapability', function() {
+  describe('Create a subscription using spire.subscriptionFromUrlAndCapabilities', function() {
     beforeEach(function () {
       var finished = false;
       runs(function(){
@@ -34,9 +34,9 @@ describe('Subscriptions', function(){
           algernon.url = subscription.url();
           var creds = {
             url: subscription.url(),
-            capability: subscription.data.capability
+            capabilities: subscription.data.capabilities
           };
-          algernon.spire.subscriptionFromUrlAndCapability(creds, function(err, subscription){
+          algernon.spire.subscriptionFromUrlAndCapabilities(creds, function(err, subscription){
             algernon.err = err;
             algernon.subscription = subscription;
             subscription.retrieveMessages({ timeout: 0 }, function (err, messages) {

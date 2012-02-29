@@ -773,9 +773,9 @@ Spire.prototype.publish = function (channelName, message, cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.accountFromUrlAndCapability({
+ * spire.accountFromUrlAndCapabilities({
  *   url: account_url,
- *   capability: account_capability
+ *   capabilities: account_capabilities
  * }, function (err, account) {
  *   if (!err) {
  *     // ...
@@ -787,8 +787,8 @@ Spire.prototype.publish = function (channelName, message, cb) {
  * @param {string} creds.capability Capability
  * @param {function (err, account)} cb Callback
  */
-Spire.prototype.accountFromUrlAndCapability = function (creds, cb) {
-  this.api.accountFromUrlAndCapability(creds, cb);
+Spire.prototype.accountFromUrlAndCapabilities = function (creds, cb) {
+  this.api.accountFromUrlAndCapabilities(creds, cb);
 };
 
 /**
@@ -800,74 +800,74 @@ Spire.prototype.accountFromUrlAndCapability = function (creds, cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.channelFromUrlAndCapability({
+ * spire.channelFromUrlAndCapabilities({
  *   url: channel_url,
- *   capability: channel_capability
+ *   capabilities: channel_capabilities
  * }, function (err, channel) {
  *   if (!err) {
  *     // ...
  *   }
  * })
  *
- * @param {object} creds Url and Capability
+ * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
- * @param {string} creds.capability Capability
+ * @param {string} creds.capabilities Capabilities
  * @param {function (err, channel)} cb Callback
  */
-Spire.prototype.channelFromUrlAndCapability = function (creds, cb) {
-  this.api.channelFromUrlAndCapability(creds, cb);
+Spire.prototype.channelFromUrlAndCapabilities = function (creds, cb) {
+  this.api.channelFromUrlAndCapabilities(creds, cb);
 };
 
 /**
- * Get Subscription from url and capability.
+ * Get Subscription from url and capabilities.
  * Use this method to get a subscription without starting a spire session.
  *
  * If you have a spire session, you should use <code>spire.subscription</code>.
  *
  * @example
  * var spire = new Spire();
- * spire.subscriptionFromUrlAndCapability({
+ * spire.subscriptionFromUrlAndCapabilities({
  *   url: subscription_url,
- *   capability: subscription_capability
+ *   capabilities: subscription_capabilities
  * }, function (err, subscription) {
  *   if (!err) {
  *     // ...
  *   }
  * })
  *
- * @param {object} creds Url and Capability
+ * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
- * @param {string} creds.capability Capability
+ * @param {string} creds.capabilities Capabilities
  * @param {function (err, subscription)} cb Callback
  */
-Spire.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
-  this.api.subscriptionFromUrlAndCapability(creds, cb);
+Spire.prototype.subscriptionFromUrlAndCapabilities = function (creds, cb) {
+  this.api.subscriptionFromUrlAndCapabilities(creds, cb);
 };
 
 /**
- * Start the Spire session with the url and capability for the session.
+ * Start the Spire session with the url and capabilities for the session.
  *
  * @example
  * var spire = new Spire();
  * var creds = {
  *   url: session_url,
- *   capability: session_capability
+ *   capabilities: session_capabilities
  * };
- * spire._startSessionFromUrlAndCapability(creds, function (err) {
+ * spire._startSessionFromUrlAndCapabilities(creds, function (err) {
  *   if (!err) {
  *     // You now have a spire session.
  *     // Start creating channels and subscripions.
  *   }
  * });
  *
- * @param {object} creds Url and Capability
+ * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
- * @param {string} creds.capability Capability
+ * @param {string} creds.capabilities Capabilities
  * @param {function (err)} cb Callback
  */
-Spire.prototype._startSessionFromUrlAndCapability = function (creds, cb) {
+Spire.prototype._startSessionFromUrlAndCapabilities = function (creds, cb) {
   var spire = this;
-  this.api.sessionFromUrlAndCapability(creds, function (err, session) {
+  this.api.sessionFromUrlAndCapabilities(creds, function (err, session) {
     if (err) return cb(err);
     spire.session = session;
     cb(null);
@@ -888,10 +888,6 @@ Spire.prototype.CREATION_RETRY_LIMIT = 5;
  * @param {function (err, channel)} cb Callback
  */
 Spire.prototype._findOrCreateChannel = function (name, cb) {
-  if (!this.session) {
-    return cb(new Error("You must start spire before you can do that."));
-  }
-
   var spire = this;
   var creationCount = 0;
 
@@ -931,10 +927,6 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
  * @param {function (err, subscription)} cb Callback
  */
 Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
-  if (!this.session) {
-    return cb(new Error("You must start spire before you can do that."));
-  }
-
   var spire = this;
   var creationCount = 0;
 
@@ -1875,14 +1867,14 @@ API.prototype.billing = function (cb) {
 };
 
 /**
- * Get Account from url and capability.
+ * Get Account from url and capabilities.
  *
- * @param {object} creds Url and Capability
+ * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
- * @param {string} creds.capability Capability
+ * @param {string} creds.capabilities Capabilities
  * @param {function (err, account)} cb Callback
  */
-API.prototype.accountFromUrlAndCapability = function (creds, cb) {
+API.prototype.accountFromUrlAndCapabilities = function (creds, cb) {
   var api = this;
   this.discover(function (err) {
     if (err) return cb(err);
@@ -1892,14 +1884,14 @@ API.prototype.accountFromUrlAndCapability = function (creds, cb) {
 };
 
 /**
- * Update Account from url and capability.
+ * Update Account from url and capabilities.
  *
- * @param {object} account Must contain at least Url and Capability
+ * @param {object} account Must contain at least Url and Capabilities
  * @param {string} creds.url Url
- * @param {string} creds.capability Capability
+ * @param {string} creds.capabilities Capabilities
  * @param {function (err, account)} cb Callback
  */
-API.prototype.updateAccountWithUrlAndCapability = function (accountData, cb) {
+API.prototype.updateAccountWithUrlAndCapabilities = function (accountData, cb) {
   var api = this;
   this.discover(function (err) {
     if (err) return cb(err);
@@ -1912,14 +1904,14 @@ API.prototype.updateAccountWithUrlAndCapability = function (accountData, cb) {
 };
 
 /**
- * Get Channel from url and capability.
+ * Get Channel from url and capabilities.
  *
- * @param {object} creds Url and Capability
+ * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
- * @param {string} creds.capability Capability
+ * @param {string} creds.capabilities Capabilities
  * @param {function (err, channel)} cb Callback
  */
-API.prototype.channelFromUrlAndCapability = function (creds, cb) {
+API.prototype.channelFromUrlAndCapabilities = function (creds, cb) {
   var api = this;
   this.discover(function (err) {
     if (err) return cb(err);
@@ -1929,14 +1921,14 @@ API.prototype.channelFromUrlAndCapability = function (creds, cb) {
 };
 
 /**
- * Get Session from url and capability.
+ * Get Session from url and capabilities.
  *
- * @param {object} creds Url and Capability
+ * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
- * @param {string} creds.capability Capability
+ * @param {string} creds.capabilities Capabilities
  * @param {function (err, subscription)} cb Callback
  */
-API.prototype.sessionFromUrlAndCapability = function (creds, cb) {
+API.prototype.sessionFromUrlAndCapabilities = function (creds, cb) {
   var api = this;
   this.discover(function (err) {
     if (err) return cb(err);
@@ -1946,14 +1938,14 @@ API.prototype.sessionFromUrlAndCapability = function (creds, cb) {
 };
 
 /**
- * Get Subscription from url and capability.
+ * Get Subscription from url and capabilities.
  *
- * @param {object} creds Url and Capability
+ * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
- * @param {string} creds.capability Capability
+ * @param {string} creds.capabilities Capabilities
  * @param {function (err, subscription)} cb Callback
  */
-API.prototype.subscriptionFromUrlAndCapability = function (creds, cb) {
+API.prototype.subscriptionFromUrlAndCapabilities = function (creds, cb) {
   var api = this;
   this.discover(function (err) {
     if (err) return cb(err);
@@ -1983,13 +1975,14 @@ API.prototype.mediaType = function (resourceName) {
 };
 
 /**
- * Returns the Authorization header for the resource.
+ * Returns the Authorization header for the resource and method.
  *
  * @param {Resource} resource Resource
+ * @param {string} method Method
  * @returns {string} Authorization header for the resource
  */
-API.prototype.authorization = function (resource) {
-  return ['Capability', resource.capability].join(' ');
+API.prototype.authorization = function (method, resource) {
+  return ['Capability', resource.capabilities[method]].join(' ');
 };
 
 /**
@@ -2108,7 +2101,7 @@ Resource.defineRequest(API.prototype, 'update_account', function (data) {
     url: data.url,
     content: data,
     headers: {
-      'Authorization': "Capability " + data.capability,
+      'Authorization': "Capability " + data.capabilities.update,
       'Accept': this.mediaType('account'),
       'Content-Type': this.mediaType('account')
     }
@@ -2301,12 +2294,21 @@ Resource.prototype.url = function () {
 };
 
 /**
- * Returns the capability for the resource.
+ * Returns the capabilities for the resource.
+ *
+ * @returns {object} Capabilities
+ */
+Resource.prototype.capabilities = function () {
+  return this.data.capabilities;
+};
+
+/**
+ * Returns the capability for the resource and method
  *
  * @returns {string} Capability
  */
-Resource.prototype.capability = function () {
-  return this.data.capability;
+Resource.prototype.capability = function (method) {
+  return this.capabilities()[method];
 };
 
 /**
@@ -2314,18 +2316,19 @@ Resource.prototype.capability = function () {
  * if one is passed in.
  *
  * @param {Resource} [resource] Optional resource
+ * @param {string} method Method
  * @returns {string} Authorization header
  */
-Resource.prototype.authorization = function (resource) {
+Resource.prototype.authorization = function (method, resource) {
   var cap;
   if (resource) {
     if (typeof resource.capability === 'function') {
-      cap = resource.capability();
+      cap = resource.capability(method);
     } else {
-      cap = resource.capability;
+      cap = resource.capabilities[method];
     }
   } else {
-    cap = this.capability();
+    cap = this.capability(method);
   }
   return "Capability " + cap;
 };
@@ -2379,7 +2382,7 @@ Resource.defineRequest(Resource.prototype, 'get', function () {
     method: 'get',
     url: this.url(),
     headers: {
-      'Authorization': this.authorization(),
+      'Authorization': this.authorization('get'),
       'Accept': this.mediaType(),
       'Content-Type': this.mediaType()
     }
@@ -2397,7 +2400,7 @@ Resource.defineRequest(Resource.prototype, 'update', function (data) {
     url: this.url(),
     content: data,
     headers: {
-      'Authorization': this.authorization(),
+      'Authorization': this.authorization('update'),
       'Accept': this.mediaType(),
       'Content-Type': this.mediaType()
     }
@@ -2414,7 +2417,7 @@ Resource.defineRequest(Resource.prototype, 'delete', function () {
     method: 'delete',
     url: this.url(),
     headers: {
-      'Authorization': this.authorization(),
+      'Authorization': this.authorization('delete'),
       'Accept': this.mediaType(),
       'Content-Type': this.mediaType()
     }
@@ -5496,7 +5499,7 @@ Resource.defineRequest(Account.prototype, 'reset', function () {
     url: this.url(),
     headers: {
       'Accept': this.mediaType(),
-      'Authorization': this.authorization()
+      'Authorization': this.authorization('reset')
     }
   };
 });
@@ -5515,7 +5518,7 @@ Resource.defineRequest(Account.prototype, 'update_billing_subscription', functio
     headers: {
       'Accept': this.mediaType(),
       'Content-Type': this.mediaType(),
-      'Authorization': this.authorization('invioces')
+      'Authorization': this.authorization('update', billing)
     }
   };
 });
@@ -5681,7 +5684,7 @@ Resource.defineRequest(Channel.prototype, 'publish', function (message) {
     method: 'post',
     url: this.url(),
     headers: {
-      'Authorization': this.authorization(),
+      'Authorization': this.authorization('publish'),
       'Accept': this.mediaType('message'),
       'Content-Type': this.mediaType('message')
     },
@@ -6003,7 +6006,7 @@ Resource.defineRequest(Session.prototype, 'account', function () {
     method: 'get',
     url: resource.url,
     headers: {
-      'Authorization': this.authorization(resource),
+      'Authorization': this.authorization('get', resource),
       'Accept': this.mediaType('account')
     }
   };
@@ -6020,7 +6023,7 @@ Resource.defineRequest(Session.prototype, 'channels', function () {
     method: 'get',
     url: collection.url,
     headers: {
-      'Authorization': this.authorization(collection),
+      'Authorization': this.authorization('all', collection),
       'Accept': this.mediaType('channels')
     }
   };
@@ -6038,7 +6041,7 @@ Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
     url: collection.url,
     query: { name: name },
     headers: {
-      'Authorization': this.authorization(collection),
+      'Authorization': this.authorization('get_by_name', collection),
       'Accept': this.mediaType('channels')
     }
   };
@@ -6056,7 +6059,7 @@ Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
     url: collection.url,
     content: { name: name },
     headers: {
-      'Authorization': this.authorization(collection),
+      'Authorization': this.authorization('create', collection),
       'Accept': this.mediaType('channel'),
       'Content-Type': this.mediaType('channel')
     }
@@ -6074,7 +6077,7 @@ Resource.defineRequest(Session.prototype, 'subscriptions', function () {
     method: 'get',
     url: collection.url,
     headers: {
-      'Authorization': this.authorization(collection),
+      'Authorization': this.authorization('all', collection),
       'Accept': this.mediaType('subscriptions')
     }
   };
@@ -6095,7 +6098,7 @@ Resource.defineRequest(Session.prototype, 'create_subscription', function (name,
       channels: channelUrls
     },
     headers: {
-      'Authorization': this.authorization(collection),
+      'Authorization': this.authorization('create', collection),
       'Accept': this.mediaType('subscription'),
       'Content-Type': this.mediaType('subscription')
     }
@@ -6393,7 +6396,7 @@ Resource.defineRequest(Subscription.prototype, 'messages', function (options) {
       'delay': options.delay || 0
     },
     headers: {
-      'Authorization': this.authorization(),
+      'Authorization': this.authorization('messages'),
       'Accept': this.mediaType('events')
     }
   };

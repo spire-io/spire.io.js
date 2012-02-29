@@ -6259,9 +6259,11 @@ Subscription.prototype.retrieveMessages = function (options, cb) {
     var messages = messagesData.messages;
 
     if (messages.length && subscription.listening) {
-      subscription.emit('messages', messages);
-      _.each(messages, function (message) {
-        subscription.emit('message', message);
+      process.nextTick(function () {
+        subscription.emit('messages', messages);
+        _.each(messages, function (message) {
+          subscription.emit('message', message);
+        });
       });
     }
 

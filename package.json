@@ -1,5 +1,5 @@
 { "name": "spire.io.js"
-, "version": "0.3.11"
+, "version": "0.3.12"
 , "description": "A JS client for spire.io messaging API.  Runs in node and the browser."
 , "keywords": ["messaging", "spire", "spire.io", "browser"]
 , "homepage": "https://github.com/spire-io/spire.io.js"
@@ -28,7 +28,7 @@
   , "test" : "./test"
   }
 , "dependencies":
-  { "shred": "0.7.6"
+  { "shred": ">=0.7.9"
   , "underscore": "1.3.1"
   , "async": "0.1.15"
   }

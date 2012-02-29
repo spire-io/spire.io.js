@@ -3538,12 +3538,11 @@ var makeLogger = function(level,fn) {
 var Logger = function(options) {
   var logger = this;
 	var options = options||{};
-  // this.level = options.level;
-  // this.colors = options.colors || this.colors;
 
   // Default options
   logger.options = _.defaults(options, {
       level: 'info'
+    , timestamp: true
     , colors: {
         info: 'green'
       , warn: 'yellow'
@@ -3560,7 +3559,7 @@ var Logger = function(options) {
   //    //=> Haiku: this is going to be awesome!
   //
   if (logger.options.module){
-    logger.options.prefix = logger.options.module + ': ';
+    logger.options.prefix = logger.options.module;
   }
 
   // Write to stderr or a file
@@ -3570,7 +3569,10 @@ var Logger = function(options) {
       if(process.title === "node")
 	  logger.stream = process.stderr;
       else if(process.title === "browser")
-	  logger.stream = console[logger.options.level];
+	  logger.stream = function () {
+      // Work around weird console context issue: http://code.google.com/p/chromium/issues/detail?id=48662
+      return console[logger.options.level].apply(console, arguments);
+    };
   }
 
   switch(logger.options.level){
@@ -3611,12 +3613,11 @@ Logger.prototype = {
 
     var logger = this
       , prefix = logger.options.prefix
+      , timestamp = logger.options.timestamp ? " " + (new Date().toISOString()) : ""
       , color = logger.options.colors[level]
     ;
 
-    // TODO: maybe this should handle
-
-    return (prefix + message)[color];
+    return (prefix + timestamp + ": " + message)[color];
   }
 };
 
@@ -5073,7 +5074,7 @@ Object.defineProperties(Response.prototype, {
 //   400 or greater.
   isError: {
     get: function() {
-      return (this.status>399)
+      return (this.status === 0 || this.status > 399)
     },
     enumerable: true
   }

@@ -305,7 +305,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#accountFromUrlAndCapability">accountFromUrlAndCapability</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#accountFromUrlAndCapabilities">accountFromUrlAndCapabilities</a></b>(creds, cb)
 								</div>
 								<div class="description">Get Account from url and capability.</div>
 							</td>
@@ -323,7 +323,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#channelFromUrlAndCapability">channelFromUrlAndCapability</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#channelFromUrlAndCapabilities">channelFromUrlAndCapabilities</a></b>(creds, cb)
 								</div>
 								<div class="description">Get Channel from url and capability.</div>
 							</td>
@@ -422,9 +422,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptionFromUrlAndCapability">subscriptionFromUrlAndCapability</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptionFromUrlAndCapabilities">subscriptionFromUrlAndCapabilities</a></b>(creds, cb)
 								</div>
-								<div class="description">Get Subscription from url and capability.</div>
+								<div class="description">Get Subscription from url and capabilities.</div>
 							</td>
 						</tr>
 					
@@ -578,11 +578,11 @@ must call one of:
 					Method Detail
 				</div>
 				
-					<a name="accountFromUrlAndCapability"> </a>
+					<a name="accountFromUrlAndCapabilities"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>accountFromUrlAndCapability</b>(creds, cb)
+					<b>accountFromUrlAndCapabilities</b>(creds, cb)
 					
 					</div>
 					<div class="description">
@@ -598,9 +598,9 @@ If you have a spire session, you should use <code>spire.session.account</code>.
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.accountFromUrlAndCapability({
+spire.accountFromUrlAndCapabilities({
   url: account_url,
-  capability: account_capability
+  capabilities: account_capabilities
 }, function (err, account) {
   if (!err) {
     // ...
@@ -701,11 +701,11 @@ spire.start(your_api_secret, function (err, session) {
 
 					<hr />
 				
-					<a name="channelFromUrlAndCapability"> </a>
+					<a name="channelFromUrlAndCapabilities"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>channelFromUrlAndCapability</b>(creds, cb)
+					<b>channelFromUrlAndCapabilities</b>(creds, cb)
 					
 					</div>
 					<div class="description">
@@ -721,9 +721,9 @@ If you have a spire session, you should use <code>spire.channel</code>.
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.channelFromUrlAndCapability({
+spire.channelFromUrlAndCapabilities({
   url: channel_url,
-  capability: channel_capability
+  capabilities: channel_capabilities
 }, function (err, channel) {
   if (!err) {
     // ...
@@ -740,7 +740,7 @@ spire.channelFromUrlAndCapability({
 									<span class="light fixedFont">{object}</span> <b>creds</b>
 									
 								</dt>
-								<dd>Url and Capability</dd>
+								<dd>Url and Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{string}</span> <b>creds.url</b>
@@ -749,10 +749,10 @@ spire.channelFromUrlAndCapability({
 								<dd>Url</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
 									
 								</dt>
-								<dd>Capability</dd>
+								<dd>Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
@@ -1320,15 +1320,15 @@ spire.start(your_api_secret, function (err, session) {
 
 					<hr />
 				
-					<a name="subscriptionFromUrlAndCapability"> </a>
+					<a name="subscriptionFromUrlAndCapabilities"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>subscriptionFromUrlAndCapability</b>(creds, cb)
+					<b>subscriptionFromUrlAndCapabilities</b>(creds, cb)
 					
 					</div>
 					<div class="description">
-						Get Subscription from url and capability.
+						Get Subscription from url and capabilities.
 Use this method to get a subscription without starting a spire session.
 
 If you have a spire session, you should use <code>spire.subscription</code>.
@@ -1339,9 +1339,9 @@ If you have a spire session, you should use <code>spire.subscription</code>.
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.subscriptionFromUrlAndCapability({
+spire.subscriptionFromUrlAndCapabilities({
   url: subscription_url,
-  capability: subscription_capability
+  capabilities: subscription_capabilities
 }, function (err, subscription) {
   if (!err) {
     // ...
@@ -1358,7 +1358,7 @@ spire.subscriptionFromUrlAndCapability({
 									<span class="light fixedFont">{object}</span> <b>creds</b>
 									
 								</dt>
-								<dd>Url and Capability</dd>
+								<dd>Url and Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{string}</span> <b>creds.url</b>
@@ -1367,10 +1367,10 @@ spire.subscriptionFromUrlAndCapability({
 								<dd>Url</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
 									
 								</dt>
-								<dd>Capability</dd>
+								<dd>Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
@@ -1568,7 +1568,7 @@ spire.update({
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 29 2012 11:56:41 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue Mar 06 2012 12:42:59 GMT-0800 (PST)
 		</div>
 	</body>
 </html>

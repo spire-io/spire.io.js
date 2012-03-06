@@ -277,18 +277,18 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#accountFromUrlAndCapability">accountFromUrlAndCapability</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/API.html#accountFromUrlAndCapabilities">accountFromUrlAndCapabilities</a></b>(creds, cb)
 								</div>
-								<div class="description">Get Account from url and capability.</div>
+								<div class="description">Get Account from url and capabilities.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#authorization">authorization</a></b>(resource)
+								<div class="fixedFont"><b><a href="../symbols/API.html#authorization">authorization</a></b>(resource, method)
 								</div>
-								<div class="description">Returns the Authorization header for the resource.</div>
+								<div class="description">Returns the Authorization header for the resource and method.</div>
 							</td>
 						</tr>
 					
@@ -304,9 +304,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#channelFromUrlAndCapability">channelFromUrlAndCapability</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/API.html#channelFromUrlAndCapabilities">channelFromUrlAndCapabilities</a></b>(creds, cb)
 								</div>
-								<div class="description">Get Channel from url and capability.</div>
+								<div class="description">Get Channel from url and capabilities.</div>
 							</td>
 						</tr>
 					
@@ -376,18 +376,18 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#sessionFromUrlAndCapability">sessionFromUrlAndCapability</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/API.html#sessionFromUrlAndCapabilities">sessionFromUrlAndCapabilities</a></b>(creds, cb)
 								</div>
-								<div class="description">Get Session from url and capability.</div>
+								<div class="description">Get Session from url and capabilities.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#subscriptionFromUrlAndCapability">subscriptionFromUrlAndCapability</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/API.html#subscriptionFromUrlAndCapabilities">subscriptionFromUrlAndCapabilities</a></b>(creds, cb)
 								</div>
-								<div class="description">Get Subscription from url and capability.</div>
+								<div class="description">Get Subscription from url and capabilities.</div>
 							</td>
 						</tr>
 					
@@ -487,15 +487,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name="accountFromUrlAndCapability"> </a>
+					<a name="accountFromUrlAndCapabilities"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>accountFromUrlAndCapability</b>(creds, cb)
+					<b>accountFromUrlAndCapabilities</b>(creds, cb)
 					
 					</div>
 					<div class="description">
-						Get Account from url and capability.
+						Get Account from url and capabilities.
 						
 						
 					</div>
@@ -510,7 +510,7 @@ ul.inheritsList
 									<span class="light fixedFont">{object}</span> <b>creds</b>
 									
 								</dt>
-								<dd>Url and Capability</dd>
+								<dd>Url and Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{string}</span> <b>creds.url</b>
@@ -519,10 +519,10 @@ ul.inheritsList
 								<dd>Url</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
 									
 								</dt>
-								<dd>Capability</dd>
+								<dd>Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
@@ -545,11 +545,11 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					<span class="light">{string}</span>
-					<b>authorization</b>(resource)
+					<b>authorization</b>(resource, method)
 					
 					</div>
 					<div class="description">
-						Returns the Authorization header for the resource.
+						Returns the Authorization header for the resource and method.
 						
 						
 					</div>
@@ -565,6 +565,12 @@ ul.inheritsList
 									
 								</dt>
 								<dd>Resource</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>method</b>
+									
+								</dt>
+								<dd>Method</dd>
 							
 							</dl>
 						
@@ -620,15 +626,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="channelFromUrlAndCapability"> </a>
+					<a name="channelFromUrlAndCapabilities"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>channelFromUrlAndCapability</b>(creds, cb)
+					<b>channelFromUrlAndCapabilities</b>(creds, cb)
 					
 					</div>
 					<div class="description">
-						Get Channel from url and capability.
+						Get Channel from url and capabilities.
 						
 						
 					</div>
@@ -643,7 +649,7 @@ ul.inheritsList
 									<span class="light fixedFont">{object}</span> <b>creds</b>
 									
 								</dt>
-								<dd>Url and Capability</dd>
+								<dd>Url and Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{string}</span> <b>creds.url</b>
@@ -652,10 +658,10 @@ ul.inheritsList
 								<dd>Url</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
 									
 								</dt>
-								<dd>Capability</dd>
+								<dd>Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
@@ -986,15 +992,15 @@ we only make the request once and cache the result for subsequent calls.
 
 					<hr />
 				
-					<a name="sessionFromUrlAndCapability"> </a>
+					<a name="sessionFromUrlAndCapabilities"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>sessionFromUrlAndCapability</b>(creds, cb)
+					<b>sessionFromUrlAndCapabilities</b>(creds, cb)
 					
 					</div>
 					<div class="description">
-						Get Session from url and capability.
+						Get Session from url and capabilities.
 						
 						
 					</div>
@@ -1009,7 +1015,7 @@ we only make the request once and cache the result for subsequent calls.
 									<span class="light fixedFont">{object}</span> <b>creds</b>
 									
 								</dt>
-								<dd>Url and Capability</dd>
+								<dd>Url and Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{string}</span> <b>creds.url</b>
@@ -1018,10 +1024,10 @@ we only make the request once and cache the result for subsequent calls.
 								<dd>Url</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
 									
 								</dt>
-								<dd>Capability</dd>
+								<dd>Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
@@ -1040,15 +1046,15 @@ we only make the request once and cache the result for subsequent calls.
 
 					<hr />
 				
-					<a name="subscriptionFromUrlAndCapability"> </a>
+					<a name="subscriptionFromUrlAndCapabilities"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>subscriptionFromUrlAndCapability</b>(creds, cb)
+					<b>subscriptionFromUrlAndCapabilities</b>(creds, cb)
 					
 					</div>
 					<div class="description">
-						Get Subscription from url and capability.
+						Get Subscription from url and capabilities.
 						
 						
 					</div>
@@ -1063,7 +1069,7 @@ we only make the request once and cache the result for subsequent calls.
 									<span class="light fixedFont">{object}</span> <b>creds</b>
 									
 								</dt>
-								<dd>Url and Capability</dd>
+								<dd>Url and Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{string}</span> <b>creds.url</b>
@@ -1072,10 +1078,10 @@ we only make the request once and cache the result for subsequent calls.
 								<dd>Url</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
+									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
 									
 								</dt>
-								<dd>Capability</dd>
+								<dd>Capabilities</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
@@ -1160,7 +1166,7 @@ we only make the request once and cache the result for subsequent calls.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 29 2012 11:56:41 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue Mar 06 2012 12:42:59 GMT-0800 (PST)
 		</div>
 	</body>
 </html>

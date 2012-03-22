@@ -211,6 +211,25 @@ describe('Channels', function () {
           });
         }); // Create a subscription with the same name
 
+        describe('Getting all subscriptions for a channel', function () {
+          beforeEach(function () {
+            var finished = false;
+            var that = this;
+            this.channel.subscriptions(function (err, subs) {
+              that.subscriptions = subs;
+              finished = true;
+            });
+
+            waitsFor(function () {
+              return finished;
+            }, 'getting channel subscriptions', 10000);
+          });
+
+          it("Should return a hash of subscriptions including 'sub_name'", function () {
+            expect(this.subscriptions.sub_name).toBeDefined()
+          });
+        });
+
         describe('Listen for the message we sent', function () {
           beforeEach(function () {
             var finished = false;

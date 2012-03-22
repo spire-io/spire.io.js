@@ -37,11 +37,11 @@ describe('Long polling', function () {
         var that = this;
         this.channel.publish('Message 1', function (err, mes) {
           that.channel.publish('Message 2', function (err, mes) {
-            that.sub1.longPoll({ timeout: 5 }, function (err, messages) {
-              that.messages1 = messages;
+            that.sub1.longPoll({ timeout: 5 }, function (err, events) {
+              that.messages1 = events.messages;
               that.channel.publish('Message 3', function (err, mes) {
-                that.sub1.longPoll({ timeout: 5 }, function (err, messages) {
-                  that.messages2 = messages;
+                that.sub1.longPoll({ timeout: 5 }, function (err, events) {
+                  that.messages2 = events.messages;
                   finished = true;
                 });
               });

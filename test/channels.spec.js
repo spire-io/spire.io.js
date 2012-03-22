@@ -216,9 +216,9 @@ describe('Channels', function () {
             var finished = false;
             runs(function () {
               var that = this;
-              this.sub.poll(function(err, messages) {
+              this.sub.poll(function(err, events) {
                 finished = true;
-                that.messages = messages;
+                that.messages = events.messages;
               });
             });
 

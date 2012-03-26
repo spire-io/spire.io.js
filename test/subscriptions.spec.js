@@ -105,9 +105,9 @@ describe('Subscriptions', function(){
           algernon.spire.subscriptionFromUrlAndCapabilities(creds, function(err, subscription){
             algernon.err = err;
             algernon.subscription = subscription;
-            subscription.retrieveMessages({ timeout: 0 }, function (err, messages) {
-              algernon.messagesErr = err;
-              algernon.messages = messages;
+            subscription.retrieveEvents({ timeout: 0 }, function (err, events) {
+              algernon.eventsErr = err;
+              algernon.events = events;
               finished = true;
             });
           });
@@ -128,9 +128,9 @@ describe('Subscriptions', function(){
       expect(this.subscription.url()).toBe(this.url);
     });
 
-    it('should make a successfull request for messages', function () {
-      expect(this.messagesErr).toBeFalsy();
-      expect(this.messages).toEqual([]);
+    it('should make a successfull request for events', function () {
+      expect(this.eventsErr).toBeFalsy();
+      expect(this.events.messages).toEqual([]);
     });
   });
 });

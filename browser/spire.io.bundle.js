@@ -935,7 +935,10 @@ Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
 
   function createSubscription() {
     creationCount++;
-    spire.session.createSubscription(name, channelNames, function (err, sub) {
+    spire.session.createSubscription({
+      name: name,
+      channelNames: channelNames
+    }, function (err, sub) {
       if (!err) return cb(null, sub);
       if (err.status !== 409) return cb(err);
       if (creationCount >= spire.CREATION_RETRY_LIMIT) {
@@ -5972,6 +5975,7 @@ Session.prototype.subscriptions$ = function (cb) {
   var session = this;
   this.request('subscriptions', function (err, subscriptions) {
     if (err) return cb(err);
+    session._subscriptions = {};
     _.each(subscriptions, function (subscription, name) {
       session._memoizeSubscription(new Subscription(session.spire, subscription));
     });
@@ -6000,17 +6004,25 @@ Session.prototype.createChannel = function (name, cb) {
  * Creates a subscription to any number of channels.  Returns a Subscription
  * resource.  Errors if a subscription with the specified name exists.
  *
- * @param {string} name Subscription name
- * @param {array} channelNames Array of channel names to subscribe to.  Can be empty.
+ * @param {object} options Options
+ * @param {string} options.name Subscription name
+ * @param {array} options.channelNames Channel names to subscribe to
+ * @param {array} options.channelUrls Channel urls to subscribe to
+ * @param {number} timeout Subscription timeout
  * @param {function (err, subscription)} cb Callback
  */
-Session.prototype.createSubscription = function (subName, channelNames, cb) {
+Session.prototype.createSubscription = function (options, cb) {
+  var name = options.name;
+  var channelNames = options.channelNames || [];
+  var channelUrls = options.channelUrls || [];
+  var timeout = options.timeout;
+
   var session = this;
   this.channels(function (channels) {
-    var channelUrls = _.map(channelNames, function (name) {
+    channelUrls.push.apply(channelUrls, _.map(channelNames, function (name) {
       return session._channels[name].url();
-    });
-    session.request('create_subscription', subName, channelUrls, function (err, sub) {
+    }));
+    session.request('create_subscription', name, channelUrls, timeout, function (err, sub) {
       if (err) return cb(err);
       var subscription = new Subscription(session.spire, sub);
       session._memoizeSubscription(subscription);
@@ -6153,14 +6165,15 @@ Resource.defineRequest(Session.prototype, 'subscriptions', function () {
  * @name create_subscription
  * @ignore
  */
-Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls) {
+Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls, timeout) {
   var collection = this.data.resources.subscriptions;
   return {
     method: 'post',
     url: collection.url,
     content: {
       name: name,
-      channels: channelUrls
+      channels: channelUrls,
+      timeout: timeout
     },
     headers: {
       'Authorization': this.authorization('create', collection),
@@ -6364,33 +6377,6 @@ Subscription.prototype.retrieveEvents = function (options, cb) {
  * Alias for subscription.retreiveEvents.
  */
 Subscription.prototype.get = Subscription.prototype.retreiveEvents;
-
-/**
- * Gets messages for the subscription.
- *
- * <p>This method only makes one request.  Use
- * <code>subscription.startListening</code> to poll repeatedly.
- *
- * @example
- * subscription.retrieveMessages(function (err, messages) {
- *   if (!err) {
- *     // `messages` is an array of messages (possably empty)
- *   }
- * });
- *
- * @param {object} [options] Optional options argument
- * @param {number} [options.last] Optional last message
- * @param {number} [options.delay] Optional delay
- * @param {number} [options.timeout] Optional timeout
- * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
- * @param {function (err, messages)} cb Callback
- */
-Subscription.prototype.retrieveMessages = function (options, cb) {
-  this.retrieveEvents(options, function (err, events) {
-    if (err) return cb(err);
-    cb(null, events.messages);
-  });
-};
 
 /**
  * Gets new events for the subscription.  This method forces a 0 second

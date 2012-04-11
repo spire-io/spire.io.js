@@ -169,9 +169,9 @@
 <span class='line'>165</span>  *
 <span class='line'>166</span>  * @param {function (err, resource)} cd Callback
 <span class='line'>167</span>  */</span><span class="WHIT">
-<span class='line'>168</span> </span><span class="NAME">Resource.prototype</span><span class="PUNC">[</span><span class="STRN">'delete'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="NAME">Resource.prototype</span><span class="PUNC">[</span><span class="STRN">'delete'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>169</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">resource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>170</span> </span><span class="WHIT">  </span><span class="NAME">this.request</span><span class="PUNC">(</span><span class="STRN">'delete'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="WHIT">  </span><span class="NAME">this.request</span><span class="PUNC">(</span><span class="STRN">'delete'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>171</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>172</span> </span><span class="WHIT">    </span><span class="KEYW">delete</span><span class="WHIT"> </span><span class="NAME">resource.data</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>173</span> </span><span class="WHIT">    </span><span class="NAME">cb</span><span class="PUNC">(</span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -273,48 +273,48 @@
 <span class='line'>269</span>  */</span><span class="WHIT">
 <span class='line'>270</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Resource.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>271</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>272</span> <span class='line'>273</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>274</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.url</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>275</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>276</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="STRN">'get'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>277</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>278</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>279</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>280</span> <span class='line'>281</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>282</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>283</span> 
-<span class='line'>284</span> </span><span class="COMM">/**
-<span class='line'>285</span>  * Updates (puts) to the resouce.
-<span class='line'>286</span>  * @name update
-<span class='line'>287</span>  * @ignore
-<span class='line'>288</span>  */</span><span class="WHIT">
-<span class='line'>289</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Resource.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'update'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>290</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>291</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'put'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>292</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.url</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>293</span> </span><span class="WHIT">    </span><span class="NAME">content</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>294</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>295</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="STRN">'update'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>296</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>297</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>298</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>299</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>300</span> <span class='line'>301</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>302</span> 
-<span class='line'>303</span> </span><span class="COMM">/**
-<span class='line'>304</span>  * Deletes a resource.
-<span class='line'>305</span>  * @name delete
-<span class='line'>306</span>  * @ignore
-<span class='line'>307</span>  */</span><span class="WHIT">
-<span class='line'>308</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Resource.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'delete'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>309</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>310</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'delete'</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>311</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.url</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>312</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>313</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="STRN">'delete'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>314</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>315</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>316</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>317</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>318</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>319</span> </span></pre></body></html>
+<span class='line'>272</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'get'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>273</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.url</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>274</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>275</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="STRN">'get'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>276</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>277</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>278</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>279</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>280</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>281</span> 
+<span class='line'>282</span> </span><span class="COMM">/**
+<span class='line'>283</span>  * Updates (puts) to the resouce.
+<span class='line'>284</span>  * @name update
+<span class='line'>285</span>  * @ignore
+<span class='line'>286</span>  */</span><span class="WHIT">
+<span class='line'>287</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Resource.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'update'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>289</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'put'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.url</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>291</span> </span><span class="WHIT">    </span><span class="NAME">content</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">data</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>292</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="STRN">'update'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>294</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>295</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>296</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>297</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>299</span> 
+<span class='line'>300</span> </span><span class="COMM">/**
+<span class='line'>301</span>  * Deletes a resource.
+<span class='line'>302</span>  * @name delete
+<span class='line'>303</span>  * @ignore
+<span class='line'>304</span>  */</span><span class="WHIT">
+<span class='line'>305</span> </span><span class="NAME">Resource.defineRequest</span><span class="PUNC">(</span><span class="NAME">Resource.prototype</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'delete'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>306</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>307</span> </span><span class="WHIT">    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'delete'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>308</span> </span><span class="WHIT">    </span><span class="NAME">url</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.url</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>309</span> </span><span class="WHIT">    </span><span class="NAME">headers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>310</span> </span><span class="WHIT">      </span><span class="STRN">'Authorization'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.authorization</span><span class="PUNC">(</span><span class="STRN">'delete'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>311</span> </span><span class="WHIT">      </span><span class="STRN">'Accept'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>312</span> </span><span class="WHIT">      </span><span class="STRN">'Content-Type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.mediaType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>313</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>314</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>315</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>316</span> </span></pre></body></html>

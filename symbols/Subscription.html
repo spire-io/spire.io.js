@@ -279,7 +279,7 @@ ul.inheritsList
 								<div class="fixedFont">
 								<b><a href="../symbols/Subscription.html#get">get</a></b>
 								</div>
-								<div class="description">Alias for subscription.retreiveMessages.</div>
+								<div class="description">Alias for subscription.retreiveEvents.</div>
 							</td>
 						</tr>
 					
@@ -313,7 +313,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Subscription.html#longPoll">longPoll</a></b>(options, cb)
 								</div>
-								<div class="description">Gets new messages for the subscription.</div>
+								<div class="description">Gets new events for the subscription.</div>
 							</td>
 						</tr>
 					
@@ -331,16 +331,16 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Subscription.html#poll">poll</a></b>(options, cb)
 								</div>
-								<div class="description">Gets new messages for the subscription.</div>
+								<div class="description">Gets new events for the subscription.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Subscription.html#retrieveMessages">retrieveMessages</a></b>(options, cb)
+								<div class="fixedFont"><b><a href="../symbols/Subscription.html#retrieveEvents">retrieveEvents</a></b>(options, cb)
 								</div>
-								<div class="description">Gets messages for the subscription.</div>
+								<div class="description">Gets events for the subscription.</div>
 							</td>
 						</tr>
 					
@@ -389,17 +389,17 @@ ul.inheritsList
 				<div class="description">
 					Represents a subscription in the spire api.
 
-<p>There are a few ways to get messages from a subscription.
+<p>There are a few ways to get events from a subscription.
 
-<p>The first is to call <code>subscription.retrieveMessages</code> directly.
+<p>The first is to call <code>subscription.retrieveEvents</code> directly.
 This is the most general method, and supports a number of options.
 
 <p>There are convenience methods <code>subscription.poll</code and
-<code>subscription.longPoll</code> which wrap <code>retrieveMessages</code>.
+<code>subscription.longPoll</code> which wrap <code>retrieveEvents</code>.
 The only difference is that <code>subscription.poll</code> has a timeout of
 0, so the request will always come back right away, while
 <code>subscription.longPoll</code> has a 30 second timeout, so the request
-will wait up to 30 seconds for new messages to arrive before returning.
+will wait up to 30 seconds for new events to arrive before returning.
 
 <p>You can also use the <code>message</code> and <code>messages</code> events to
 listen for new messages on the subscription.
@@ -467,7 +467,7 @@ received in a single request.  The `message` event fires once per message.
 					
 					</div>
 					<div class="description">
-						Alias for subscription.retreiveMessages.
+						Alias for subscription.retreiveEvents.
 						
 						
 					</div>
@@ -497,7 +497,7 @@ received in a single request.  The `message` event fires once per message.
 					
 					</div>
 					<div class="description">
-						Gets new messages for the subscription.
+						Gets new events for the subscription.
 
 <p>This method defaults to a 30 second timeout, so the request will wait up to
 30 seconds for a new message to come in.  You can increase the wait time with
@@ -511,9 +511,9 @@ poll repeatedly.
 					
 					
 					
-					<pre class="code">subscription.longPoll({ timeout: 60 }, function (err, messages) {
+					<pre class="code">subscription.longPoll({ timeout: 60 }, function (err, events) {
   if (!err) {
-    // `messages` is an array of messages (possably empty)
+    // `events.messages` is an array of messages (possably empty)
   }
 });</pre>
 					
@@ -548,7 +548,7 @@ poll repeatedly.
 								<dd>Optional timeout</dd>
 							
 								<dt>
-									<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
+									<span class="light fixedFont">{function (err|events)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -604,9 +604,9 @@ poll repeatedly.
 					
 					</div>
 					<div class="description">
-						Gets new messages for the subscription.  This method forces a 0 second
+						Gets new events for the subscription.  This method forces a 0 second
 timeout, so the request will come back immediately, but may have an empty
-array of messages if there are no new ones.
+array of events if there are no new ones.
 
 <p>This method only makes one request.  Use
 <code>subscription.startListening</code> to poll repeatedly.
@@ -616,9 +616,9 @@ array of messages if there are no new ones.
 					
 					
 					
-					<pre class="code">subscription.poll(function (err, messages) {
+					<pre class="code">subscription.poll(function (err, events) {
   if (!err) {
-    // `messages` is an array of messages (possably empty)
+    // `events.messages` is an array of messages (possably empty)
   }
 });</pre>
 					
@@ -647,7 +647,7 @@ array of messages if there are no new ones.
 								<dd>Optional ordering ('asc' or 'desc')</dd>
 							
 								<dt>
-									<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
+									<span class="light fixedFont">{function (err|events)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -663,15 +663,15 @@ array of messages if there are no new ones.
 
 					<hr />
 				
-					<a name="retrieveMessages"> </a>
+					<a name="retrieveEvents"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>retrieveMessages</b>(options, cb)
+					<b>retrieveEvents</b>(options, cb)
 					
 					</div>
 					<div class="description">
-						Gets messages for the subscription.
+						Gets events for the subscription.
 
 <p>This method only makes one request.  Use
 <code>subscription.startListening</code> to poll repeatedly.
@@ -681,9 +681,9 @@ array of messages if there are no new ones.
 					
 					
 					
-					<pre class="code">subscription.retrieveMessages(function (err, messages) {
+					<pre class="code">subscription.retrieveEvents(function (err, events) {
   if (!err) {
-    // `messages` is an array of messages (possably empty)
+    // `events` is a hash with `messages`, `joins`, and `parts` (each possibly empty)
   }
 });</pre>
 					
@@ -703,7 +703,7 @@ array of messages if there are no new ones.
 									<span class="light fixedFont">{number}</span> <b>options.last</b>
 									<i>Optional</i>
 								</dt>
-								<dd>Optional last message</dd>
+								<dd>Optional last event</dd>
 							
 								<dt>
 									<span class="light fixedFont">{number}</span> <b>options.delay</b>
@@ -865,7 +865,7 @@ setTimout(function () {
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue Mar 06 2012 12:42:59 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Apr 11 2012 14:08:13 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

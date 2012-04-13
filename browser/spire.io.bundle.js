@@ -6008,21 +6008,21 @@ Session.prototype.createChannel = function (name, cb) {
  * @param {string} options.name Subscription name
  * @param {array} options.channelNames Channel names to subscribe to
  * @param {array} options.channelUrls Channel urls to subscribe to
- * @param {number} timeout Subscription timeout
+ * @param {number} options.expiration Subscription expiration (ms)
  * @param {function (err, subscription)} cb Callback
  */
 Session.prototype.createSubscription = function (options, cb) {
   var name = options.name;
   var channelNames = options.channelNames || [];
   var channelUrls = options.channelUrls || [];
-  var timeout = options.timeout;
+  var expiration = options.expiration;
 
   var session = this;
   this.channels(function (channels) {
     channelUrls.push.apply(channelUrls, _.map(channelNames, function (name) {
       return session._channels[name].url();
     }));
-    session.request('create_subscription', name, channelUrls, timeout, function (err, sub) {
+    session.request('create_subscription', name, channelUrls, expiration, function (err, sub) {
       if (err) return cb(err);
       var subscription = new Subscription(session.spire, sub);
       session._memoizeSubscription(subscription);
@@ -6165,7 +6165,7 @@ Resource.defineRequest(Session.prototype, 'subscriptions', function () {
  * @name create_subscription
  * @ignore
  */
-Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls, timeout) {
+Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls, expiration) {
   var collection = this.data.resources.subscriptions;
   return {
     method: 'post',
@@ -6173,7 +6173,7 @@ Resource.defineRequest(Session.prototype, 'create_subscription', function (name,
     content: {
       name: name,
       channels: channelUrls,
-      timeout: timeout
+      expiration: expiration
     },
     headers: {
       'Authorization': this.authorization('create', collection),

@@ -5895,6 +5895,25 @@ Session.prototype.resetAccount = function (cb) {
 };
 
 /**
+ * Gets a channel by name.
+ *
+ * @example
+ * spire.session.channelByName('channel-name', function (err, channel) {
+ *   if (!err) {
+ *     // `channel` is a channel object
+ *   }
+ * });
+ *
+ * @param {function (err, channels)} cb Callback
+ */
+Session.prototype.channelByName = function (name, cb) {
+  var session = this;
+  this.request('channel_by_name', name, function (err, channelsData) {
+    return cb(err, new Channel(session.spire, channelsData[name]));
+  });
+};
+
+/**
  * Gets the channels collection.  Returns a hash of Channel resources.
  *
  * Returns a value from the cache, if one if available.
@@ -5988,11 +6007,25 @@ Session.prototype.subscriptions$ = function (cb) {
  * specified name exists.
  *
  * @param {string} name Channel name
+ * @param {number} limit Number of messages to keep in channel
  * @param {function (err, channel)} cb Callback
  */
-Session.prototype.createChannel = function (name, cb) {
+Session.prototype.createChannel = function (name, limit, cb) {
   var session = this;
-  this.request('create_channel', name, function (err, data) {
+  if (!cb) {
+    cb = limit;
+    limit = null;
+  }
+
+  var opts = {
+    name: name
+  }
+
+  if (limit !== null) {
+    opts.limit = limit
+  }
+
+  this.request('create_channel', opts, function (err, data) {
     if (err) return cb(err);
     var channel = new Channel(session.spire, data);
     session._memoizeChannel(channel);
@@ -6129,12 +6162,12 @@ Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
  * @name create_channel
  * @ignore
  */
-Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
+Resource.defineRequest(Session.prototype, 'create_channel', function (opts) {
   var collection = this.data.resources.channels;
   return {
     method: 'post',
     url: collection.url,
-    content: { name: name },
+    content: opts,
     headers: {
       'Authorization': this.authorization('create', collection),
       'Accept': this.mediaType('channel'),

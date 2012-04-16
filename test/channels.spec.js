@@ -154,6 +154,29 @@ describe('Channels', function () {
       });
     }); // Creating a channel with the same name
 
+    describe('Getting a channel by  name', function () {
+      beforeEach(function () {
+        var finished = false;
+        runs(function () {
+          var that = this;
+          this.spire.session.channelByName('foo', function (err, channel) {
+            console.log(err)
+            console.log(channel)
+            finished = true;
+            that.channel3 = channel;
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 'get a channel by name', 10000);
+      });
+
+      it('should be the same channel as before', function () {
+        expect(this.channel3.url()).toEqual(this.channel.url());
+      });
+    });
+
     describe('Publish to a channel', function () {
       beforeEach(function () {
         var finished = false;

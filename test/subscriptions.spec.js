@@ -52,12 +52,9 @@ describe('Subscriptions', function(){
         runs(function () {
           var that = this;
           setTimeout(function () {
-            // HACK TO TRIGGER SHARK GC
-            that.chan.publish('blah', function () {
-              setTimeout(function () {
-                finished = true;
-              }, 500);
-            });
+            setTimeout(function () {
+              finished = true;
+            }, 500);
           }, 500);
         });
 

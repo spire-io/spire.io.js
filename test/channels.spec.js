@@ -160,8 +160,6 @@ describe('Channels', function () {
         runs(function () {
           var that = this;
           this.spire.session.channelByName('foo', function (err, channel) {
-            console.log(err)
-            console.log(channel)
             finished = true;
             that.channel3 = channel;
           });

@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - ResponseError</title>
+		<title>JsDoc Reference - Message</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -220,24 +220,26 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class ResponseError
+				Class Message
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					<a href="../symbols/Resource.html">Resource</a>.<br />
 				
 			
-				HTTP Response Error
+				Message Resource
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/lib_spire_api_response_error.js.html">response_error.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/lib_spire_api_message.js.html">message.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class ResponseError.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Message.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -250,12 +252,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/ResponseError.html#constructor">ResponseError</a></b>(response, request)
+								<b><a href="../symbols/Message.html#constructor">Message</a></b>(spire, data)
 							</div>
-							<div class="description">ResponseError is a wrapper for request errors, this makes it easier to pass
-an error to the callbacks of the async functions that still retain their
-extra contextual information passed into the arguments of requests's error
-handler</div>
+							<div class="description">Represents a message in the spire api.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -266,6 +265,15 @@ handler</div>
 			
 
 <!-- ============================== methods summary ======================== -->
+			
+				
+				
+				
+				
+				<dl class="inheritsList">
+				<dt>Methods borrowed from class <a href="../symbols/Resource.html">Resource</a>: </dt><dd><a href="../symbols/Resource.html#authorization">authorization</a>, <a href="../symbols/Resource.html#capabilities">capabilities</a>, <a href="../symbols/Resource.html#capability">capability</a>, <a href="../symbols/Resource.html#get">get</a>, <a href="../symbols/Resource.html#mediaType">mediaType</a>, <a href="../symbols/Resource.html#request">request</a>, <a href="../symbols/Resource.html#schema">schema</a>, <a href="../symbols/Resource.html#update">update</a>, <a href="../symbols/Resource.html#url">url</a></dd>
+				</dl>
+				
 			
 <!-- ============================== events summary ======================== -->
 			
@@ -278,14 +286,11 @@ handler</div>
 				</div>
 				
 				<div class="fixedFont">
-						<b>ResponseError</b>(response, request)
+						<b>Message</b>(spire, data)
 				</div>
 				
 				<div class="description">
-					ResponseError is a wrapper for request errors, this makes it easier to pass
-an error to the callbacks of the async functions that still retain their
-extra contextual information passed into the arguments of requests's error
-handler
+					Represents a message in the spire api.
 					
 				</div>
 				
@@ -297,16 +302,16 @@ handler
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{object}</span>  <b>response</b>
+								<span class="light fixedFont">{object}</span>  <b>spire</b>
 								
 							</dt>
-								<dd>Response HTTP client</dd>
+								<dd>Spire object</dd>
 						
 							<dt>
-								<span class="light fixedFont">{object}</span>  <b>request</b>
+								<span class="light fixedFont">{object}</span>  <b>data</b>
 								
 							</dt>
-								<dd>Request description</dd>
+								<dd>Message data from the spire api</dd>
 						
 						</dl>
 					

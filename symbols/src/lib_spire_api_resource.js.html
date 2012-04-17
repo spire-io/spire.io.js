@@ -134,7 +134,7 @@
 <span class='line'>129</span>  *
 <span class='line'>130</span>  * &lt;p>Default method that may be overwritten by subclasses.
 <span class='line'>131</span>  *
-<span class='line'>132</span>  * @param {function (err, resource)} cd Callback
+<span class='line'>132</span>  * @param {function (err, resource)} cb Callback
 <span class='line'>133</span>  */</span><span class="WHIT">
 <span class='line'>134</span> </span><span class="NAME">Resource.prototype.get</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>135</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">resource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
@@ -151,7 +151,7 @@
 <span class='line'>147</span>  * &lt;p>Default method that may be overwritten by subclasses.
 <span class='line'>148</span>  *
 <span class='line'>149</span>  * @param {object} data Resource data
-<span class='line'>150</span>  * @param {function (err, resource)} cd Callback
+<span class='line'>150</span>  * @param {function (err, resource)} cb Callback
 <span class='line'>151</span>  */</span><span class="WHIT">
 <span class='line'>152</span> </span><span class="NAME">Resource.prototype.update</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>153</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">resource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
@@ -167,7 +167,7 @@
 <span class='line'>163</span>  *
 <span class='line'>164</span>  * &lt;p>Default method that may be overwritten by subclasses.
 <span class='line'>165</span>  *
-<span class='line'>166</span>  * @param {function (err, resource)} cd Callback
+<span class='line'>166</span>  * @param {function (err, resource)} cb Callback
 <span class='line'>167</span>  */</span><span class="WHIT">
 <span class='line'>168</span> </span><span class="NAME">Resource.prototype</span><span class="PUNC">[</span><span class="STRN">'delete'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cb</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>169</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">resource</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">

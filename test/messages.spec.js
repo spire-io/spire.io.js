@@ -29,7 +29,7 @@ describe('Messages', function(){
 
       runs(function () {
         var that = this;
-        this.spire.publish('a channel', 'my message', function (err, message) {
+        this.spire.publish('a channel for messages', 'my message', function (err, message) {
           that.message = message;
           finished = true;
         });
@@ -71,6 +71,49 @@ describe('Messages', function(){
         expect(this.newMessage.content).toBe('my message');
       });
     });
+
+    describe('updating the message', function () {
+      beforeEach(function () {
+        var finished = false;
+
+        runs(function () {
+          var that = this;
+          this.message.update({content: 'a new message'}, function (err) {
+            finished = true;
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 10000, 'get messages');
+      });
+
+      it('should have the new content', function () {
+        expect(this.message.content).toBe('a new message');
+      });
+    });
+
+    describe('deleting the message', function () {
+      beforeEach(function () {
+        var finished = false;
+
+        runs(function () {
+          var that = this;
+          this.message['delete'](function (err) {
+            that.err = err;
+            finished = true;
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 10000, 'get messages');
+      });
+
+      it('should not error', function () {
+        expect(this.err).toBeFalsy();
+      });
+    });
   });
 
   describe('A message returned from a subscription', function () {
@@ -79,10 +122,15 @@ describe('Messages', function(){
 
       runs(function () {
         var that = this;
-        this.spire.publish('message channel', 'my message', function (err, message) {
-          that.spire.subscribe('message channel', function (messages) {
-            that.message = messages[0];
-            finished = true;
+        this.spire.publish('a channel for more messages', 'my message', function (err, message) {
+          that.spire.session.createSubscription({
+            name: 'sub ' + Date.now(),
+            channelNames: ['a channel for more messages']
+          }, function (err, sub) {
+            sub.retrieveEvents(function (err, events) {
+              that.message = events.messages[0];
+              finished = true;
+            });
           });
         });
       });
@@ -121,6 +169,50 @@ describe('Messages', function(){
 
       it('should have the same content', function () {
         expect(this.newMessage.content).toBe('my message');
+      });
+    });
+//
+//    describe('updating the message', function () {
+//      beforeEach(function () {
+//        var finished = false;
+//
+//        runs(function () {
+//          var that = this;
+//          this.message.update({content: 'a new message'}, function (err, newMessage) {
+//            that.updatedMessage = newMessage;
+//            finished = true;
+//          });
+//        });
+//
+//        waitsFor(function () {
+//          return finished;
+//        }, 10000, 'update message');
+//      });
+//
+//      it('should have the new content', function () {
+//        expect(this.updatedMessage.content).toBe('a new message');
+//      });
+//    });
+//
+    describe('deleting the message', function () {
+      beforeEach(function () {
+        var finished = false;
+
+        runs(function () {
+          var that = this;
+          this.message['delete'](function (err) {
+            that.err = err;
+            finished = true;
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 10000, 'get messages');
+      });
+
+      it('should not error', function () {
+        expect(this.err).toBeFalsy();
       });
     });
   });

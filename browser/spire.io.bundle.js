@@ -1712,6 +1712,7 @@ var Resource = require('./api/resource')
   , Account = require('./api/account')
   , Billing = require('./api/billing')
   , Channel = require('./api/channel')
+  , Message = require('./api/message')
   , Session = require('./api/session')
   , Subscription = require('./api/subscription')
   ;
@@ -2246,7 +2247,7 @@ Resource.prototype.request = function () {
  *
  * <p>Default method that may be overwritten by subclasses.
  *
- * @param {function (err, resource)} cd Callback
+ * @param {function (err, resource)} cb Callback
  */
 Resource.prototype.get = function (cb) {
   var resource = this;
@@ -2263,7 +2264,7 @@ Resource.prototype.get = function (cb) {
  * <p>Default method that may be overwritten by subclasses.
  *
  * @param {object} data Resource data
- * @param {function (err, resource)} cd Callback
+ * @param {function (err, resource)} cb Callback
  */
 Resource.prototype.update = function (data, cb) {
   var resource = this;
@@ -2279,7 +2280,7 @@ Resource.prototype.update = function (data, cb) {
  *
  * <p>Default method that may be overwritten by subclasses.
  *
- * @param {function (err, resource)} cd Callback
+ * @param {function (err, resource)} cb Callback
  */
 Resource.prototype['delete'] = function (cb) {
   var resource = this;
@@ -5603,7 +5604,9 @@ require.define("/spire/api/channel.js", function (require, module, exports, __di
     /**
  * @fileOverview Channel Resource class definition
  */
-var Resource = require('./resource');
+var Resource = require('./resource')
+  , Message = require('./message')
+  ;
 
 /**
  * Represents a channel in the spire api.
@@ -5652,7 +5655,11 @@ Channel.prototype.name = function () {
  * @param {function (err, message)} cb Callback
  */
 Channel.prototype.publish = function (message, cb) {
-  this.request('publish', { content: message }, cb);
+  var spire = this.spire;
+  this.request('publish', { content: message }, function (err, messageData) {
+    if (err) return cb(err);
+    cb(null, new Message(spire, messageData));
+  });
 };
 
 /**
@@ -5759,6 +5766,54 @@ Resource.defineRequest(Channel.prototype, 'subscriptions', function (message) {
     }
   };
 });
+
+});
+
+require.define("/spire/api/message.js", function (require, module, exports, __dirname, __filename) {
+    /**
+ * @fileOverview Message Resource class definition
+ */
+var Resource = require('./resource');
+
+/**
+ * Represents a message in the spire api.
+ *
+ * @class Message Resource
+ *
+ * @constructor
+ * @extends Resource
+ * @param {object} spire Spire object
+ * @param {object} data Message data from the spire api
+ */
+function Message(spire, data) {
+  this.spire = spire;
+  this.data = data;
+  this.content = data.content;
+  this.type = data.type;
+  this.timestamp = data.timestamp
+  this.resourceName = 'message';
+}
+
+Message.prototype = new Resource();
+
+/**
+ * <p>Updates (puts to) the message.
+ *
+ * @param {object} data Message data
+ * @param {function (err, resource)} cb Callback
+ */
+Resource.prototype.update = function (data, cb) {
+  var resource = this;
+  this.request('update', data, function (err, data) {
+    if (err) return cb(err);
+    resource.data = data;
+    resource.content = data.content;
+    resource.timestamp = data.timestamp
+    cb(null, resource);
+  });
+};
+
+module.exports = Message;
 
 });
 
@@ -6225,6 +6280,7 @@ require.define("/spire/api/subscription.js", function (require, module, exports,
  */
 
 var Resource = require('./resource')
+  , Message = require('./message')
   , _ = require('underscore')
   , async = require('async')
   ;
@@ -6357,6 +6413,7 @@ Subscription.prototype.stopListening = function () {
  */
 Subscription.prototype.retrieveEvents = function (options, cb) {
   var subscription = this;
+  var spire = this.spire;
   if (!cb) {
     cb = options;
     options = {};
@@ -6368,6 +6425,13 @@ Subscription.prototype.retrieveEvents = function (options, cb) {
     if (err) {
       subscription.emit('error', err);
       return cb(err);
+    }
+
+    if (eventsData.messages.length) {
+      var messagesData = eventsData.messages;
+      eventsData.messages = _(eventsData.messages).map(function (messageData) {
+        return new Message(spire, messageData);
+      });
     }
 
     if (!subscription.listening) {

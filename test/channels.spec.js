@@ -251,6 +251,25 @@ describe('Channels', function () {
           });
         });
 
+        describe('Getting the subscription by name', function () {
+          beforeEach(function () {
+            var finished = false;
+            var that = this;
+            this.spire.session.subscriptionByName('sub_name', function (err, sub) {
+              that.subscription = sub;
+              finished = true;
+            });
+
+            waitsFor(function () {
+              return finished;
+            }, 'getting subscription by name', 10000);
+          });
+
+          it("Should return the right sub", function () {
+            expect(this.subscription.name()).toBe('sub_name');
+          });
+        });
+
         describe('Listen for the message we sent', function () {
           beforeEach(function () {
             var finished = false;

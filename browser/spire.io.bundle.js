@@ -6460,7 +6460,9 @@ Subscription.prototype.retrieveEvents = function (options, cb) {
 
   var req = this.request('events', options, function (err, eventsData) {
     if (err) {
-      subscription.emit('error', err);
+      if (subscription.listeners('error').length) {
+        subscription.emit('error', err);
+      }
       return cb(err);
     }
 

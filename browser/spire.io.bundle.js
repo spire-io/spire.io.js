@@ -907,9 +907,9 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
   }
 
   function getChannel() {
-    spire.session.channels$(function (err, channels) {
-      if (err) return cb(err);
-      if (channels[name]) return cb(null, channels[name]);
+    spire.session.channelByName(name, function (err, channel) {
+      if (err && err.status !== 404) return cb(err);
+      if (channel) return cb(null, channel);
       createChannel();
     });
   }
@@ -949,16 +949,16 @@ Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
   }
 
   function getSubscription() {
-    spire.session.subscriptions$(function (err, subscriptions) {
-      if (err) return cb(err);
-      if (subscriptions[name]) return cb(null, subscriptions[name]);
+    spire.session.subscriptionByName(name, function (err, subscription) {
+      if (err && err.status !== 404) return cb(err);
+      if (subscription) return cb(null, subscription);
       createSubscription();
     });
   }
 
   this._ensureSession(function (err) {
     if (err) return cb(err);
-    getSubscription();
+    createSubscription();
   });
 };
 
@@ -5964,7 +5964,8 @@ Session.prototype.resetAccount = function (cb) {
 Session.prototype.channelByName = function (name, cb) {
   var session = this;
   this.request('channel_by_name', name, function (err, channelsData) {
-    return cb(err, new Channel(session.spire, channelsData[name]));
+    if (err) return cb(err);
+    return cb(null, new Channel(session.spire, channelsData[name]));
   });
 };
 
@@ -6072,7 +6073,8 @@ Session.prototype.subscriptions$ = function (cb) {
 Session.prototype.subscriptionByName = function (name, cb) {
   var session = this;
   this.request('subscription_by_name', name, function (err, subscriptionsData) {
-    return cb(err, new Subscription(session.spire, subscriptionsData[name]));
+    if (err) return cb(err);
+    return cb(null, new Subscription(session.spire, subscriptionsData[name]));
   });
 };
 

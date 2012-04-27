@@ -23,17 +23,17 @@ describe('Subscriptions', function(){
     }, 'Session registration or start', 10000);
   });
 
-  describe('Create a subscripiton with a timeout', function () {
+  describe('Create a subscripiton with a expiration', function () {
     beforeEach(function () {
       var finished = false;
       runs(function () {
         var that = this;
-        this.spire.session.createChannel('timeout channel', function (err, chan) {
+        this.spire.session.createChannel('expiration channel', function (err, chan) {
           that.chan = chan;
           that.spire.session.createSubscription({
-            name: 'timeout sub',
-            channelNames: ['timeout channel'],
-            timeout: 250
+            name: 'expiration sub',
+            channelNames: ['expiration channel'],
+            expiration: 250
           }, function (err, sub) {
             that.sub = sub;
             finished = true;
@@ -52,18 +52,13 @@ describe('Subscriptions', function(){
         runs(function () {
           var that = this;
           setTimeout(function () {
-            // HACK TO TRIGGER SHARK GC
-            that.chan.publish('blah', function () {
-              setTimeout(function () {
-                finished = true;
-              }, 500);
-            });
-          }, 500);
+            finished = true;
+          }, 1000);
         });
 
         waitsFor(function () {
           return finished;
-        }, 'timeout wait', 10000);
+        }, 'expiration wait', 10000);
       });
 
       describe("getting all subscriptions", function () {
@@ -83,8 +78,8 @@ describe('Subscriptions', function(){
         });
 
         // FIXME: Uncomment once GC is running on build
-        //it('should not include the timeout subscription', function () {
-        //  expect(this.subs['timeout sub']).toBeFalsy();
+        //it('should not include the expiration subscription', function () {
+        //  expect(this.subs['expiration sub']).toBeFalsy();
         //});
       });
     });

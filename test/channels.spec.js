@@ -154,6 +154,27 @@ describe('Channels', function () {
       });
     }); // Creating a channel with the same name
 
+    describe('Getting a channel by  name', function () {
+      beforeEach(function () {
+        var finished = false;
+        runs(function () {
+          var that = this;
+          this.spire.session.channelByName('foo', function (err, channel) {
+            finished = true;
+            that.channel3 = channel;
+          });
+        });
+
+        waitsFor(function () {
+          return finished;
+        }, 'get a channel by name', 10000);
+      });
+
+      it('should be the same channel as before', function () {
+        expect(this.channel3.url()).toEqual(this.channel.url());
+      });
+    });
+
     describe('Publish to a channel', function () {
       beforeEach(function () {
         var finished = false;
@@ -227,6 +248,25 @@ describe('Channels', function () {
 
           it("Should return a hash of subscriptions including 'sub_name'", function () {
             expect(this.subscriptions.sub_name).toBeDefined()
+          });
+        });
+
+        describe('Getting the subscription by name', function () {
+          beforeEach(function () {
+            var finished = false;
+            var that = this;
+            this.spire.session.subscriptionByName('sub_name', function (err, sub) {
+              that.subscription = sub;
+              finished = true;
+            });
+
+            waitsFor(function () {
+              return finished;
+            }, 'getting subscription by name', 10000);
+          });
+
+          it("Should return the right sub", function () {
+            expect(this.subscription.name()).toBe('sub_name');
           });
         });
 

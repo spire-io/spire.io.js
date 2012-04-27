@@ -460,6 +460,28 @@ Spire.prototype.login = function (email, password, cb) {
 };
 
 /**
+ * Retrieve an application with a given application key.
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.getApplication('key-for-your-app', function (err, application) {
+ *   if (!err) {
+ *     // 'application' will now hold your application object.
+ *   }
+ * });
+ *
+ * @param {string} application_key Application key
+ * @param {function(err, application)} cb Callback
+ */
+Spire.prototype.getApplication = function (application_key, cb) {
+  var spire = this;
+  this.api.getApplication(application_key, function (err, application) {
+    if (err) return cb(err);
+    cb(null, application);
+  });
+};
+
+/**
  * Registers for a new spire account, and authenticates as the newly created account
  *
  * @example
@@ -907,9 +929,9 @@ Spire.prototype._findOrCreateChannel = function (name, cb) {
   }
 
   function getChannel() {
-    spire.session.channels$(function (err, channels) {
-      if (err) return cb(err);
-      if (channels[name]) return cb(null, channels[name]);
+    spire.session.channelByName(name, function (err, channel) {
+      if (err && err.status !== 404) return cb(err);
+      if (channel) return cb(null, channel);
       createChannel();
     });
   }
@@ -949,16 +971,16 @@ Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
   }
 
   function getSubscription() {
-    spire.session.subscriptions$(function (err, subscriptions) {
-      if (err) return cb(err);
-      if (subscriptions[name]) return cb(null, subscriptions[name]);
+    spire.session.subscriptionByName(name, function (err, subscription) {
+      if (err && err.status !== 404) return cb(err);
+      if (subscription) return cb(null, subscription);
       createSubscription();
     });
   }
 
   this._ensureSession(function (err) {
     if (err) return cb(err);
-    getSubscription();
+    createSubscription();
   });
 };
 
@@ -1712,8 +1734,11 @@ var Resource = require('./api/resource')
   , Account = require('./api/account')
   , Billing = require('./api/billing')
   , Channel = require('./api/channel')
+  , Message = require('./api/message')
   , Session = require('./api/session')
   , Subscription = require('./api/subscription')
+  , Application = require('./api/application')
+  , Member = require('./api/member')
   ;
 
 /**
@@ -1992,6 +2017,24 @@ API.prototype.authorization = function (method, resource) {
 };
 
 /**
+ * Returns an application when passed an application key.
+ *
+ * @param {string} key Application key
+ * @param {function(err)} cb Callback
+ */
+API.prototype.getApplication = function (key, cb) {
+  var api = this;
+  this.discover(function (err) {
+    if (err) return cb(err);
+    api.request('get_application', key, function (err, appData) {
+      if (err) return cb(err);
+      var application = new Application(api.spire, appData);
+      cb(null, application);
+    });
+  });
+};
+
+/**
  * Requests
  * These define API calls and have no side effects.  They can be run by calling
  *     this.request(<request name>);
@@ -2110,6 +2153,24 @@ Resource.defineRequest(API.prototype, 'update_account', function (data) {
       'Authorization': "Capability " + data.capability,
       'Accept': this.mediaType('account'),
       'Content-Type': this.mediaType('account')
+    }
+  };
+});
+
+/**
+ * Gets an application resource.
+ * @name application
+ * @ignore
+ */
+Resource.defineRequest(API.prototype, 'get_application', function (app_key) {
+  return {
+    method: 'get',
+    url: this.description.resources.applications.url,
+    content: "",
+    query: { application_key: app_key },
+    headers: {
+      'Accept': this.mediaType('applications'),
+      'Content-Type': this.mediaType('applications')
     }
   };
 });
@@ -2246,7 +2307,7 @@ Resource.prototype.request = function () {
  *
  * <p>Default method that may be overwritten by subclasses.
  *
- * @param {function (err, resource)} cd Callback
+ * @param {function (err, resource)} cb Callback
  */
 Resource.prototype.get = function (cb) {
   var resource = this;
@@ -2263,7 +2324,7 @@ Resource.prototype.get = function (cb) {
  * <p>Default method that may be overwritten by subclasses.
  *
  * @param {object} data Resource data
- * @param {function (err, resource)} cd Callback
+ * @param {function (err, resource)} cb Callback
  */
 Resource.prototype.update = function (data, cb) {
   var resource = this;
@@ -2279,11 +2340,11 @@ Resource.prototype.update = function (data, cb) {
  *
  * <p>Default method that may be overwritten by subclasses.
  *
- * @param {function (err, resource)} cd Callback
+ * @param {function (err, resource)} cb Callback
  */
-Resource.prototype['delete'] = function (data, cb) {
+Resource.prototype['delete'] = function (cb) {
   var resource = this;
-  this.request('delete', data, function (err, data) {
+  this.request('delete', function (err, data) {
     if (err) return cb(err);
     delete resource.data;
     cb(null);
@@ -5603,7 +5664,9 @@ require.define("/spire/api/channel.js", function (require, module, exports, __di
     /**
  * @fileOverview Channel Resource class definition
  */
-var Resource = require('./resource');
+var Resource = require('./resource')
+  , Message = require('./message')
+  ;
 
 /**
  * Represents a channel in the spire api.
@@ -5652,7 +5715,11 @@ Channel.prototype.name = function () {
  * @param {function (err, message)} cb Callback
  */
 Channel.prototype.publish = function (message, cb) {
-  this.request('publish', { content: message }, cb);
+  var spire = this.spire;
+  this.request('publish', { content: message }, function (err, messageData) {
+    if (err) return cb(err);
+    cb(null, new Message(spire, messageData));
+  });
 };
 
 /**
@@ -5762,6 +5829,54 @@ Resource.defineRequest(Channel.prototype, 'subscriptions', function (message) {
 
 });
 
+require.define("/spire/api/message.js", function (require, module, exports, __dirname, __filename) {
+    /**
+ * @fileOverview Message Resource class definition
+ */
+var Resource = require('./resource');
+
+/**
+ * Represents a message in the spire api.
+ *
+ * @class Message Resource
+ *
+ * @constructor
+ * @extends Resource
+ * @param {object} spire Spire object
+ * @param {object} data Message data from the spire api
+ */
+function Message(spire, data) {
+  this.spire = spire;
+  this.data = data;
+  this.content = data.content;
+  this.type = data.type;
+  this.timestamp = data.timestamp
+  this.resourceName = 'message';
+}
+
+Message.prototype = new Resource();
+
+/**
+ * <p>Updates (puts to) the message.
+ *
+ * @param {object} data Message data
+ * @param {function (err, resource)} cb Callback
+ */
+Resource.prototype.update = function (data, cb) {
+  var resource = this;
+  this.request('update', data, function (err, data) {
+    if (err) return cb(err);
+    resource.data = data;
+    resource.content = data.content;
+    resource.timestamp = data.timestamp
+    cb(null, resource);
+  });
+};
+
+module.exports = Message;
+
+});
+
 require.define("/spire/api/session.js", function (require, module, exports, __dirname, __filename) {
     /**
  * @fileOverview Session Resource class definition
@@ -5771,6 +5886,8 @@ var Resource = require('./resource')
   , Account = require('./account')
   , Channel = require('./channel')
   , Subscription = require('./subscription')
+  , Application = require('./application')
+  , Member = require('./member')
   , _ = require('underscore')
   ;
 
@@ -5805,7 +5922,7 @@ function Session(spire, data) {
 
   this._channels = {};
   this._subscriptions = {};
-
+  this._applications = {};
 	this._storeResources();
 
 }
@@ -5895,6 +6012,75 @@ Session.prototype.resetAccount = function (cb) {
 };
 
 /**
+ * Gets the applications collection.  Returns a hash of Application resources.
+ *
+ * Returns a value from the cache, if one if available.
+ *
+ * @example
+ * spire.session.applications(function (err, applications) {
+ *   if (!err) {
+ *     // `applications` is a hash of all the account's applications
+ *   }
+ * });
+ *
+ * @param {function (err, applications)} cb Callback
+ */
+Session.prototype.applications = function (cb) {
+  if (!_.isEmpty(this._applications)) return cb(null, this._applications);
+  this.applications$(cb);
+};
+
+/**
+ * Gets the applications collection.  Returns a hash of Application resources.
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * spire.session.applications$(function (err, applications) {
+ *   if (!err) {
+ *     // `applications` is a hash of all the account's applications
+ *   }
+ * });
+ *
+ * @param {function (err, applications)} cb Callback
+ */
+Session.prototype.applications$ = function (cb) {
+  var session = this;
+  this.request('applications', function (err, applicationsData) {
+    if (err) return cb(err);
+    _.each(applicationsData, function (application, name) {
+      session._memoizeApplication(new Application(session.spire, application));
+    });
+    cb(null, session._applications);
+  });
+};
+
+/**
+ * Gets an application by name.  Returns an Application resource
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * spire.session.applicationByName('name_of_application', function (err, application) {
+ *   if (!err) {
+ *     // `application` now contains an application object
+ *   }
+ * });
+ *
+ * @param {String} applicationName Name of application
+ * @param {function (err, application)} cb Callback
+ */
+Session.prototype.applicationByName = function (applicationName, cb) {
+  var session = this;
+  this.request('application_by_name', function (err, applicationData) {
+    if (err) return cb(err);
+    application = new Application(session.spire, applicationData[applicationName]);
+    session._memoizeApplication(application);
+    cb(null, application);
+  });
+};
+
+/**
  * Gets the channels collection.  Returns a hash of Channel resources.
  *
  * Returns a value from the cache, if one if available.
@@ -5914,7 +6100,7 @@ Session.prototype.channels = function (cb) {
 };
 
 /**
- * Gets the channels collection.  Returns a hasg of Channel resources.
+ * Gets the channels collection.  Returns a hash of Channel resources.
  *
  * Always gets a fresh value from the api.
  *
@@ -5935,6 +6121,31 @@ Session.prototype.channels$ = function (cb) {
       session._memoizeChannel(new Channel(session.spire, channel));
     });
     cb(null, session._channels);
+  });
+};
+
+/**
+ * Gets a channel by name.  Returns a Channel resource
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * spire.session.channelByName('name_of_channel', function (err, channel) {
+ *   if (!err) {
+ *     // `channel` now contains a channel object
+ *   }
+ * });
+ *
+ * @param {String} channelName Name of channel
+ * @param {function (err, channel)} cb Callback
+ */
+Session.prototype.channelByName = function (channelName, cb) {
+  var session = this;
+  this.request('channel_by_name', channelName, function (err, channelData) {
+    if (err) return cb(err);
+    channel = new Channel(session.spire, channelData[channelName]);
+    session._memoizeChannel(channel);
+    cb(null, channel);
   });
 };
 
@@ -5969,7 +6180,7 @@ Session.prototype.subscriptions = function (cb) {
  *   }
  * });
  *
- * @param {function (err, channels)} cb Callback
+ * @param {function (err, subscriptions)} cb Callback
  */
 Session.prototype.subscriptions$ = function (cb) {
   var session = this;
@@ -5984,15 +6195,71 @@ Session.prototype.subscriptions$ = function (cb) {
 };
 
 /**
+ * Gets a subscription by name.  Returns a Subscription resource
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * spire.session.subscriptionByName('name_of_subscription', function (err, subscription) {
+ *   if (!err) {
+ *     // `subscription` now contains a subscription object
+ *   }
+ * });
+ *
+ * @param {String} subscriptionName Name of subscription
+ * @param {function (err, subscription)} cb Callback
+ */
+Session.prototype.subscriptionByName = function (subscriptionName, cb) {
+  var session = this;
+  this.request('subscription_by_name', subscriptionName, function (err, subscriptionData) {
+    if (err) return cb(err);
+    subscription = new Subscription(session.spire, subscriptionData[subscriptionName]);
+    session._memoizeSubscription(subscription);
+    cb(null, subscription);
+  });
+};
+
+/**
+ * Creates an application.  Returns an application resource.  Errors if an application with the
+ * specified name exists.
+ *
+ * @param {string} name Application name
+ * @param {function (err, application)} cb Callback
+ */
+Session.prototype.createApplication = function (name, cb) {
+  var session = this;
+  this.request('create_application', name, function (err, data) {
+    if (err) return cb(err);
+    var application = new Application(session.spire, data);
+    session._memoizeApplication(application);
+    cb(null, application);
+  });
+};
+
+/**
  * Creates a channel.  Returns a Channel resource.  Errors if a channel with the
  * specified name exists.
  *
  * @param {string} name Channel name
+ * @param {number} limit Number of messages to keep in channel
  * @param {function (err, channel)} cb Callback
  */
-Session.prototype.createChannel = function (name, cb) {
+Session.prototype.createChannel = function (name, limit, cb) {
   var session = this;
-  this.request('create_channel', name, function (err, data) {
+  if (!cb) {
+    cb = limit;
+    limit = null;
+  }
+
+  var opts = {
+    name: name
+  }
+
+  if (limit !== null) {
+    opts.limit = limit
+  }
+
+  this.request('create_channel', opts, function (err, data) {
     if (err) return cb(err);
     var channel = new Channel(session.spire, data);
     session._memoizeChannel(channel);
@@ -6008,27 +6275,36 @@ Session.prototype.createChannel = function (name, cb) {
  * @param {string} options.name Subscription name
  * @param {array} options.channelNames Channel names to subscribe to
  * @param {array} options.channelUrls Channel urls to subscribe to
- * @param {number} timeout Subscription timeout
+ * @param {number} options.expiration Subscription expiration (ms)
  * @param {function (err, subscription)} cb Callback
  */
 Session.prototype.createSubscription = function (options, cb) {
   var name = options.name;
   var channelNames = options.channelNames || [];
   var channelUrls = options.channelUrls || [];
-  var timeout = options.timeout;
+  var expiration = options.expiration;
 
   var session = this;
   this.channels(function (channels) {
     channelUrls.push.apply(channelUrls, _.map(channelNames, function (name) {
       return session._channels[name].url();
     }));
-    session.request('create_subscription', name, channelUrls, timeout, function (err, sub) {
+    session.request('create_subscription', name, channelUrls, expiration, function (err, sub) {
       if (err) return cb(err);
       var subscription = new Subscription(session.spire, sub);
       session._memoizeSubscription(subscription);
       cb(null, subscription);
     });
   });
+};
+
+ /**
+ * Stores the application resource in a hash by its name.
+ *
+ * @param channel {object} Application to store
+ */
+Session.prototype._memoizeApplication = function (application) {
+  this._applications[application.name()] = application;
 };
 
  /**
@@ -6129,12 +6405,12 @@ Resource.defineRequest(Session.prototype, 'channel_by_name', function (name) {
  * @name create_channel
  * @ignore
  */
-Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
+Resource.defineRequest(Session.prototype, 'create_channel', function (opts) {
   var collection = this.data.resources.channels;
   return {
     method: 'post',
     url: collection.url,
-    content: { name: name },
+    content: opts,
     headers: {
       'Authorization': this.authorization('create', collection),
       'Accept': this.mediaType('channel'),
@@ -6145,7 +6421,7 @@ Resource.defineRequest(Session.prototype, 'create_channel', function (name) {
 
 /**
  * Gets the subscriptions collection.
- * @name subscrtiptions
+ * @name subscriptions
  * @ignore
  */
 Resource.defineRequest(Session.prototype, 'subscriptions', function () {
@@ -6161,11 +6437,29 @@ Resource.defineRequest(Session.prototype, 'subscriptions', function () {
 });
 
 /**
+ * Gets a subscription by name.  Returns a collection with a single value: { name: subscription }.
+ * @name subscription_by_name
+ * @ignore
+ */
+Resource.defineRequest(Session.prototype, 'subscription_by_name', function (name) {
+  var collection = this.data.resources.subscriptions;
+  return {
+    method: 'get',
+    url: collection.url,
+    query: { name: name },
+    headers: {
+      'Authorization': this.authorization('get_by_name', collection),
+      'Accept': this.mediaType('subscriptions')
+    }
+  };
+});
+
+/**
  * Creates a subscrtiption.  Returns a subscription object.
  * @name create_subscription
  * @ignore
  */
-Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls, timeout) {
+Resource.defineRequest(Session.prototype, 'create_subscription', function (name, channelUrls, expiration) {
   var collection = this.data.resources.subscriptions;
   return {
     method: 'post',
@@ -6173,7 +6467,7 @@ Resource.defineRequest(Session.prototype, 'create_subscription', function (name,
     content: {
       name: name,
       channels: channelUrls,
-      timeout: timeout
+      expiration: expiration
     },
     headers: {
       'Authorization': this.authorization('create', collection),
@@ -6183,6 +6477,43 @@ Resource.defineRequest(Session.prototype, 'create_subscription', function (name,
   };
 });
 
+/**
+ * Gets the applications collection.
+ * @name applications
+ * @ignore
+ */
+Resource.defineRequest(Session.prototype, 'applications', function () {
+  var collection = this.data.resources.applications;
+  return {
+    method: 'get',
+    url: collection.url,
+    headers: {
+      'Authorization': this.authorization('all', collection),
+      'Accept': this.mediaType('applications')
+    }
+  };
+});
+
+/**
+ * Creates an application.  Returns an application object.
+ * @name create_application
+ * @ignore
+ */
+Resource.defineRequest(Session.prototype, 'create_application', function (name) {
+  var collection = this.data.resources.applications;
+  return {
+    method: 'post',
+    url: collection.url,
+    content: {
+      name: name
+    },
+    headers: {
+      'Authorization': this.authorization('create', collection),
+      'Accept': this.mediaType('application'),
+      'Content-Type': this.mediaType('application')
+    }
+  };
+});
 
 });
 
@@ -6192,6 +6523,7 @@ require.define("/spire/api/subscription.js", function (require, module, exports,
  */
 
 var Resource = require('./resource')
+  , Message = require('./message')
   , _ = require('underscore')
   , async = require('async')
   ;
@@ -6324,6 +6656,7 @@ Subscription.prototype.stopListening = function () {
  */
 Subscription.prototype.retrieveEvents = function (options, cb) {
   var subscription = this;
+  var spire = this.spire;
   if (!cb) {
     cb = options;
     options = {};
@@ -6333,8 +6666,17 @@ Subscription.prototype.retrieveEvents = function (options, cb) {
 
   var req = this.request('events', options, function (err, eventsData) {
     if (err) {
-      subscription.emit('error', err);
+      if (subscription.listeners('error').length) {
+        subscription.emit('error', err);
+      }
       return cb(err);
+    }
+
+    if (eventsData.messages.length) {
+      var messagesData = eventsData.messages;
+      eventsData.messages = _(eventsData.messages).map(function (messageData) {
+        return new Message(spire, messageData);
+      });
     }
 
     if (!subscription.listening) {
@@ -6499,6 +6841,586 @@ Resource.defineRequest(Subscription.prototype, 'events', function (options) {
   };
 });
 
+});
+
+require.define("/spire/api/application.js", function (require, module, exports, __dirname, __filename) {
+    /**
+ * @fileOverview Application Resource class definition
+ */
+var Resource = require('./resource')
+  , Account = require('./account')
+  , Channel = require('./channel')
+  , Subscription = require('./subscription')
+  , Member = require('./member')
+  , _ = require('underscore')
+  ;
+
+/**
+ * Represents an application in the spire api.
+ *
+ * @class Application Resource
+ *
+ * @constructor
+ * @extends Resource
+ * @param {object} spire Spire object
+ * @param {object} data  Application data from the spire api
+ */
+function Application(spire, data) {
+  this.spire = spire;
+  this.data = data;
+  this.resourceName = 'application';
+  
+  this._channels = {};
+  this._subscriptions = {};
+  this._members = {};
+  this._storeResources();
+}
+
+Application.prototype = new Resource();
+
+module.exports = Application;
+
+/**
+ * Returns the application name.
+ *
+ * @returns {string} Application name
+ */
+Application.prototype.name = function () {
+  return this.data.name;
+};
+
+/**
+ * Gets the members collection.  Returns a hash of Member resources.
+ *
+ * Returns a value from the cache, if one if available.
+ *
+ * @example
+ * application.members(function (err, members) {
+ *   if (!err) {
+ *     // `members` is a hash of all the applications's members
+ *   }
+ * });
+ *
+ * @param {function (err, members)} cb Callback
+ */
+Application.prototype.members = function (cb) {
+  if (!_.isEmpty(this._members)) return cb(null, this._members);
+  this.members$(cb);
+};
+
+/**
+ * Gets the members collection.  Returns a hash of Members resources.
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * application.members$(function (err, members) {
+ *   if (!err) {
+ *     // `members` is a hash of all the applications's members
+ *   }
+ * });
+ *
+ * @param {function (err, members)} cb Callback
+ */
+Application.prototype.members$ = function (cb) {
+  var application = this;
+  this.request('members', function (err, membersData) {
+    if (err) return cb(err);
+    _.each(membersData, function (member, name) {
+      application._memoizeMember(new Member(application.spire, member));
+    });
+    cb(null, application._members);
+  });
+};
+
+/**
+ * Creates a member.  Returns a Member resource.  Errors if a member with the
+ * specified email exists.
+ *
+ * @param {string} email Member email
+ * @param {string} password Member password
+ * @param {function (err, member)} cb Callback
+ */
+Application.prototype.createMember = function (email, password, cb) {
+  var application = this;
+  var params = {
+    email: email,
+    password: password
+  }
+  this.request('create_member', params, function (err, data) {
+    if (err) return cb(err);
+    var member = new Member(application.spire, data);
+    application._memoizeMember(member);
+    cb(null, member);
+  });
+};
+
+/**
+ * Gets a member by email.  Returns a Member resource
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * spire.session.memberByEmail('email_of_member', function (err, member) {
+ *   if (!err) {
+ *     // `member` now contains a member object
+ *   }
+ * });
+ *
+ * @param {String} memberEmail Email of member
+ * @param {function (err, member)} cb Callback
+ */
+Application.prototype.memberByEmail = function (memberEmail, cb) {
+  var application = this;
+  this.request('member_by_email', function (err, memberData) {
+    if (err) return cb(err);
+    member = new Member(application.spire, memberData[memberEmail]);
+    application._memoizeMember(member);
+    cb(null, member);
+  });
+};
+
+/**
+ * Gets the channels collection.  Returns a hash of Channel resources.
+ *
+ * Returns a value from the cache, if one if available.
+ *
+ * @example
+ * application.channels(function (err, channels) {
+ *   if (!err) {
+ *     // `channels` is a hash of all the applications's channels
+ *   }
+ * });
+ *
+ * @param {function (err, channels)} cb Callback
+ */
+Application.prototype.channels = function (cb) {
+  if (!_.isEmpty(this._channels)) return cb(null, this._channels);
+  this.channels$(cb);
+};
+
+/**
+ * Gets the channels collection.  Returns a hash of Channel resources.
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * application.channels$(function (err, channels) {
+ *   if (!err) {
+ *     // `channels` is a hash of all the applications's channels
+ *   }
+ * });
+ *
+ * @param {function (err, channels)} cb Callback
+ */
+Application.prototype.channels$ = function (cb) {
+  var application = this;
+  this.request('channels', function (err, channelsData) {
+    if (err) return cb(err);
+    _.each(channelsData, function (channel, name) {
+      application._memoizeChannel(new Channel(application.spire, channel));
+    });
+    cb(null, application._channels);
+  });
+};
+
+/**
+ * Gets a channel by name.  Returns a Channel resource
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * spire.session.channelByName('name_of_channel', function (err, channel) {
+ *   if (!err) {
+ *     // `channel` now contains a channel object
+ *   }
+ * });
+ *
+ * @param {String} channelName Name of channel
+ * @param {function (err, channel)} cb Callback
+ */
+Application.prototype.channelByName = function (channelName, cb) {
+  var application = this;
+  this.request('channel_by_name', function (err, channelData) {
+    if (err) return cb(err);
+    channel = new Channel(application.spire, channelData[channelName]);
+    application._memoizeChannel(channel);
+    cb(null, channel);
+  });
+};
+
+/**
+ * Gets the subscriptions collection.  Returns a hash of Subscription resources.
+ *
+ * Returns a value from the cache, if one if available.
+ *
+ * @example
+ * application.subscriptions(function (err, subscriptions) {
+ *   if (!err) {
+ *     // `subscriptions` is a hash of all the applications's subscriptions
+ *   }
+ * });
+ *
+ * @param {function (err, subscriptions)} cb Callback
+ */
+Application.prototype.subscriptions = function (cb) {
+  if (!_.isEmpty(this._subscriptions)) return cb(null, this._subscriptions);
+  this.subscriptions$(cb);
+};
+
+/**
+ * Gets the subscriptions collection.  Returns a hash of Subscription resources.
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * application.subscriptions$(function (err, subscriptions) {
+ *   if (!err) {
+ *     // `subscriptions` is a hash of all the application's subscriptions
+ *   }
+ * });
+ *
+ * @param {function (err, subscriptions)} cb Callback
+ */
+Application.prototype.subscriptions$ = function (cb) {
+  var application = this;
+  this.request('subscriptions', function (err, subscriptions) {
+    if (err) return cb(err);
+    application._subscriptions = {};
+    _.each(subscriptions, function (subscription, name) {
+      application._memoizeSubscription(new Subscription(application.spire, subscription));
+    });
+    cb(null, application._subscriptions);
+  });
+};
+
+/**
+ * Gets a subscription by name.  Returns a Subscription resource
+ *
+ * Always gets a fresh value from the api.
+ *
+ * @example
+ * spire.session.subscriptionByName('name_of_subscription', function (err, subscription) {
+ *   if (!err) {
+ *     // `subscription` now contains a subscription object
+ *   }
+ * });
+ *
+ * @param {String} subscriptionName Name of subscription
+ * @param {function (err, subscription)} cb Callback
+ */
+Application.prototype.subscriptionByName = function (subscriptionName, cb) {
+  var application = this;
+  this.request('subscription_by_name', function (err, subscriptionData) {
+    if (err) return cb(err);
+    subscription = new Subscription(application.spire, subscriptionData[subscriptionName]);
+    application._memoizeSubscription(subscription);
+    cb(null, subscription);
+  });
+};
+
+/**
+ * Creates a channel.  Returns a Channel resource.  Errors if a channel with the
+ * specified name exists.
+ *
+ * @param {string} name Channel name
+ * @param {function (err, channel)} cb Callback
+ */
+Application.prototype.createChannel = function (name, cb) {
+  var application = this;
+  this.request('create_channel', name, function (err, data) {
+    if (err) return cb(err);
+    var channel = new Channel(application.spire, data);
+    application._memoizeChannel(channel);
+    cb(null, channel);
+  });
+};
+
+/**
+ * Creates a subscription to any number of channels.  Returns a Subscription
+ * resource.  Errors if a subscription with the specified name exists.
+ *
+ * @param {object} options Options
+ * @param {string} options.name Subscription name
+ * @param {array} options.channelNames Channel names to subscribe to
+ * @param {array} options.channelUrls Channel urls to subscribe to
+ * @param {number} timeout Subscription timeout
+ * @param {function (err, subscription)} cb Callback
+ */
+Application.prototype.createSubscription = function (options, cb) {
+  var name = options.name;
+  var channelNames = options.channelNames || [];
+  var channelUrls = options.channelUrls || [];
+  var timeout = options.timeout;
+
+  var application = this;
+  this.channels(function (channels) {
+    channelUrls.push.apply(channelUrls, _.map(channelNames, function (name) {
+      return application._channels[name].url();
+    }));
+    application.request('create_subscription', name, channelUrls, timeout, function (err, sub) {
+      if (err) return cb(err);
+      var subscription = new Subscription(application.spire, sub);
+      application._memoizeSubscription(subscription);
+      cb(null, subscription);
+    });
+  });
+};
+
+ /**
+ * Stores the member resource in a hash by its name.
+ *
+ * @param channel {object} Member to store
+ */
+Application.prototype._memoizeMember = function (member) {
+  this._members[member.email()] = member;
+};
+
+ /**
+ * Stores the channel resource in a hash by its name.
+ *
+ * @param channel {object} Channel to store
+ */
+Application.prototype._memoizeChannel = function (channel) {
+  this._channels[channel.name()] = channel;
+};
+
+/**
+ * Stores the subscription resource in a hash by its name.
+ *
+ * @param subscription {object} Subscription to store
+ */
+Application.prototype._memoizeSubscription = function (subscription) {
+  this._subscriptions[subscription.name()] = subscription;
+};
+
+/**
+ * Stores the resources.
+ */
+Application.prototype._storeResources = function () {
+  var application = this;
+  var resources = {};
+  _.each(this.data.resources, function (resource, name) {
+    // Turn the account object into an instance of Resource.
+    if (name === 'account') {
+      resource = new Account(application.spire, resource);
+      application._account = resource;
+    }
+    resources[name] = resource;
+  });
+
+  this.resources = resources;
+};
+
+
+/**
+ * Requests
+ *
+ * These define API calls and have no side effects.  They can be run by calling
+ *     this.request(<request name>);
+ */
+
+/**
+ * Gets the channels collection.
+ * @name channels
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'channels', function () {
+  var collection = this.data.resources.channels;
+  return {
+    method: 'get',
+    url: collection.url,
+    headers: {
+      'Authorization': this.authorization('all', collection),
+      'Accept': this.mediaType('channels')
+    }
+  };
+});
+
+/**
+ * Gets a channel by name.  Returns a collection with a single value: { name: channel }.
+ * @name channel_by_name
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'channel_by_name', function (name) {
+  var collection = this.data.resources.channels;
+  return {
+    method: 'get',
+    url: collection.url,
+    query: { name: name },
+    headers: {
+      'Authorization': this.authorization('get_by_name', collection),
+      'Accept': this.mediaType('channels')
+    }
+  };
+});
+
+/**
+ * Creates a channel.  Returns a channel object.
+ * @name create_channel
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'create_channel', function (name) {
+  var collection = this.data.resources.channels;
+  return {
+    method: 'post',
+    url: collection.url,
+    content: { name: name },
+    headers: {
+      'Authorization': this.authorization('create', collection),
+      'Accept': this.mediaType('channel'),
+      'Content-Type': this.mediaType('channel')
+    }
+  };
+});
+
+/**
+ * Gets the subscriptions collection.
+ * @name subscrtiptions
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'subscriptions', function () {
+  var collection = this.data.resources.subscriptions;
+  return {
+    method: 'get',
+    url: collection.url,
+    headers: {
+      'Authorization': this.authorization('all', collection),
+      'Accept': this.mediaType('subscriptions')
+    }
+  };
+});
+
+/**
+ * Creates a subscrtiption.  Returns a subscription object.
+ * @name create_subscription
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'create_subscription', function (name, channelUrls, timeout) {
+  var collection = this.data.resources.subscriptions;
+  return {
+    method: 'post',
+    url: collection.url,
+    content: {
+      name: name,
+      channels: channelUrls,
+      timeout: timeout
+    },
+    headers: {
+      'Authorization': this.authorization('create', collection),
+      'Accept': this.mediaType('subscription'),
+      'Content-Type': this.mediaType('subscription')
+    }
+  };
+});
+
+/**
+ * Gets a subscription by name.  Returns a collection with a single value: { name: subscription }.
+ * @name subscription_by_name
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'subscription_by_name', function (name) {
+  var collection = this.data.resources.subscriptions;
+  return {
+    method: 'get',
+    url: collection.url,
+    query: { name: name },
+    headers: {
+      'Authorization': this.authorization('get_by_name', collection),
+      'Accept': this.mediaType('subscriptions')
+    }
+  };
+});
+
+/**
+ * Gets the members collection.
+ * @name members
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'members', function () {
+  var collection = this.data.resources.members;
+  return {
+    method: 'get',
+    url: collection.url,
+    headers: {
+      'Authorization': this.authorization('all', collection),
+      'Accept': this.mediaType('members')
+    }
+  };
+});
+
+/**
+ * Gets a member by email.  Returns a collection with a single value: { email: member }.
+ * @name member_by_email
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'member_by_email', function (name) {
+  var collection = this.data.resources.members;
+  return {
+    method: 'get',
+    url: collection.url,
+    query: { name: name },
+    headers: {
+      'Authorization': this.authorization('get_by_email', collection),
+      'Accept': this.mediaType('member')
+    }
+  };
+});
+
+/**
+ * Creates a member.  Returns a member object.
+ * @name create_member
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'create_member', function (data) {
+  var collection = this.data.resources.members;
+  return {
+    method: 'post',
+    url: collection.url,
+    content: data,
+    headers: {
+      'Authorization': this.authorization('create', collection),
+      'Accept': this.mediaType('member'),
+      'Content-Type': this.mediaType('member')
+    }
+  };
+});
+});
+
+require.define("/spire/api/member.js", function (require, module, exports, __dirname, __filename) {
+    /**
+ * @fileOverview Member Resource class definition
+ */
+var Resource = require('./resource');
+
+/**
+ * Represents a member in the spire api.
+ *
+ * @class Member Resource
+ *
+ * @constructor
+ * @extends Resource
+ * @param {object} spire Spire object
+ * @param {object} data  Member data from the spire api
+ */
+function Member(spire, data) {
+  this.spire = spire;
+  this.data = data;
+  this.resourceName = 'member';
+}
+
+Member.prototype = new Resource();
+
+module.exports = Member;
+
+/**
+ * Returns the member email.
+ *
+ * @returns {string} Member email
+ */
+Member.prototype.email = function () {
+  return this.data.email;
+};
 });
 
 require.define("/node_modules/http-browserify/package.json", function (require, module, exports, __dirname, __filename) {

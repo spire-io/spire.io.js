@@ -35,10 +35,9 @@ Register a new spire account:
 Or start spire with an account secret:
 
     spire.start(your_account_secret, function (err, session) {
-        if (!err) {
-          // You now have a Spire session
-        }
-      });
+      if (!err) {
+        // You now have a Spire session
+      }
     });
 
 Once Spire is started, you can start subscribing and publishing to channels.

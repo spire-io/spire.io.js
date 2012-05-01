@@ -37,7 +37,7 @@ describe('Long polling', function () {
         var that = this;
         this.channel.publish('Message 1', function (err, mes) {
           that.channel.publish('Message 2', function (err, mes) {
-            that.sub1.longPoll({ timeout: 5 }, function (err, events) {
+            that.sub1.longPoll({ last: 0, timeout: 5 }, function (err, events) {
               that.messages1 = events.messages;
               that.channel.publish('Message 3', function (err, mes) {
                 that.sub1.longPoll({ timeout: 5 }, function (err, events) {
@@ -97,5 +97,49 @@ describe('Long polling', function () {
       expect(this.messages[0].content).toBe('Goodnight moon.');
     });
   }); // Waits for the message we published
+
+
+  describe('Polls repeatedly', function () {
+    beforeEach(function () {
+      var finished = false;
+      runs(function () {
+        var that = this;
+        this.messages = [];
+        this.sub1.addListener('messages', function (messages) {
+          that.messages.push(messages);
+        });
+        this.sub1.startListening({
+          timeout: 5
+        });
+
+        setTimeout(function () {
+          that.channel.publish('hello 1', function (err, mes) {
+            that.channel.publish('hello 2', function (err, mes) {
+              that.channel.publish('hello 3', function (err, mes) {
+                setTimeout(function () {
+                  finished = true;
+                  that.sub1.stopListening();
+                }, 2000);
+              });
+            });
+          });
+        }, 1000);
+      });
+
+      waitsFor(function () {
+        return finished;
+      }, 'Publish to channel', 10000);
+    });
+
+    it('should get back three sets of events', function () {
+      expect(this.messages.length).toBe(3);
+    });
+
+    it('should get back our messages', function () {
+      expect(this.messages[0][0].content).toBe('hello 1');
+      expect(this.messages[1][0].content).toBe('hello 2');
+      expect(this.messages[2][0].content).toBe('hello 3');
+    });
+  }); // Polls repeatedly
 }); // Long polling
 

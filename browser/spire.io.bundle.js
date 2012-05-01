@@ -722,6 +722,7 @@ Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) 
   if (typeof options === 'function') {
     cb = listener;
     listener = options;
+    options = {}
   }
 
   cb = cb || function () {};
@@ -734,7 +735,9 @@ Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) 
       if (err) return cb(err);
       subscription.addListener('messages', listener);
       subscription.startListening(options);
-      return cb(null, subscription);
+      process.nextTick(function () {
+        cb(null, subscription);
+      });
     });
   });
 };
@@ -754,7 +757,7 @@ Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) 
  *
  * @param {string} channelName Channel name
  * @param {object, string} message Message
- * @param {function (err, subscription)} cb Callback
+ * @param {function (err, message)} cb Callback
  */
 Spire.prototype.publish = function (channelName, message, cb) {
   var spire = this;
@@ -6598,10 +6601,17 @@ Subscription.prototype.longPoll = function (options, cb) {
 Subscription.prototype._listen = function (opts) {
   var subscription = this;
   opts = opts || {};
+
+  if (typeof opts.last !== 'undefined') {
+    this.last = opts.last;
+    delete opts.last;
+  }
+
   async.whilst(
     function () { return subscription.listening; },
     function (cb) {
-      subscription.longPoll(opts, cb);
+      optsClone = _.clone(opts);
+      subscription.longPoll(optsClone, cb);
     },
     function () {}
   );

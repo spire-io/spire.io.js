@@ -108,7 +108,7 @@ describe('Long polling', function () {
         var count = 0;
         this.sub1.addListener('messages', function (messages) {
           that.messages = that.messages.concat(messages);
-          count++
+          count += messages.length
           if (count === 3) {
             finished = true;
             that.sub1.stopListening();
@@ -135,7 +135,6 @@ describe('Long polling', function () {
 
     it('should get back three sets messages with the correct content', function () {
       expect(this.messages.length).toBe(3);
-      console.log(this.messages.length)
       expect(this.messages[0].content).toBe('hello 1');
       expect(this.messages[1].content).toBe('hello 2');
       expect(this.messages[2].content).toBe('hello 3');

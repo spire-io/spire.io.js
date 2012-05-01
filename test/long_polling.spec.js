@@ -105,8 +105,14 @@ describe('Long polling', function () {
       runs(function () {
         var that = this;
         this.messages = [];
+        var count = 0;
         this.sub1.addListener('messages', function (messages) {
-          that.messages.push(messages);
+          that.messages = that.messages.concat(messages);
+          count++
+          if (count === 3) {
+            finished = true;
+            that.sub1.stopListening();
+          }
         });
         this.sub1.startListening({
           timeout: 5
@@ -116,10 +122,6 @@ describe('Long polling', function () {
           that.channel.publish('hello 1', function (err, mes) {
             that.channel.publish('hello 2', function (err, mes) {
               that.channel.publish('hello 3', function (err, mes) {
-                setTimeout(function () {
-                  finished = true;
-                  that.sub1.stopListening();
-                }, 2000);
               });
             });
           });
@@ -128,17 +130,15 @@ describe('Long polling', function () {
 
       waitsFor(function () {
         return finished;
-      }, 'Publish to channel', 10000);
+      }, 'Publish to channel', 15000);
     });
 
-    it('should get back three sets of events', function () {
+    it('should get back three sets messages with the correct content', function () {
       expect(this.messages.length).toBe(3);
-    });
-
-    it('should get back our messages', function () {
-      expect(this.messages[0][0].content).toBe('hello 1');
-      expect(this.messages[1][0].content).toBe('hello 2');
-      expect(this.messages[2][0].content).toBe('hello 3');
+      console.log(this.messages.length)
+      expect(this.messages[0].content).toBe('hello 1');
+      expect(this.messages[1].content).toBe('hello 2');
+      expect(this.messages[2].content).toBe('hello 3');
     });
   }); // Polls repeatedly
 }); // Long polling

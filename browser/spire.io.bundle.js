@@ -1947,7 +1947,7 @@ API.prototype.channelFromUrlAndCapabilities = function (creds, cb) {
   this.discover(function (err) {
     if (err) return cb(err);
     var channel = new Channel(api.spire, creds);
-    channel.get(cb);
+    channel.getIfCapable(cb);
   });
 };
 
@@ -1964,7 +1964,7 @@ API.prototype.sessionFromUrlAndCapabilities = function (creds, cb) {
   this.discover(function (err) {
     if (err) return cb(err);
     var session = new Session(api.spire, creds);
-    session.get(cb);
+    session.getIfCapable(cb);
   });
 };
 
@@ -2317,6 +2317,21 @@ Resource.prototype.get = function (cb) {
     cb(null, resource);
   });
 };
+
+/**
+ * <p>Gets the resource if we have the get capability.  Otherwise just return the resource.
+ *
+ * <p>Default method that may be overwritten by subclasses.
+ *
+ * @param {function (err, resource)} cb Callback
+ */
+Resource.prototype.getIfCapable = function(cb){
+  if(this.capability('get')){
+    this.get(cb);
+  } else {
+    cb(null, this);
+  }
+}
 
 /**
  * <p>Updates (puts to) the resource.
@@ -5032,7 +5047,7 @@ var Response = function(raw, request, callback) {
       }
 
       try {
-        cookie = new Cookie(cookieStr);
+        cookie = new Cookie(cookieString);
         if (cookie) {
           cookieObjs.push(cookie);
         }
@@ -5041,7 +5056,7 @@ var Response = function(raw, request, callback) {
       }
     }
 
-    request.cookieJar.setCookies(cookies);
+    request.cookieJar.setCookies(cookieObjs);
   }
 
   this.request = request;
@@ -5666,6 +5681,7 @@ require.define("/spire/api/channel.js", function (require, module, exports, __di
  */
 var Resource = require('./resource')
   , Message = require('./message')
+  , Subscription = require('./subscription')
   ;
 
 /**
@@ -5742,7 +5758,11 @@ Channel.prototype.subscription = function (subName, cb) {
     cb = subName;
     subName = null;
   }
-  this.spire.subscription(subName, this.name(), cb);
+  var spire = this.spire;
+  this.request('create_subscription', subName, function (err, subData) {
+    if (err) return cb(err);
+    cb(null, new Subscription(spire, subData));
+  });
 };
 
 /**
@@ -5827,6 +5847,24 @@ Resource.defineRequest(Channel.prototype, 'subscriptions', function (message) {
   };
 });
 
+/**
+ * @name create_subscription
+ * @ignore
+ * Create a subscription for the channel.
+ */
+Resource.defineRequest(Channel.prototype, 'create_subscription', function (name) {
+  var collection = this.data.resources.subscriptions;
+  return {
+    method: 'post',
+    url: collection.url,
+    headers: {
+      'Authorization': this.authorization('create', collection),
+      'Accept': this.mediaType('subscription'),
+      'Content-Type': this.mediaType('subscription')
+    },
+    content: {name: name}
+  };
+});
 });
 
 require.define("/spire/api/message.js", function (require, module, exports, __dirname, __filename) {
@@ -5874,6 +5912,332 @@ Resource.prototype.update = function (data, cb) {
 };
 
 module.exports = Message;
+
+});
+
+require.define("/spire/api/subscription.js", function (require, module, exports, __dirname, __filename) {
+    /**
+ * @fileOverview Subscription Resource class definition
+ */
+
+var Resource = require('./resource')
+  , Message = require('./message')
+  , _ = require('underscore')
+  , async = require('async')
+  ;
+
+/**
+ * Represents a subscription in the spire api.
+ *
+ * <p>There are a few ways to get events from a subscription.
+ *
+ * <p>The first is to call <code>subscription.retrieveEvents</code> directly.
+ * This is the most general method, and supports a number of options.
+ *
+ * <p>There are convenience methods <code>subscription.poll</code and
+ * <code>subscription.longPoll</code> which wrap <code>retrieveEvents</code>.
+ * The only difference is that <code>subscription.poll</code> has a timeout of
+ * 0, so the request will always come back right away, while
+ * <code>subscription.longPoll</code> has a 30 second timeout, so the request
+ * will wait up to 30 seconds for new events to arrive before returning.
+ *
+ * <p>You can also use the <code>message</code> and <code>messages</code> events to
+ * listen for new messages on the subscription.
+ *
+ * <p><pre><code>
+ *    subscription.addListener('message', function (message) {
+ *      console.log('Message received: ' + message.content);
+ *    });
+ *
+ *    subscription.addListener('messages', function (messages) {
+ *      console.log('Received ' + messages.length + ' messages.');
+ *    });
+ *
+ *    subscription.startListening();
+ * </code></pre>
+ * </p>
+ *
+ * <p>The `messages` event fires first and contains the all the messages that were
+ * received in a single request.  The `message` event fires once per message.
+ *
+ * @class Subscription Resource
+ *
+ * @constructor
+ * @extends Resource
+ * @param {object} spire Spire object
+ * @param {object} data Subscription data from the spire api
+ */
+function Subscription(spire, data) {
+  this.spire = spire;
+  this.data = data;
+  this.resourceName = 'subscription';
+
+  this.last = null;
+  this.listening = false;
+}
+
+Subscription.prototype = new Resource();
+
+module.exports = Subscription;
+
+/**
+ * Gets the name of the subscription.
+ *
+ * @returns {string} Name
+ */
+Subscription.prototype.name = function () {
+  return this.data.name;
+};
+
+/**
+ * Starts long polling for the subscription.
+ *
+ * <p>The <code>message</code> and <code>messages</code> events will fire when a
+ * request comes back with messages.  The <code>message</code> event will fire
+ * once per message, while the <code>messages</code> event fires every time a
+ * request comes back with more than one message.
+ *
+ * @example
+ * subscription.addListener('message', function (message) {
+ *   console.log('Message received: ' + message.content);
+ * });
+ *
+ * subscription.addListener('messages', function (messages) {
+ *   console.log('Received ' + messages.length + ' messages.');
+ * });
+ *
+ * subscription.startListening();
+ *
+ * // Stop Listening after 100 seconds.
+ * setTimout(function () {
+ *   subscription.stopListening();
+ *  }, 100000);
+ *
+ * @param {object} [options] Optional options argument
+ * @param {number} [options.last] Optional last message
+ * @param {number} [options.delay] Optional delay
+ * @param {number} [options.timeout] Optional timeout
+ * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
+ * @param {function (err, messages)} cb Callback
+ */
+Subscription.prototype.startListening = function (opts) {
+  this.listening = true;
+  this._listen(opts);
+};
+
+/**
+ * Stops listening on the subscription.
+ */
+Subscription.prototype.stopListening = function () {
+  this.listening = false;
+};
+
+/**
+ * Gets events for the subscription.
+ *
+ * <p>This method only makes one request.  Use
+ * <code>subscription.startListening</code> to poll repeatedly.
+ *
+ * @example
+ * subscription.retrieveEvents(function (err, events) {
+ *   if (!err) {
+ *     // `events` is a hash with `messages`, `joins`, and `parts` (each possibly empty)
+ *   }
+ * });
+ *
+ * @param {object} [options] Optional options argument
+ * @param {number} [options.last] Optional last event
+ * @param {number} [options.delay] Optional delay
+ * @param {number} [options.timeout] Optional timeout
+ * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
+ * @param {function (err, messages)} cb Callback
+ */
+Subscription.prototype.retrieveEvents = function (options, cb) {
+  var subscription = this;
+  var spire = this.spire;
+  if (!cb) {
+    cb = options;
+    options = {};
+  }
+
+  options.orderBy = options.orderBy || 'desc';
+
+  var req = this.request('events', options, function (err, eventsData) {
+    if (err) {
+      if (subscription.listeners('error').length) {
+        subscription.emit('error', err);
+      }
+      return cb(err);
+    }
+
+    if (eventsData.messages.length) {
+      var messagesData = eventsData.messages;
+      eventsData.messages = _(eventsData.messages).map(function (messageData) {
+        return new Message(spire, messageData);
+      });
+    }
+
+    if (!subscription.listening) {
+      return cb(null, eventsData);
+    }
+
+    var eventTypes = ["messages", "joins", "parts"];
+
+    _.each(eventTypes, function (eventType) {
+      if (eventsData[eventType].length) {
+        subscription.emit(eventType, eventsData[eventType])
+      }
+    });
+
+    var allEvents = _.reduce(eventTypes, function (_allEvents, eventType) {
+      return _allEvents.concat(eventsData[eventType]);
+    }, []);
+
+    allEvents.sort(function (a, b) {
+      return a.timestamp - b.timestamp
+    });
+
+    if (allEvents.length) {
+      process.nextTick(function () {
+        _.each(allEvents, function (event) {
+          subscription.emit(event.type, event);
+        });
+      });
+    }
+
+    cb(null, eventsData);
+  });
+
+  req.on('socket', function (socket) {
+    subscription.emit('socket', socket);
+  });
+};
+
+/**
+ * Alias for subscription.retreiveEvents.
+ */
+Subscription.prototype.get = Subscription.prototype.retreiveEvents;
+
+/**
+ * Gets new events for the subscription.  This method forces a 0 second
+ * timeout, so the request will come back immediately, but may have an empty
+ * array of events if there are no new ones.
+ *
+ * <p>This method only makes one request.  Use
+ * <code>subscription.startListening</code> to poll repeatedly.
+ *
+ * @example
+ * subscription.poll(function (err, events) {
+ *   if (!err) {
+ *     // `events.messages` is an array of messages (possably empty)
+ *   }
+ * });
+ *
+ * @param {object} [options] Optional options argument
+ * @param {number} [options.delay] Optional delay
+ * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
+ * @param {function (err, events)} cb Callback
+ */
+Subscription.prototype.poll = function (options, cb) {
+  if (!cb) {
+    cb = options;
+    options = {};
+  }
+  options.timeout = 0;
+  this.longPoll(options, cb);
+};
+
+/**
+ * Gets new events for the subscription.
+ *
+ * <p>This method defaults to a 30 second timeout, so the request will wait up to
+ * 30 seconds for a new message to come in.  You can increase the wait time with
+ * the <code>options.timeout</code> paraameter.
+ *
+ * <p>This method only makes one request.  Use `subscription.startListening` to
+ * poll repeatedly.
+ *
+ * @example
+ * subscription.longPoll({ timeout: 60 }, function (err, events) {
+ *   if (!err) {
+ *     // `events.messages` is an array of messages (possably empty)
+ *   }
+ * });
+ *
+ * @param {object} [options] Optional options argument
+ * @param {number} [options.delay] Optional delay
+ * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
+ * @param {number} [options.timeout] Optional timeout
+ * @param {function (err, events)} cb Callback
+ */
+Subscription.prototype.longPoll = function (options, cb) {
+  var subscription = this;
+  if (!cb) {
+    cb = options;
+    options = {};
+  }
+
+  options.last = this.last;
+  options.timeout = options.timeout || 30;
+
+  this.retrieveEvents(options, function (err, events) {
+    if (err) return cb(err);
+    if (events.last) {
+      subscription.last = events.last;
+    }
+
+    cb(null, events);
+  });
+};
+
+/**
+ * Repeatedly polls for new events until `subscription.stopListening` is
+ * called.
+ *
+ * You should use `subscription.startListening` instead of calling this method
+ * directly.
+ */
+Subscription.prototype._listen = function (opts) {
+  var subscription = this;
+  opts = opts || {};
+  async.whilst(
+    function () { return subscription.listening; },
+    function (cb) {
+      subscription.longPoll(opts, cb);
+    },
+    function () {}
+  );
+};
+
+/**
+ * Requests
+ *
+ * These define API calls and have no side effects.  They can be run by calling
+ *     this.request(<request name>);
+ */
+
+/**
+ * Gets the events for the subscription, according to various parameters.
+ * @name events
+ * @ignore
+ */
+Resource.defineRequest(Subscription.prototype, 'events', function (options) {
+  options = options || {};
+  return {
+    method: 'get',
+    url: this.url(),
+    query: {
+      'timeout': options.timeout || 0,
+      'last': options.last || 0,
+      'order-by': options.orderBy || 'desc',
+      'delay': options.delay || 0
+    },
+    headers: {
+      'Authorization': this.authorization('events'),
+      'Accept': this.mediaType('events')
+    }
+  };
+});
 
 });
 
@@ -6517,332 +6881,6 @@ Resource.defineRequest(Session.prototype, 'create_application', function (name) 
 
 });
 
-require.define("/spire/api/subscription.js", function (require, module, exports, __dirname, __filename) {
-    /**
- * @fileOverview Subscription Resource class definition
- */
-
-var Resource = require('./resource')
-  , Message = require('./message')
-  , _ = require('underscore')
-  , async = require('async')
-  ;
-
-/**
- * Represents a subscription in the spire api.
- *
- * <p>There are a few ways to get events from a subscription.
- *
- * <p>The first is to call <code>subscription.retrieveEvents</code> directly.
- * This is the most general method, and supports a number of options.
- *
- * <p>There are convenience methods <code>subscription.poll</code and
- * <code>subscription.longPoll</code> which wrap <code>retrieveEvents</code>.
- * The only difference is that <code>subscription.poll</code> has a timeout of
- * 0, so the request will always come back right away, while
- * <code>subscription.longPoll</code> has a 30 second timeout, so the request
- * will wait up to 30 seconds for new events to arrive before returning.
- *
- * <p>You can also use the <code>message</code> and <code>messages</code> events to
- * listen for new messages on the subscription.
- *
- * <p><pre><code>
- *    subscription.addListener('message', function (message) {
- *      console.log('Message received: ' + message.content);
- *    });
- *
- *    subscription.addListener('messages', function (messages) {
- *      console.log('Received ' + messages.length + ' messages.');
- *    });
- *
- *    subscription.startListening();
- * </code></pre>
- * </p>
- *
- * <p>The `messages` event fires first and contains the all the messages that were
- * received in a single request.  The `message` event fires once per message.
- *
- * @class Subscription Resource
- *
- * @constructor
- * @extends Resource
- * @param {object} spire Spire object
- * @param {object} data Subscription data from the spire api
- */
-function Subscription(spire, data) {
-  this.spire = spire;
-  this.data = data;
-  this.resourceName = 'subscription';
-
-  this.last = null;
-  this.listening = false;
-}
-
-Subscription.prototype = new Resource();
-
-module.exports = Subscription;
-
-/**
- * Gets the name of the subscription.
- *
- * @returns {string} Name
- */
-Subscription.prototype.name = function () {
-  return this.data.name;
-};
-
-/**
- * Starts long polling for the subscription.
- *
- * <p>The <code>message</code> and <code>messages</code> events will fire when a
- * request comes back with messages.  The <code>message</code> event will fire
- * once per message, while the <code>messages</code> event fires every time a
- * request comes back with more than one message.
- *
- * @example
- * subscription.addListener('message', function (message) {
- *   console.log('Message received: ' + message.content);
- * });
- *
- * subscription.addListener('messages', function (messages) {
- *   console.log('Received ' + messages.length + ' messages.');
- * });
- *
- * subscription.startListening();
- *
- * // Stop Listening after 100 seconds.
- * setTimout(function () {
- *   subscription.stopListening();
- *  }, 100000);
- *
- * @param {object} [options] Optional options argument
- * @param {number} [options.last] Optional last message
- * @param {number} [options.delay] Optional delay
- * @param {number} [options.timeout] Optional timeout
- * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
- * @param {function (err, messages)} cb Callback
- */
-Subscription.prototype.startListening = function (opts) {
-  this.listening = true;
-  this._listen(opts);
-};
-
-/**
- * Stops listening on the subscription.
- */
-Subscription.prototype.stopListening = function () {
-  this.listening = false;
-};
-
-/**
- * Gets events for the subscription.
- *
- * <p>This method only makes one request.  Use
- * <code>subscription.startListening</code> to poll repeatedly.
- *
- * @example
- * subscription.retrieveEvents(function (err, events) {
- *   if (!err) {
- *     // `events` is a hash with `messages`, `joins`, and `parts` (each possibly empty)
- *   }
- * });
- *
- * @param {object} [options] Optional options argument
- * @param {number} [options.last] Optional last event
- * @param {number} [options.delay] Optional delay
- * @param {number} [options.timeout] Optional timeout
- * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
- * @param {function (err, messages)} cb Callback
- */
-Subscription.prototype.retrieveEvents = function (options, cb) {
-  var subscription = this;
-  var spire = this.spire;
-  if (!cb) {
-    cb = options;
-    options = {};
-  }
-
-  options.orderBy = options.orderBy || 'desc';
-
-  var req = this.request('events', options, function (err, eventsData) {
-    if (err) {
-      if (subscription.listeners('error').length) {
-        subscription.emit('error', err);
-      }
-      return cb(err);
-    }
-
-    if (eventsData.messages.length) {
-      var messagesData = eventsData.messages;
-      eventsData.messages = _(eventsData.messages).map(function (messageData) {
-        return new Message(spire, messageData);
-      });
-    }
-
-    if (!subscription.listening) {
-      return cb(null, eventsData);
-    }
-
-    var eventTypes = ["messages", "joins", "parts"];
-
-    _.each(eventTypes, function (eventType) {
-      if (eventsData[eventType].length) {
-        subscription.emit(eventType, eventsData[eventType])
-      }
-    });
-
-    var allEvents = _.reduce(eventTypes, function (_allEvents, eventType) {
-      return _allEvents.concat(eventsData[eventType]);
-    }, []);
-
-    allEvents.sort(function (a, b) {
-      return a.timestamp - b.timestamp
-    });
-
-    if (allEvents.length) {
-      process.nextTick(function () {
-        _.each(allEvents, function (event) {
-          subscription.emit(event.type, event);
-        });
-      });
-    }
-
-    cb(null, eventsData);
-  });
-
-  req.on('socket', function (socket) {
-    subscription.emit('socket', socket);
-  });
-};
-
-/**
- * Alias for subscription.retreiveEvents.
- */
-Subscription.prototype.get = Subscription.prototype.retreiveEvents;
-
-/**
- * Gets new events for the subscription.  This method forces a 0 second
- * timeout, so the request will come back immediately, but may have an empty
- * array of events if there are no new ones.
- *
- * <p>This method only makes one request.  Use
- * <code>subscription.startListening</code> to poll repeatedly.
- *
- * @example
- * subscription.poll(function (err, events) {
- *   if (!err) {
- *     // `events.messages` is an array of messages (possably empty)
- *   }
- * });
- *
- * @param {object} [options] Optional options argument
- * @param {number} [options.delay] Optional delay
- * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
- * @param {function (err, events)} cb Callback
- */
-Subscription.prototype.poll = function (options, cb) {
-  if (!cb) {
-    cb = options;
-    options = {};
-  }
-  options.timeout = 0;
-  this.longPoll(options, cb);
-};
-
-/**
- * Gets new events for the subscription.
- *
- * <p>This method defaults to a 30 second timeout, so the request will wait up to
- * 30 seconds for a new message to come in.  You can increase the wait time with
- * the <code>options.timeout</code> paraameter.
- *
- * <p>This method only makes one request.  Use `subscription.startListening` to
- * poll repeatedly.
- *
- * @example
- * subscription.longPoll({ timeout: 60 }, function (err, events) {
- *   if (!err) {
- *     // `events.messages` is an array of messages (possably empty)
- *   }
- * });
- *
- * @param {object} [options] Optional options argument
- * @param {number} [options.delay] Optional delay
- * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
- * @param {number} [options.timeout] Optional timeout
- * @param {function (err, events)} cb Callback
- */
-Subscription.prototype.longPoll = function (options, cb) {
-  var subscription = this;
-  if (!cb) {
-    cb = options;
-    options = {};
-  }
-
-  options.last = this.last;
-  options.timeout = options.timeout || 30;
-
-  this.retrieveEvents(options, function (err, events) {
-    if (err) return cb(err);
-    if (events.last) {
-      subscription.last = events.last;
-    }
-
-    cb(null, events);
-  });
-};
-
-/**
- * Repeatedly polls for new events until `subscription.stopListening` is
- * called.
- *
- * You should use `subscription.startListening` instead of calling this method
- * directly.
- */
-Subscription.prototype._listen = function (opts) {
-  var subscription = this;
-  opts = opts || {};
-  async.whilst(
-    function () { return subscription.listening; },
-    function (cb) {
-      subscription.longPoll(opts, cb);
-    },
-    function () {}
-  );
-};
-
-/**
- * Requests
- *
- * These define API calls and have no side effects.  They can be run by calling
- *     this.request(<request name>);
- */
-
-/**
- * Gets the events for the subscription, according to various parameters.
- * @name events
- * @ignore
- */
-Resource.defineRequest(Subscription.prototype, 'events', function (options) {
-  options = options || {};
-  return {
-    method: 'get',
-    url: this.url(),
-    query: {
-      'timeout': options.timeout || 0,
-      'last': options.last || 0,
-      'order-by': options.orderBy || 'desc',
-      'delay': options.delay || 0
-    },
-    headers: {
-      'Authorization': this.authorization('events'),
-      'Accept': this.mediaType('events')
-    }
-  };
-});
-
-});
-
 require.define("/spire/api/application.js", function (require, module, exports, __dirname, __filename) {
     /**
  * @fileOverview Application Resource class definition
@@ -7421,6 +7459,15 @@ module.exports = Member;
 Member.prototype.email = function () {
   return this.data.email;
 };
+
+/**
+ * Returns the members profile.
+ *
+ * @returns {string} Member profile
+ */
+Member.prototype.profile = function () {
+  return this.data.profile;
+};
 });
 
 require.define("/node_modules/http-browserify/package.json", function (require, module, exports, __dirname, __filename) {
@@ -7485,67 +7532,11 @@ var xhrHttp = (function () {
     }
 })();
 
-http.STATUS_CODES = {
-    100 : 'Continue',
-    101 : 'Switching Protocols',
-    102 : 'Processing', // RFC 2518, obsoleted by RFC 4918
-    200 : 'OK',
-    201 : 'Created',
-    202 : 'Accepted',
-    203 : 'Non-Authoritative Information',
-    204 : 'No Content',
-    205 : 'Reset Content',
-    206 : 'Partial Content',
-    207 : 'Multi-Status', // RFC 4918
-    300 : 'Multiple Choices',
-    301 : 'Moved Permanently',
-    302 : 'Moved Temporarily',
-    303 : 'See Other',
-    304 : 'Not Modified',
-    305 : 'Use Proxy',
-    307 : 'Temporary Redirect',
-    400 : 'Bad Request',
-    401 : 'Unauthorized',
-    402 : 'Payment Required',
-    403 : 'Forbidden',
-    404 : 'Not Found',
-    405 : 'Method Not Allowed',
-    406 : 'Not Acceptable',
-    407 : 'Proxy Authentication Required',
-    408 : 'Request Time-out',
-    409 : 'Conflict',
-    410 : 'Gone',
-    411 : 'Length Required',
-    412 : 'Precondition Failed',
-    413 : 'Request Entity Too Large',
-    414 : 'Request-URI Too Large',
-    415 : 'Unsupported Media Type',
-    416 : 'Requested Range Not Satisfiable',
-    417 : 'Expectation Failed',
-    418 : 'I\'m a teapot', // RFC 2324
-    422 : 'Unprocessable Entity', // RFC 4918
-    423 : 'Locked', // RFC 4918
-    424 : 'Failed Dependency', // RFC 4918
-    425 : 'Unordered Collection', // RFC 4918
-    426 : 'Upgrade Required', // RFC 2817
-    500 : 'Internal Server Error',
-    501 : 'Not Implemented',
-    502 : 'Bad Gateway',
-    503 : 'Service Unavailable',
-    504 : 'Gateway Time-out',
-    505 : 'HTTP Version not supported',
-    506 : 'Variant Also Negotiates', // RFC 2295
-    507 : 'Insufficient Storage', // RFC 4918
-    509 : 'Bandwidth Limit Exceeded',
-    510 : 'Not Extended' // RFC 2774
-};
-
 });
 
 require.define("/node_modules/http-browserify/lib/request.js", function (require, module, exports, __dirname, __filename) {
     var EventEmitter = require('events').EventEmitter;
 var Response = require('./response');
-var isSafeHeader = require('./isSafeHeader');
 
 var Request = module.exports = function (xhr, params) {
     var self = this;
@@ -7562,7 +7553,7 @@ var Request = module.exports = function (xhr, params) {
     
     if (params.headers) {
         Object.keys(params.headers).forEach(function (key) {
-            if (!isSafeHeader(key)) return;
+            if (!self.isSafeRequestHeader(key)) return;
             var value = params.headers[key];
             if (Array.isArray(value)) {
                 value.forEach(function (v) {
@@ -7606,11 +7597,40 @@ Request.prototype.end = function (s) {
     this.xhr.send(this.body);
 };
 
+// Taken from http://dxr.mozilla.org/mozilla/mozilla-central/content/base/src/nsXMLHttpRequest.cpp.html
+Request.unsafeHeaders = [
+    "accept-charset",
+    "accept-encoding",
+    "access-control-request-headers",
+    "access-control-request-method",
+    "connection",
+    "content-length",
+    "cookie",
+    "cookie2",
+    "content-transfer-encoding",
+    "date",
+    "expect",
+    "host",
+    "keep-alive",
+    "origin",
+    "referer",
+    "te",
+    "trailer",
+    "transfer-encoding",
+    "upgrade",
+    "user-agent",
+    "via"
+];
+
+Request.prototype.isSafeRequestHeader = function (headerName) {
+    if (!headerName) return false;
+    return (Request.unsafeHeaders.indexOf(headerName.toLowerCase()) === -1)
+};
+
 });
 
 require.define("/node_modules/http-browserify/lib/response.js", function (require, module, exports, __dirname, __filename) {
     var EventEmitter = require('events').EventEmitter;
-var isSafeHeader = require('./isSafeHeader');
 
 var Response = module.exports = function (xhr) {
     this.xhr = xhr;
@@ -7656,16 +7676,12 @@ function parseHeaders (xhr) {
 }
 
 Response.prototype.getHeader = function (key) {
-    var header = this.headers ? this.headers[key.toLowerCase()] : null;
-    if (header) return header;
+    var header = this.headers[key.toLowerCase()];
 
     // Work around Mozilla bug #608735 [https://bugzil.la/608735], which causes
     // getAllResponseHeaders() to return {} if the response is a CORS request.
     // xhr.getHeader still works correctly.
-    if (isSafeHeader(key)) {
-      return this.xhr.getResponseHeader(key);
-    }
-    return null;
+    return header || this.xhr.getResponseHeader(key);
 };
 
 Response.prototype.handle = function () {
@@ -7720,40 +7736,6 @@ Response.prototype.write = function () {
         this.emit('data', xhr.responseText.slice(this.offset));
         this.offset = xhr.responseText.length;
     }
-};
-
-});
-
-require.define("/node_modules/http-browserify/lib/isSafeHeader.js", function (require, module, exports, __dirname, __filename) {
-    // Taken from http://dxr.mozilla.org/mozilla/mozilla-central/content/base/src/nsXMLHttpRequest.cpp.html
-var unsafeHeaders = [
-    "accept-charset",
-    "accept-encoding",
-    "access-control-request-headers",
-    "access-control-request-method",
-    "connection",
-    "content-length",
-    "cookie",
-    "cookie2",
-    "content-transfer-encoding",
-    "date",
-    "expect",
-    "host",
-    "keep-alive",
-    "origin",
-    "referer",
-    "set-cookie",
-    "te",
-    "trailer",
-    "transfer-encoding",
-    "upgrade",
-    "user-agent",
-    "via"
-];
-
-module.exports = function (headerName) {
-    if (!headerName) return false;
-    return (unsafeHeaders.indexOf(headerName.toLowerCase()) === -1)
 };
 
 });

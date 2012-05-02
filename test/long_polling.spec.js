@@ -97,5 +97,52 @@ describe('Long polling', function () {
       expect(this.messages[0].content).toBe('Goodnight moon.');
     });
   }); // Waits for the message we published
+
+  describe('Polls repeatedly', function () {
+    beforeEach(function () {
+      var finished = false;
+      runs(function () {
+        var that = this;
+        this.messages = [];
+        var count = 0;
+
+        this.sub1.addListener('messages', function (messages) {
+          that.messages = that.messages.concat(messages);
+          count += messages.length
+          if (count >= 3) {
+            finished = true;
+            that.sub1.stopListening();
+          }
+        });
+
+        this.channel.publish('too early', function (err, mes) {
+          that.sub1.startListening({
+            last: 'now',
+            timeout: 5
+          });
+
+          setTimeout(function () {
+            that.channel.publish('hello 1', function (err, mes) {
+              that.channel.publish('hello 2', function (err, mes) {
+                that.channel.publish('hello 3', function (err, mes) {
+                });
+              });
+            });
+          }, 1000);
+        });
+      });
+
+      waitsFor(function () {
+        return finished;
+      }, 'Publish to channel', 20000);
+    });
+
+    it('should get back three sets messages with the correct content', function () {
+      expect(this.messages.length).toBe(3);
+      expect(this.messages[0].content).toBe('hello 1');
+      expect(this.messages[1].content).toBe('hello 2');
+      expect(this.messages[2].content).toBe('hello 3');
+    });
+  }); // Polls repeatedly
 }); // Long polling
 

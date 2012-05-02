@@ -35,10 +35,9 @@ Register a new spire account:
 Or start spire with an account secret:
 
     spire.start(your_account_secret, function (err, session) {
-        if (!err) {
-          // You now have a Spire session
-        }
-      });
+      if (!err) {
+        // You now have a Spire session
+      }
     });
 
 Once Spire is started, you can start subscribing and publishing to channels.
@@ -59,6 +58,18 @@ Subscribe to multiple channels:
       for (var i = 0; i < messages.length; i++) {
         console.log("Received message from channel " +
           messages[i].channel + ": " + messages[i].content);
+      }
+    });
+
+By default, the `spire.subscribe` method will return all channel events starting with the very first event.
+If you only want to listen for events from this point forward, pass `last: 'now'` as an option:
+
+
+Subscribe to a channel, and only listen for new events:
+
+    spire.subcribe('channel name', { last: 'now' }, function (messages) {
+      for (var i = 0; i < messages.length; i++) {
+        console.log("Received message: " + messages[i].content);
       }
     });
 
@@ -123,28 +134,38 @@ or equivalently:
 
 ### Listening on a subscription
 
-Subscriptions have two events:
-    * the `messages` event will fire with every batch of messages received, and
-    * the `message` event will fire with every message individually.
+Subscriptions have three basic kinds of events:
 
-Here are examples of both kinds of event listeners:
+    * `message` events are messages that were published to the channel,
+    * `join` events are created when a new subscription is added to the channel, and
+    * `part` events are created when a subscription is deleted or expires.
+
+Here are examples of all three kinds of event listeners:
 
     mySubscription.addListener('message', function (message) {
       console.log('Message received: ' + message.content);
     });
 
-    mySubscription.addListener('messages', function (messages) {
-      console.log('Received ' + messages.length' + ' messages.');
+    mySubscription.addListener('join', function (join) {
+      console.log('Subscription joined: ' + join.subscription_name);
+    });
+
+    mySubscription.addListener('part', function (part) {
+      console.log('Subscription parted: ' + part.subscription_name);
     });
 
 To start listening on a subscription, call:
 
     mySubscription.startListening();
 
+You can pass options to `startListening`.
+For example, if you only want to listen for new messages (and ignore all messages that have already been sent), pass in `last: 'now'`:
+
+    mySubscription.startListening({ last: 'now' });
+
 To stop listening on a subscription, call:
 
     mySubscription.stopListening();
-
 
 
 ## Reference Documentation

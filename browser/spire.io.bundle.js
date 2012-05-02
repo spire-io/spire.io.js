@@ -7274,6 +7274,27 @@ Application.prototype.createMember = function (email, password, cb) {
 };
 
 /**
+ * Authenticates a member.  Returns a Member resource.  Error if authenication fails.
+ *
+ * @param {string} email Member email
+ * @param {string} password Member password
+ * @param {function (err, member)} cb Callback
+ */
+Application.prototype.authenticateMember = function (email, password, cb) {
+  var application = this;
+  var params = {
+    email: email,
+    password: password
+  }
+  this.request('authenticate_member', params, function (err, data) {
+    if (err) return cb(err);
+    var member = new Member(application.spire, data);
+    application._memoizeMember(member);
+    cb(null, member);
+  });
+};
+
+/**
  * Gets a member by email.  Returns a Member resource
  *
  * Always gets a fresh value from the api.
@@ -7700,6 +7721,23 @@ Resource.defineRequest(Application.prototype, 'create_member', function (data) {
       'Authorization': this.authorization('create', collection),
       'Accept': this.mediaType('member'),
       'Content-Type': this.mediaType('member')
+    }
+  };
+});
+
+/**
+ * Authenticates a member.  Returns a member object.
+ * @name authenticate_member
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'authenticate_member', function (data) {
+  var collection = this.data.resources.authentication;
+  return {
+    method: 'post',
+    url: collection.url,
+    content: data,
+    headers: {
+      'Accept': this.mediaType('member')
     }
   };
 });

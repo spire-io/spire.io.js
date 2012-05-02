@@ -733,6 +733,18 @@ Spire.prototype.subscriptions$ = function (cb) {
  *   // `err` will be non-null if there was a problem creating the subscription.
  * });
  *
+ * By default this will get all events from the beginning of time.
+ * If you only want messages created from this point forward, pass { last: 'now' } in the options:
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.start(your_api_secret, { last: 'now' }, function (err, session) {
+ *   spire.subscribe('myChannel', options, function (messages) {
+ *     // `messages` is array of messages sent to the channel
+ *   }, function (err) {
+ *   // `err` will be non-null if there was a problem creating the subscription.
+ * });
+ *
  * @param {array or string} channelOrChannels Either a single channel name, or an array of
  *   channel names to subscribe to
  * @param {object} [options] Options to pass to the listener
@@ -744,7 +756,9 @@ Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) 
   if (typeof options === 'function') {
     cb = listener;
     listener = options;
+    options = {}
   }
+
 
   cb = cb || function () {};
 
@@ -756,7 +770,9 @@ Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) 
       if (err) return cb(err);
       subscription.addListener('messages', listener);
       subscription.startListening(options);
-      return cb(null, subscription);
+      process.nextTick(function () {
+        cb(null, subscription);
+      });
     });
   });
 };
@@ -776,7 +792,7 @@ Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) 
  *
  * @param {string} channelName Channel name
  * @param {object, string} message Message
- * @param {function (err, subscription)} cb Callback
+ * @param {function (err, message)} cb Callback
  */
 Spire.prototype.publish = function (channelName, message, cb) {
   var spire = this;
@@ -4170,6 +4186,7 @@ var STATUS_CODES = HTTP.STATUS_CODES;
 var Request = function(options) {
   this.log = options.logger;
   this.cookieJar = options.cookieJar;
+  this.encoding = options.encoding;
   processOptions(this,options||{});
   createRequest(this);
 };
@@ -4318,12 +4335,12 @@ Object.defineProperties(Request.prototype, {
         , milliseconds = 0;
       ;
       if (!timeout) return this;
-      if (typeof options=="number") { milliseconds = options; }
+      if (typeof timeout==="number") { milliseconds = timeout; }
       else {
-        milliseconds = (options.milliseconds||0) +
-          (1000 * ((options.seconds||0) +
-              (60 * ((options.minutes||0) +
-                (60 * (options.hours||0))))));
+        milliseconds = (timeout.milliseconds||0) +
+          (1000 * ((timeout.seconds||0) +
+              (60 * ((timeout.minutes||0) +
+                (60 * (timeout.hours||0))))));
       }
       this._timeout = milliseconds;
       return this;
@@ -4418,7 +4435,7 @@ var processOptions = function(request,options) {
   }
 
   // Set the remaining options.
-  request.query = options.query||options.parameters;
+  request.query = options.query||options.parameters||request.query ;
   request.method = options.method;
   request.setHeader("user-agent",options.agent||"Shred for Node.js, Version 0.5.0");
   request.setHeaders(options.headers);
@@ -4563,7 +4580,7 @@ var createRequest = function(request) {
     timeout = setTimeout(function() {
       request.log.debug("Timeout fired, aborting request ...");
       request._raw.abort();
-      request.emit("timeout", request);
+      request.emitter.emit("timeout", request);
     },request.timeout);
   }
 
@@ -5014,6 +5031,14 @@ try {
   console.warn("no zlib library");
 }
 
+// Iconv doesn't work in browser
+var Iconv = null;
+try {
+  Iconv = require('iconv-lite');
+} catch (e) {
+  console.warn("no iconv library");
+}
+
 // Construct a `Response` object. You should never have to do this directly. The
 // `Request` object handles this, getting the raw response object and passing it
 // in here, along with the request. The callback allows us to stream the response
@@ -5097,11 +5122,18 @@ var Response = function(raw, request, callback) {
 
     if (zlib && response.getHeader("Content-Encoding") === 'gzip'){
       zlib.gunzip(body, function (err, gunzippedBody) {
-        body = gunzippedBody.toString();
+        if (Iconv && response.request.encoding){
+          body = Iconv.fromEncoding(gunzippedBody,response.request.encoding);
+        } else {
+          body = gunzippedBody.toString();
+        }
         setBodyAndFinish(body);
       })
     }
     else{
+       if (response.request.encoding){
+            body = Iconv.fromEncoding(body,response.request.encoding);
+        }        
       setBodyAndFinish(body);
     }
   });
@@ -5310,7 +5342,12 @@ Object.defineProperties(Content.prototype,{
 // - **length**. Typically accessed as `content.length`, returns the length in
 //   bytes of the raw content entity.
   length: {
-    get: function() { return this.body.length; }
+    get: function() {
+      if (typeof Buffer !== 'undefined') {
+        return Buffer.byteLength(this.body);
+      }
+      return this.body.length;
+    }
   }
 });
 
@@ -5471,6 +5508,227 @@ module.exports = {
     constructor.prototype.setHeaders = function(hash) { return setHeaders(this,hash); };
   },
 };
+});
+
+require.define("/node_modules/shred/node_modules/iconv-lite/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {}
+});
+
+require.define("/node_modules/shred/node_modules/iconv-lite/index.js", function (require, module, exports, __dirname, __filename) {
+    // Module exports
+module.exports = iconv = {
+    toEncoding: function(str, encoding) {
+        return iconv.getCodec(encoding).toEncoding(str);
+    },
+    fromEncoding: function(buf, encoding) {
+        return iconv.getCodec(encoding).fromEncoding(buf);
+    },
+    
+    defaultCharUnicode: '�',
+    defaultCharSingleByte: '?',
+    
+    // Get correct codec for given encoding.
+    getCodec: function(encoding) {
+        var enc = encoding || "utf8";
+        var codecOptions = undefined;
+        while (1) {
+            if (getType(enc) === "String")
+                enc = enc.replace(/[- ]/g, "").toLowerCase();
+            var codec = iconv.encodings[enc];
+            var type = getType(codec);
+            if (type === "String") {
+                // Link to other encoding.
+                codecOptions = {originalEncoding: enc};
+                enc = codec;
+            }
+            else if (type === "Object" && codec.type != undefined) {
+                // Options for other encoding.
+                codecOptions = codec;
+                enc = codec.type;
+            } 
+            else if (type === "Function")
+                // Codec itself.
+                return codec(codecOptions);
+            else
+                throw new Error("Encoding not recognized: '" + encoding + "' (searched as: '"+enc+"')");
+        }
+    },
+    
+    // Define basic encodings
+    encodings: {
+        internal: function(options) {
+            return {
+                toEncoding: function(str) {
+                    return new Buffer(ensureString(str), options.originalEncoding);
+                },
+                fromEncoding: function(buf) {
+                    return ensureBuffer(buf).toString(options.originalEncoding);
+                }
+            };
+        },
+        utf8: "internal",
+        ucs2: "internal",
+        binary: "internal",
+        ascii: "internal",
+        base64: "internal",
+        latin1: {
+            type: "internal",
+            originalEncoding: "binary"
+        },
+        
+        // Codepage single-byte encodings.
+        singlebyte: function(options) {
+            // Prepare chars if needed
+            if (!options.chars || (options.chars.length !== 128 && options.chars.length !== 256))
+                throw new Error("Encoding '"+options.type+"' has incorrect 'chars' (must be of len 128 or 256)");
+            
+            if (options.chars.length === 128)
+                options.chars = asciiString + options.chars;
+            
+            if (!options.charsBuf) {
+                options.charsBuf = new Buffer(256*2);
+                for (var i = 0; i < options.chars.length; i++) {
+                    var code = options.chars.charCodeAt(i);
+                    options.charsBuf[i*2+0] = code & 0xFF;
+                    options.charsBuf[i*2+1] = code >>> 8;
+                }
+            }
+            
+            if (!options.revCharsBuf) {
+                options.revCharsBuf = new Buffer(65536);
+                var defChar = iconv.defaultCharSingleByte.charCodeAt(0);
+                for (var i = 0; i < options.revCharsBuf.length; i++)
+                    options.revCharsBuf[i] = defChar;
+                for (var i = 0; i < options.chars.length; i++)
+                    options.revCharsBuf[options.chars.charCodeAt(i)] = i;
+            }
+            
+            return {
+                toEncoding: function(str) {
+                    str = ensureString(str);
+                    
+                    var buf = new Buffer(str.length);
+                    var revCharsBuf = options.revCharsBuf;
+                    for (var i = 0; i < str.length; i++)
+                        buf[i] = revCharsBuf[str.charCodeAt(i)];
+                    
+                    return buf;
+                },
+                fromEncoding: function(buf) {
+                    buf = ensureBuffer(buf);
+                    
+                    // As string are immutable in JS, we use ucs2 buffer to speed up computations.
+                    var charsBuf = options.charsBuf;
+                    var newBuf = new Buffer(buf.length*2);
+                    var idx1 = 0, idx2 = 0;
+                    for (var i = 0, _len = buf.length; i < _len; i++) {
+                        idx1 = buf[i]*2; idx2 = i*2;
+                        newBuf[idx2] = charsBuf[idx1];
+                        newBuf[idx2+1] = charsBuf[idx1+1];
+                    }
+                    return newBuf.toString('ucs2');
+                }
+            };
+        },
+
+        // Codepage double-byte encodings.
+        table: function(options) {
+            var table = options.table, key, revCharsTable = options.revCharsTable;
+            if (!table) {
+                throw new Error("Encoding '" + options.type +"' has incorect 'table' option");
+            }
+            if(!revCharsTable) {
+                revCharsTable = options.revCharsTable = {};
+                for (key in table) {
+                    revCharsTable[table[key]] = parseInt(key);
+                }
+            }
+            
+            return {
+                toEncoding: function(str) {
+                    str = ensureString(str);
+                    var len = 0, strLen = str.length;
+                    for (var i = 0; i < strLen; i++) {
+                        if (!!(str.charCodeAt(i) >> 8)) {
+                            len += 2;
+                        } else {
+                            len ++;
+                        }
+                    }
+                    var newBuf = new Buffer(len);
+                    for (var i = 0, j = 0; i < strLen; i++) {
+                        var unicode = str.charCodeAt(i);
+                        if (!!(unicode >> 7)) {
+                            var gbkcode = revCharsTable[unicode] || revCharsTable[iconv.defaultCharUnicode.charCodeAt(0)];//not found in table ,replace it
+                            newBuf[j++] = gbkcode >> 8;//high byte;
+                            newBuf[j++] = gbkcode & 0xFF;//low byte
+                        } else {//ascii
+                            newBuf[j++] = unicode;
+                        }
+                    }
+                    return newBuf;
+                },
+                fromEncoding: function(buf) {
+                    buf = ensureBuffer(buf);
+                    var idx = 0, len = 0,
+                        newBuf = new Buffer(len*2),unicode,gbkcode;
+                    for (var i = 0, _len = buf.length; i < _len; i++, len++) {
+                        if (!!(buf[i] & 0x80)) {//the high bit is 1, so this byte is gbkcode's high byte.skip next byte
+                            i++;
+                        }
+                    }
+                    var newBuf = new Buffer(len*2);
+                    for (var i = 0, j = 0, _len = buf.length; i < _len; i++, j++) {
+                        var temp = buf[i], gbkcode, unicode;
+                        if (temp & 0x80) {
+                            gbkcode = (temp << 8) + buf[++i];
+                            unicode = table[gbkcode] || iconv.defaultCharUnicode.charCodeAt(0);//not found in table, replace with defaultCharUnicode
+                        }else {
+                            unicode = temp;
+                        }
+                        newBuf[j*2] = unicode & 0xFF;//low byte
+                        newBuf[j*2+1] = unicode >> 8;//high byte
+                    }
+                    return newBuf.toString('ucs2');
+                }
+            }
+        }
+    }
+};
+
+// Add aliases to convert functions
+iconv.encode = iconv.toEncoding;
+iconv.decode = iconv.fromEncoding;
+
+// Load other encodings from files in /encodings dir.
+var encodingsDir = __dirname+"/encodings/",
+    fs = require('fs');
+fs.readdirSync(encodingsDir).forEach(function(file) {
+    if(fs.statSync(encodingsDir + file).isDirectory()) return;
+    var encodings = require(encodingsDir + file)
+    for (var key in encodings)
+        iconv.encodings[key] = encodings[key]
+});
+
+// Utilities
+var asciiString = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f'+
+              ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f';
+
+var ensureBuffer = function(buf) {
+    buf = buf || new Buffer(0);
+    return (buf instanceof Buffer) ? buf : new Buffer(buf.toString(), "utf8");
+}
+
+var ensureString = function(str) {
+    str = str || "";
+    return (str instanceof String) ? str : str.toString((str instanceof Buffer) ? 'utf8' : undefined);
+}
+
+var getType = function(obj) {
+    return Object.prototype.toString.call(obj).slice(8, -1);
+}
+
+
 });
 
 require.define("/spire/api/response_error.js", function (require, module, exports, __dirname, __filename) {
@@ -5865,6 +6123,7 @@ Resource.defineRequest(Channel.prototype, 'create_subscription', function (name)
     content: {name: name}
   };
 });
+
 });
 
 require.define("/spire/api/message.js", function (require, module, exports, __dirname, __filename) {
@@ -5941,24 +6200,36 @@ var Resource = require('./resource')
  * <code>subscription.longPoll</code> has a 30 second timeout, so the request
  * will wait up to 30 seconds for new events to arrive before returning.
  *
- * <p>You can also use the <code>message</code> and <code>messages</code> events to
- * listen for new messages on the subscription.
+ * <p>You can also use the <code>event</code> <code>message</code> <code>join</code> and <code>part</code> events to
+ * listen for new events on the subscription.
  *
  * <p><pre><code>
  *    subscription.addListener('message', function (message) {
  *      console.log('Message received: ' + message.content);
  *    });
  *
- *    subscription.addListener('messages', function (messages) {
- *      console.log('Received ' + messages.length + ' messages.');
+ *    subscription.addListener('join', function (join) {
+ *      console.log('Subscription joined: ' + join.subscription_name);
+ *    });
+ *
+ *    subscription.addListener('part', function (part) {
+ *      console.log('Subscription parted: ' + part.subscription_name);
+ *    });
+ *
+ *    subscription.addListener('event', function (event) {
+ *      // This fires for messages, joins, and parts.
+ *      console.log('Received event!');
  *    });
  *
  *    subscription.startListening();
  * </code></pre>
- * </p>
  *
- * <p>The `messages` event fires first and contains the all the messages that were
- * received in a single request.  The `message` event fires once per message.
+ * <p>By default this will get all events from the beginning of time.
+ * If you only want messages created from this point forward, pass { last: 'now' } in the options to `startListening`:
+ *
+ * <p><pre><code>
+ *    subscription.startListening({ last: 'now' });
+ * </code></pre>
  *
  * @class Subscription Resource
  *
@@ -6002,10 +6273,6 @@ Subscription.prototype.name = function () {
  *   console.log('Message received: ' + message.content);
  * });
  *
- * subscription.addListener('messages', function (messages) {
- *   console.log('Received ' + messages.length + ' messages.');
- * });
- *
  * subscription.startListening();
  *
  * // Stop Listening after 100 seconds.
@@ -6013,6 +6280,12 @@ Subscription.prototype.name = function () {
  *   subscription.stopListening();
  *  }, 100000);
  *
+ * <p>By default this will get all events from the beginning of time.
+ * If you only want messages created from this point forward, pass { last: 'now' } in the options to `startListening`:
+ *
+ * <p><pre><code>
+ *    subscription.startListening({ last: 'now' });
+ * </code></pre>
  * @param {object} [options] Optional options argument
  * @param {number} [options.last] Optional last message
  * @param {number} [options.delay] Optional delay
@@ -6200,10 +6473,17 @@ Subscription.prototype.longPoll = function (options, cb) {
 Subscription.prototype._listen = function (opts) {
   var subscription = this;
   opts = opts || {};
+
+  if (typeof opts.last !== 'undefined') {
+    this.last = opts.last;
+    delete opts.last;
+  }
+
   async.whilst(
     function () { return subscription.listening; },
     function (cb) {
-      subscription.longPoll(opts, cb);
+      optsClone = _.clone(opts);
+      subscription.longPoll(optsClone, cb);
     },
     function () {}
   );
@@ -7532,11 +7812,67 @@ var xhrHttp = (function () {
     }
 })();
 
+http.STATUS_CODES = {
+    100 : 'Continue',
+    101 : 'Switching Protocols',
+    102 : 'Processing', // RFC 2518, obsoleted by RFC 4918
+    200 : 'OK',
+    201 : 'Created',
+    202 : 'Accepted',
+    203 : 'Non-Authoritative Information',
+    204 : 'No Content',
+    205 : 'Reset Content',
+    206 : 'Partial Content',
+    207 : 'Multi-Status', // RFC 4918
+    300 : 'Multiple Choices',
+    301 : 'Moved Permanently',
+    302 : 'Moved Temporarily',
+    303 : 'See Other',
+    304 : 'Not Modified',
+    305 : 'Use Proxy',
+    307 : 'Temporary Redirect',
+    400 : 'Bad Request',
+    401 : 'Unauthorized',
+    402 : 'Payment Required',
+    403 : 'Forbidden',
+    404 : 'Not Found',
+    405 : 'Method Not Allowed',
+    406 : 'Not Acceptable',
+    407 : 'Proxy Authentication Required',
+    408 : 'Request Time-out',
+    409 : 'Conflict',
+    410 : 'Gone',
+    411 : 'Length Required',
+    412 : 'Precondition Failed',
+    413 : 'Request Entity Too Large',
+    414 : 'Request-URI Too Large',
+    415 : 'Unsupported Media Type',
+    416 : 'Requested Range Not Satisfiable',
+    417 : 'Expectation Failed',
+    418 : 'I\'m a teapot', // RFC 2324
+    422 : 'Unprocessable Entity', // RFC 4918
+    423 : 'Locked', // RFC 4918
+    424 : 'Failed Dependency', // RFC 4918
+    425 : 'Unordered Collection', // RFC 4918
+    426 : 'Upgrade Required', // RFC 2817
+    500 : 'Internal Server Error',
+    501 : 'Not Implemented',
+    502 : 'Bad Gateway',
+    503 : 'Service Unavailable',
+    504 : 'Gateway Time-out',
+    505 : 'HTTP Version not supported',
+    506 : 'Variant Also Negotiates', // RFC 2295
+    507 : 'Insufficient Storage', // RFC 4918
+    509 : 'Bandwidth Limit Exceeded',
+    510 : 'Not Extended' // RFC 2774
+};
+
 });
 
 require.define("/node_modules/http-browserify/lib/request.js", function (require, module, exports, __dirname, __filename) {
     var EventEmitter = require('events').EventEmitter;
 var Response = require('./response');
+var isSafeHeader = require('./isSafeHeader');
 
 var Request = module.exports = function (xhr, params) {
     var self = this;
@@ -7553,7 +7889,7 @@ var Request = module.exports = function (xhr, params) {
     
     if (params.headers) {
         Object.keys(params.headers).forEach(function (key) {
-            if (!self.isSafeRequestHeader(key)) return;
+            if (!isSafeHeader(key)) return;
             var value = params.headers[key];
             if (Array.isArray(value)) {
                 value.forEach(function (v) {
@@ -7597,40 +7933,11 @@ Request.prototype.end = function (s) {
     this.xhr.send(this.body);
 };
 
-// Taken from http://dxr.mozilla.org/mozilla/mozilla-central/content/base/src/nsXMLHttpRequest.cpp.html
-Request.unsafeHeaders = [
-    "accept-charset",
-    "accept-encoding",
-    "access-control-request-headers",
-    "access-control-request-method",
-    "connection",
-    "content-length",
-    "cookie",
-    "cookie2",
-    "content-transfer-encoding",
-    "date",
-    "expect",
-    "host",
-    "keep-alive",
-    "origin",
-    "referer",
-    "te",
-    "trailer",
-    "transfer-encoding",
-    "upgrade",
-    "user-agent",
-    "via"
-];
-
-Request.prototype.isSafeRequestHeader = function (headerName) {
-    if (!headerName) return false;
-    return (Request.unsafeHeaders.indexOf(headerName.toLowerCase()) === -1)
-};
-
 });
 
 require.define("/node_modules/http-browserify/lib/response.js", function (require, module, exports, __dirname, __filename) {
     var EventEmitter = require('events').EventEmitter;
+var isSafeHeader = require('./isSafeHeader');
 
 var Response = module.exports = function (xhr) {
     this.xhr = xhr;
@@ -7676,12 +7983,16 @@ function parseHeaders (xhr) {
 }
 
 Response.prototype.getHeader = function (key) {
-    var header = this.headers[key.toLowerCase()];
+    var header = this.headers ? this.headers[key.toLowerCase()] : null;
+    if (header) return header;
 
     // Work around Mozilla bug #608735 [https://bugzil.la/608735], which causes
     // getAllResponseHeaders() to return {} if the response is a CORS request.
     // xhr.getHeader still works correctly.
-    return header || this.xhr.getResponseHeader(key);
+    if (isSafeHeader(key)) {
+      return this.xhr.getResponseHeader(key);
+    }
+    return null;
 };
 
 Response.prototype.handle = function () {
@@ -7736,6 +8047,40 @@ Response.prototype.write = function () {
         this.emit('data', xhr.responseText.slice(this.offset));
         this.offset = xhr.responseText.length;
     }
+};
+
+});
+
+require.define("/node_modules/http-browserify/lib/isSafeHeader.js", function (require, module, exports, __dirname, __filename) {
+    // Taken from http://dxr.mozilla.org/mozilla/mozilla-central/content/base/src/nsXMLHttpRequest.cpp.html
+var unsafeHeaders = [
+    "accept-charset",
+    "accept-encoding",
+    "access-control-request-headers",
+    "access-control-request-method",
+    "connection",
+    "content-length",
+    "cookie",
+    "cookie2",
+    "content-transfer-encoding",
+    "date",
+    "expect",
+    "host",
+    "keep-alive",
+    "origin",
+    "referer",
+    "set-cookie",
+    "te",
+    "trailer",
+    "transfer-encoding",
+    "upgrade",
+    "user-agent",
+    "via"
+];
+
+module.exports = function (headerName) {
+    if (!headerName) return false;
+    return (unsafeHeaders.indexOf(headerName.toLowerCase()) === -1)
 };
 
 });

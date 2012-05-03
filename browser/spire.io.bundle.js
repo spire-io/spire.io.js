@@ -7762,14 +7762,30 @@ var Resource = require('./resource');
 function Member(spire, data) {
   this.spire = spire;
   this.data = data;
-  this.login = data.login;
-  this.profile = data.profile;
   this.resourceName = 'member';
 }
 
 Member.prototype = new Resource();
 
 module.exports = Member;
+
+/**
+ * Returns the member login.
+ *
+ * @returns {string} Member login
+ */
+Member.prototype.login = function () {
+  return this.data.login;
+};
+
+/**
+ * Returns the members profile.
+ *
+ * @returns {string} Member profile
+ */
+Member.prototype.profile = function () {
+  return this.data.profile;
+};
 });
 
 require.define("/node_modules/http-browserify/package.json", function (require, module, exports, __dirname, __filename) {

@@ -138,7 +138,7 @@ Authenticate an existing member:
     });
 
 
-For more on applications and the Identity API, see the [identity topic guide][http://www.spire.io/docs/tutorials/simple-chat.html] or the [tuturial for a secure serverless app][http://www.spire.io/docs/tutorials/simple-chat.html].
+For more on applications and the Identity API, see the [identity topic guide](http://www.spire.io/docs/tutorials/simple-chat.html) or the [tuturial for a secure serverless app](http://www.spire.io/docs/tutorials/simple-chat.html).
 
 ## Advanced Usage
 

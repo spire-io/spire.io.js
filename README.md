@@ -26,9 +26,9 @@ Register a new spire account:
       email: 'you@email.com',
       password: your_password,
       password_confirmation: your_password_confirmation
-    }, function (err, session) {
+    }, function (err) {
       if (!err) {
-        // Your account has been registered, and you now have a spire session.  Start creating channels and subscripions.
+        // Your account has been registered, and you now have a spire session at `spire.session`.  Start creating channels and subscripions.
       }
     });
 
@@ -36,7 +36,7 @@ Or start spire with an account secret:
 
     spire.start(your_account_secret, function (err, session) {
       if (!err) {
-        // You now have a Spire session
+        // You now have a Spire session at `spire.session`
       }
     });
 
@@ -84,6 +84,61 @@ Publish to a channel:
         console.log('Message sent!');
       }
     });
+
+## Identity API
+
+You can use the spire.io Identity API for secure serverless apps.
+
+The Identity API lets you create applications:
+
+    // Create a new application.
+    var applicationName = "my-application";
+    spire.session.createApplication(applicationName, function (err, application) {
+      if (!err) {
+        // `application` is your new application
+      }
+    });
+
+
+Once you have created an application, clients can create new members, or authenticate existing members with needing a session or any priveledged information.
+
+Start by getting the application:
+
+    // Get an application from the application key.
+    var myApplicationKey = "application-key";
+    spire.getApplication(myApplicationKey, function (err, application) {
+      if (!err) {
+        // `application` is an application object
+      }
+    });
+
+Create a new member:
+
+    // Create a new member for myApplication.
+    // `myApplication` is an application object.
+    var login = "foo";
+    var password = "bar";
+    myApplication.createMember(login, password, function (err, member) {
+      if (!err) {
+        // `member` is a member object
+      }
+    });
+
+
+Authenticate an existing member:
+
+    // Authenticate a member for myApplication
+    // `myApplication` is an application object.
+    var login = "foo";
+    var password = "bar";
+    myApplication.authenticateMember(login, password, function (err, member) {
+      if (!err) {
+        // `member` is a member object
+      }
+    });
+
+
+For more on applications and the Identity API, see the [identity topic guide][http://www.spire.io/docs/tutorials/simple-chat.html] or the [tuturial for a secure serverless app][http://www.spire.io/docs/tutorials/simple-chat.html].
 
 ## Advanced Usage
 

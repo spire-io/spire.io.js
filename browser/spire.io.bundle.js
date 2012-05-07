@@ -2374,6 +2374,7 @@ Resource.prototype.update = function (data, cb) {
  * @param {function (err, resource)} cb Callback
  */
 Resource.prototype['delete'] = function (cb) {
+  cb = cb || function (err) { if (err) { throw err; } };
   var resource = this;
   this.request('delete', function (err, data) {
     if (err) return cb(err);

@@ -5517,7 +5517,7 @@ require.define("/node_modules/shred/node_modules/iconv-lite/package.json", funct
 
 require.define("/node_modules/shred/node_modules/iconv-lite/index.js", function (require, module, exports, __dirname, __filename) {
     // Module exports
-module.exports = iconv = {
+var iconv = module.exports = {
     toEncoding: function(str, encoding) {
         return iconv.getCodec(encoding).toEncoding(str);
     },
@@ -5572,10 +5572,6 @@ module.exports = iconv = {
         binary: "internal",
         ascii: "internal",
         base64: "internal",
-        latin1: {
-            type: "internal",
-            originalEncoding: "binary"
-        },
         
         // Codepage single-byte encodings.
         singlebyte: function(options) {
@@ -6227,10 +6223,10 @@ var Resource = require('./resource')
  * </code></pre>
  *
  * <p>By default this will get all events from the beginning of time.
- * If you only want messages created from this point forward, pass { last: 'now' } in the options to `startListening`:
+ * If you only want messages created from this point forward, pass { start: 'now' } in the options to `startListening`:
  *
  * <p><pre><code>
- *    subscription.startListening({ last: 'now' });
+ *    subscription.startListening({ start: 'now' });
  * </code></pre>
  *
  * @class Subscription Resource
@@ -6283,16 +6279,17 @@ Subscription.prototype.name = function () {
  *  }, 100000);
  *
  * <p>By default this will get all events from the beginning of time.
- * If you only want messages created from this point forward, pass { last: 'now' } in the options to `startListening`:
+ * If you only want messages created from this point forward, pass { start: 'now' } in the options to `startListening`:
  *
  * <p><pre><code>
- *    subscription.startListening({ last: 'now' });
+ *    subscription.startListening({ start: 'now' });
  * </code></pre>
  * @param {object} [options] Optional options argument
- * @param {number} [options.last] Optional last message
+ * @param {number} [options.start] Optional start timestamp of events to receive
+ * @param {number} [options.stop] Optional stop timestamp of events to receive
+ * @param {number} [options.last] Optional last message (same as start)
  * @param {number} [options.delay] Optional delay
  * @param {number} [options.timeout] Optional timeout
- * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
  * @param {function (err, messages)} cb Callback
  */
 Subscription.prototype.startListening = function (opts) {
@@ -6321,10 +6318,11 @@ Subscription.prototype.stopListening = function () {
  * });
  *
  * @param {object} [options] Optional options argument
- * @param {number} [options.last] Optional last event
+ * @param {number} [options.start] Optional start timestamp of events to receive
+ * @param {number} [options.stop] Optional stop timestamp of events to receive
+ * @param {number} [options.last] Optional last message (same as start)
  * @param {number} [options.delay] Optional delay
  * @param {number} [options.timeout] Optional timeout
- * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
  * @param {function (err, messages)} cb Callback
  */
 Subscription.prototype.retrieveEvents = function (options, cb) {
@@ -6334,8 +6332,6 @@ Subscription.prototype.retrieveEvents = function (options, cb) {
     cb = options;
     options = {};
   }
-
-  options.orderBy = options.orderBy || 'desc';
 
   var req = this.request('events', options, function (err, eventsData) {
     if (err) {
@@ -6410,7 +6406,6 @@ Subscription.prototype.get = Subscription.prototype.retreiveEvents;
  *
  * @param {object} [options] Optional options argument
  * @param {number} [options.delay] Optional delay
- * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
  * @param {function (err, events)} cb Callback
  */
 Subscription.prototype.poll = function (options, cb) {
@@ -6441,7 +6436,6 @@ Subscription.prototype.poll = function (options, cb) {
  *
  * @param {object} [options] Optional options argument
  * @param {number} [options.delay] Optional delay
- * @param {string} [options.orderBy] Optional ordering ('asc' or 'desc')
  * @param {number} [options.timeout] Optional timeout
  * @param {function (err, events)} cb Callback
  */
@@ -6505,15 +6499,25 @@ Subscription.prototype._listen = function (opts) {
  */
 Resource.defineRequest(Subscription.prototype, 'events', function (options) {
   options = options || {};
+
+  reqOpts = {
+      'timeout': options.timeout || 0,
+      'last': options.last || 0,
+      'delay': options.delay || 0,
+  };
+
+  if (options.start) {
+    reqOpts.start = options.start;
+  }
+
+  if (options.stop) {
+    reqOpts.stop = options.stop;
+  }
+
   return {
     method: 'get',
     url: this.url(),
-    query: {
-      'timeout': options.timeout || 0,
-      'last': options.last || 0,
-      'order-by': options.orderBy || 'desc',
-      'delay': options.delay || 0
-    },
+    query: reqOpts,
     headers: {
       'Authorization': this.authorization('events'),
       'Accept': this.mediaType('events')

@@ -77,37 +77,6 @@ describe('Channels', function () {
         this.subscription.stopListening();
       });
     });
-
-    describe('Passing options to spire.subscribe', function () {
-      beforeEach(function () {
-        var finished = false;
-
-        runs(function () {
-          var that = this;
-          that.spire.publish('yet another channel', 'message uno', function () {
-            that.spire.publish('yet another channel', 'message dos', function () {
-              that.spire.subscribe('yet another channel', {orderBy: 'asc'}, function (messages) {
-                that.messages = messages;
-                finished = true;
-              }, function (err, subscription) {
-                that.subscription = subscription;
-              });
-            });
-          });
-        });
-
-        waitsFor(function () {
-          return finished;
-        }, 10000, 'spire.subscribe');
-      });
-
-      it('should return the messages', function () {
-        expect(this.messages.length).toBe(2);
-        expect(this.messages[0].content).toBe('message dos');
-        expect(this.messages[1].content).toBe('message uno');
-        this.subscription.stopListening();
-      });
-    });
   });
 
   describe('Create a channel', function () {

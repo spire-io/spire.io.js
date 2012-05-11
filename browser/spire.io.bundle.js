@@ -6223,10 +6223,10 @@ var Resource = require('./resource')
  * </code></pre>
  *
  * <p>By default this will get all events from the beginning of time.
- * If you only want messages created from this point forward, pass { start: 'now' } in the options to `startListening`:
+ * If you only want messages created from this point forward, pass { min_timestamp: 'now' } in the options to `startListening`:
  *
  * <p><pre><code>
- *    subscription.startListening({ start: 'now' });
+ *    subscription.startListening({ min_timestamp: 'now' });
  * </code></pre>
  *
  * @class Subscription Resource
@@ -6279,15 +6279,15 @@ Subscription.prototype.name = function () {
  *  }, 100000);
  *
  * <p>By default this will get all events from the beginning of time.
- * If you only want messages created from this point forward, pass { start: 'now' } in the options to `startListening`:
+ * If you only want messages created from this point forward, pass { min_timestamp: 'now' } in the options to `startListening`:
  *
  * <p><pre><code>
- *    subscription.startListening({ start: 'now' });
+ *    subscription.startListening({ min_timestamp: 'now' });
  * </code></pre>
  * @param {object} [options] Optional options argument
- * @param {number} [options.start] Optional start timestamp of events to receive
- * @param {number} [options.stop] Optional stop timestamp of events to receive
- * @param {number} [options.last] Optional last message (same as start)
+ * @param {number} [options.min_timestamp] Optional min_timestamp of events to receive
+ * @param {number} [options.max_timestamp] Optional max_timestamp of events to receive
+ * @param {number} [options.last] Optional last message (same as min_timestamp)
  * @param {number} [options.delay] Optional delay
  * @param {number} [options.timeout] Optional timeout
  * @param {function (err, messages)} cb Callback
@@ -6318,9 +6318,9 @@ Subscription.prototype.stopListening = function () {
  * });
  *
  * @param {object} [options] Optional options argument
- * @param {number} [options.start] Optional start timestamp of events to receive
- * @param {number} [options.stop] Optional stop timestamp of events to receive
- * @param {number} [options.last] Optional last message (same as start)
+ * @param {number} [options.min_timestamp] Optional min_timestamp of events to receive
+ * @param {number} [options.max_timestamp] Optional max_timestamp of events to receive
+ * @param {number} [options.last] Optional last message (same as min_timestamp)
  * @param {number} [options.delay] Optional delay
  * @param {number} [options.timeout] Optional timeout
  * @param {function (err, messages)} cb Callback
@@ -6470,12 +6470,12 @@ Subscription.prototype._listen = function (opts) {
   var subscription = this;
   opts = opts || {};
 
-  opts.start = opts.start || opts.last;
+  opts.min_timestamp = opts.min_timestamp || opts.last;
 
-  if (typeof opts.start !== 'undefined') {
-    this.last = opts.start;
+  if (typeof opts.min_timestamp !== 'undefined') {
+    this.last = opts.min_timestamp;
   }
-  delete opts.start;
+  delete opts.min_timestamp;
   delete opts.last;
 
   async.whilst(
@@ -6513,12 +6513,12 @@ Resource.defineRequest(Subscription.prototype, 'events', function (options) {
     reqOpts.last = options.last;
   }
 
-  if (options.start) {
-    reqOpts.start = options.start;
+  if (options.min_timestamp) {
+    reqOpts.min_timestamp = options.min_timestamp;
   }
 
-  if (options.stop) {
-    reqOpts.stop = options.stop;
+  if (options.max_timestamp) {
+    reqOpts.max_timestamp = options.max_timestamp;
   }
 
   return {

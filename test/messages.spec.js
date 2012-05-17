@@ -29,7 +29,7 @@ describe('Messages', function(){
 
       runs(function () {
         var that = this;
-        this.spire.publish('a channel for messages', 'my message', function (err, message) {
+        this.spire.session.publish('a channel for messages', 'my message', function (err, message) {
           that.message = message;
           finished = true;
         });
@@ -122,7 +122,7 @@ describe('Messages', function(){
 
       runs(function () {
         var that = this;
-        this.spire.publish('a channel for more messages', 'my message', function (err, message) {
+        this.spire.session.publish('a channel for more messages', 'my message', function (err, message) {
           that.spire.session.createSubscription({
             name: 'sub ' + Date.now(),
             channelNames: ['a channel for more messages']

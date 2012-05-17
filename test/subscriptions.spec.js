@@ -92,13 +92,16 @@ describe('Subscriptions', function(){
         var algernon = this;
         // Our friend Algernon here doesn't assert anything, I just wanted to
         // make sure this method didn't crash like it used to
-        this.spire.subscription('constantinople', 'istanbul', function (err, subscription) {
+        this.spire.session.createSubscription({
+          name: 'constantinople',
+          channelNames: ['istanbul']
+        }, function (err, subscription) {
           algernon.url = subscription.url();
           var creds = {
             url: subscription.url(),
             capabilities: subscription.data.capabilities
           };
-          algernon.spire.subscriptionFromUrlAndCapabilities(creds, function(err, subscription){
+          algernon.spire.api.subscriptionFromUrlAndCapabilities(creds, function(err, subscription){
             algernon.err = err;
             algernon.subscription = subscription;
             subscription.retrieveEvents({ timeout: 0 }, function (err, events) {

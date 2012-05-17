@@ -359,8 +359,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
  * </ul>
  */
 
-var async = require('async')
-  , API = require('./spire/api')
+var API = require('./spire/api')
   , Shred = require('shred')
   ;
 
@@ -394,7 +393,6 @@ function Spire(opts) {
   opts = opts || {};
   this.api = new API(this, opts);
   this.session = null;
-  this._opts_secret = opts.secret;
   this.shred = new Shred({
     logCurl: opts.logCurl
   });
@@ -403,39 +401,26 @@ function Spire(opts) {
 module.exports = Spire;
 
 /**
- * Get the account secret.
- *
- * @returns {string} Account secret
- */
-Spire.prototype.secret = function () {
-  this._ensureSession();
-  if (this.session && this.session.resources && this.session.resources.account) {
-    return this.session.resources.account.secret();
-  }
-  return null;
-};
-
-/**
  * Start the Spire session with the given account secret.
  *
  * @example
  * var spire = new Spire();
  * spire.start(your_api_secret, function (err, session) {
  *   if (!err) {
- *     // You now have a spire session.
+ *     // `session` is a spire session.
  *     // Start creating channels and subscripions.
  *   }
  * });
  *
  * @param {string} secret The acccount secret
- * @param {function(err)} cb Callback
+ * @param {function(err, session)} cb Callback
  */
 Spire.prototype.start = function (secret, cb) {
   var spire = this;
   this.api.createSession(secret, function (err, session) {
     if (err) return cb(err);
     spire.session = session;
-    cb(null);
+    cb(null, session);
   });
 };
 
@@ -444,23 +429,23 @@ Spire.prototype.start = function (secret, cb) {
  *
  * @example
  * var spire = new Spire();
- * spire.login(your_email, your_password, function (err) {
+ * spire.login(your_email, your_password, function (err, session) {
  *   if (!err) {
- *     // You now have a spire session.
+ *     // `session` is a spire session.
  *     // Start creating channels and subscripions.
  *   }
  * });
  *
  * @param {string} email Email
  * @param {string} password Password
- * @param {function(err)} cb Callback
+ * @param {function(err, session)} cb Callback
  */
 Spire.prototype.login = function (email, password, cb) {
   var spire = this;
   this.api.login(email, password, function (err, session) {
     if (err) return cb(err);
     spire.session = session;
-    cb(null);
+    cb(null, session);
   });
 };
 
@@ -497,8 +482,8 @@ Spire.prototype.getApplication = function (application_key, cb) {
  *   password_confirmation: your_password_confirmation
  * }, function (err) {
  *   if (!err) {
- *     // Your account has been registered,
- *     // and you now have a spire session.
+ *     // Your account has been registered.
+ *     // `session` is a spire session.
  *     // Start creating channels and subscripions.
  *   }
  * });
@@ -507,41 +492,14 @@ Spire.prototype.getApplication = function (application_key, cb) {
  * @param {string} user.email Email
  * @param {string} user.password Password
  * @param {string} [user.password_confirmation] Optional password confirmation
- * @param {function (err)} cb Callback
+ * @param {function (err, session)} cb Callback
  */
 Spire.prototype.register = function (user, cb) {
   var spire = this;
   this.api.createAccount(user, function (err, session) {
     if (err) return cb(err);
     spire.session = session;
-    cb(null);
-  });
-};
-
-/**
- * Updates your account info.
- *
- * @example
- * var spire = new Spire();
- * spire.update({
- *   email: your_new_email
- * }, function (err, account) {
- *   if (!err) {
- *     // Your account has been updated.
- *   }
- * });
- *
- * @param {object} user User info
- * @param {string} user.email Email
- * @param {string} user.password Password
- * @param {string} [user.password_confirmation] Optional password confirmation
- * @param {function (err)} cb Callback
- */
-Spire.prototype.update = function (user, cb) {
-  var spire = this;
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    spire.session.resources.account.update(user, cb);
+    cb(null, session);
   });
 };
 
@@ -564,1185 +522,9 @@ Spire.prototype.passwordResetRequest = function (email, cb) {
 };
 
 /**
- * Gets a channel (creates if necessary).
- *
- * @example
- * var spire = new Spire();
- * spire.start(your_api_secret, function (err, session) {
- *   spire.channel('foo', function (err, channel) {
- *     if (!err) {
- *       // `channel` is the channel named "foo".
- *     }
- *   });
- * });
- *
- * @param {string} name Channel name to get or create
- * @param {function(err, channel)} cb Callback
- */
-Spire.prototype.channel = function (name, cb) {
-  var spire = this;
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-
-    if (spire.session._channels[name]) {
-      return cb(null, spire.session._channels[name]);
-    }
-    spire._findOrCreateChannel(name, cb);
-  });
-};
-
-/**
- * Gets a list of all channels.  Will return cached data if it is available,
- * otherwise will make a request.
- *
- * @example
- * var spire = new Spire();
- * spire.start(your_api_secret, function (err, session) {
- *   spire.channels(function (err, channels) {
- *     if (!err) {
- *       // `channels` is a hash of all the account's channels
- *     }
- *   });
- * });
- *
- * @param {function (err, channels)} cb Callback
- */
-Spire.prototype.channels = function (cb) {
-  var spire = this;
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    spire.session.channels(cb);
-  });
-};
-
-/**
- * Gets a list of all channels.  Ignores any cached data, and forces the
- * request.
- *
- * @example
- * var spire = new Spire();
- * spire.start(your_api_secret, function (err, session) {
- *   spire.channels$(function (err, channels) {
- *     if (!err) {
- *       // `channels` is a hash of all the account's channels
- *     }
- *   });
- * });
- *
- * @param {function (err, channels)} cb Callback
- */
-Spire.prototype.channels$ = function (cb) {
-  var spire = this;
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    spire.session.channels$(cb);
-  });
-};
-
-/**
- * Gets a subscription to the given channels.  Creates the channels and the
- * subscription if necessary.
- *
- * @example
- * var spire = new Spire();
- * spire.start(your_api_secret, function (err, session) {
- *   spire.subscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
- *     if (!err) {
- *       // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
- *     }
- *   });
- * });
- *
- * @param {string} Subscription name
- * @param {array or string} channelOrChannels Either a single channel name, or an array of
- *   channel names to subscribe to
- * @param {function (err, subscription)} cb Callback
- */
-Spire.prototype.subscription = function (name, channelOrChannels, cb) {
-  var channelNames = (typeof channelOrChannels === 'string') ?
-    [channelOrChannels] : channelOrChannels;
-
-  var spire = this;
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    async.forEach(
-      channelNames,
-      function (channelName, innerCB) {
-        spire._findOrCreateChannel(channelName, innerCB);
-      },
-      function (err) {
-        if (err) return cb(err);
-        spire._findOrCreateSubscription(name, channelNames, cb);
-      }
-    );
-  });
-};
-
-/**
- * Get the subscriptions for an account.  Will return cached data if it is
- * available, otherwise makes a request.
- *
- * @example
- * var spire = new Spire();
- * spire.start(your_api_secret, function (err, session) {
- *   spire.subscriptions(function (err, subscriptions) {
- *     if (!err) {
- *       // `subscriptions` is a hash of all the account's subscriptions
- *     }
- *   });
- * });
- *
- * @param {function (err, subscriptions)} cb Callback
- */
-Spire.prototype.subscriptions = function (cb) {
-  var spire = this;
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    spire.session.subscriptions(cb);
-  });
-};
-
-/**
- * Get the subscriptions for an account.  Ignores any cached data and always
- * makes a request.
- *
- * @example
- * var spire = new Spire();
- * spire.start(your_api_secret, function (err, session) {
- *   spire.subscriptions$(function (err, subscriptions) {
- *     if (!err) {
- *       // `subscriptions` is a hash of all the account's subscriptions
- *     }
- *   });
- * });
- *
- * @param {function (err, subscriptions)} cb Callback
- */
-Spire.prototype.subscriptions$ = function (cb) {
-  var spire = this;
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    spire.session.subscriptions$(cb);
-  });
-};
-
-/**
- * Creates an new subscription to a channel or channels, and adds a listener.
- *
- * @example
- * var spire = new Spire();
- * spire.start(your_api_secret, function (err, session) {
- *   spire.subscribe('myChannel', options, function (messages) {
- *     // `messages` is array of messages sent to the channel
- *   }, function (err) {
- *   // `err` will be non-null if there was a problem creating the subscription.
- * });
- *
- * By default this will get all events from the beginning of time.
- * If you only want messages created from this point forward, pass { last: 'now' } in the options:
- *
- * @example
- * var spire = new Spire();
- * spire.start(your_api_secret, { last: 'now' }, function (err, session) {
- *   spire.subscribe('myChannel', options, function (messages) {
- *     // `messages` is array of messages sent to the channel
- *   }, function (err) {
- *   // `err` will be non-null if there was a problem creating the subscription.
- * });
- *
- * @param {array or string} channelOrChannels Either a single channel name, or an array of
- *   channel names to subscribe to
- * @param {object} [options] Options to pass to the listener
- * @param {function (messages)} listener Listener that will get called with each batch of messages
- * @param {function (err, subscription)} [cb] Callback
- */
-Spire.prototype.subscribe = function (channelOrChannels, options, listener, cb) {
-  var spire = this;
-  if (typeof options === 'function') {
-    cb = listener;
-    listener = options;
-    options = {}
-  }
-
-
-  cb = cb || function () {};
-
-  var name = 'anon-' + Date.now() + '-' + Math.random();
-
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    spire.subscription(name, channelOrChannels, function (err, subscription) {
-      if (err) return cb(err);
-      subscription.addListener('messages', listener);
-      subscription.startListening(options);
-      process.nextTick(function () {
-        cb(null, subscription);
-      });
-    });
-  });
-};
-
-/**
- * Publish to a channel.
- *
- * Creates the channel if necessary.
- *
- * @example
- * var spire = new Spire();
- * spire.publish('my_channel', 'my message', function (err, message) {
- *   if (!err) {
- *     //  Message sent successfully
- *   }
- * });
- *
- * @param {string} channelName Channel name
- * @param {object, string} message Message
- * @param {function (err, message)} cb Callback
- */
-Spire.prototype.publish = function (channelName, message, cb) {
-  var spire = this;
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    spire.channel(channelName, function (err, channel) {
-      if (err) { return cb(err); }
-      channel.publish(message, cb);
-    });
-  });
-};
-
-/**
- * Get Account from url and capability.
- *
- * Use this method to get the account without starting a spire session.
- *
- * If you have a spire session, you should use <code>spire.session.account</code>.
- *
- * @example
- * var spire = new Spire();
- * spire.accountFromUrlAndCapabilities({
- *   url: account_url,
- *   capabilities: account_capabilities
- * }, function (err, account) {
- *   if (!err) {
- *     // ...
- *   }
- * })
- *
- * @param {object} creds Url and Capability
- * @param {string} creds.url Url
- * @param {string} creds.capability Capability
- * @param {function (err, account)} cb Callback
- */
-Spire.prototype.accountFromUrlAndCapabilities = function (creds, cb) {
-  this.api.accountFromUrlAndCapabilities(creds, cb);
-};
-
-/**
- * Get Channel from url and capability.
- *
- * Use this method to get a channel without starting a spire session.
- *
- * If you have a spire session, you should use <code>spire.channel</code>.
- *
- * @example
- * var spire = new Spire();
- * spire.channelFromUrlAndCapabilities({
- *   url: channel_url,
- *   capabilities: channel_capabilities
- * }, function (err, channel) {
- *   if (!err) {
- *     // ...
- *   }
- * })
- *
- * @param {object} creds Url and Capabilities
- * @param {string} creds.url Url
- * @param {string} creds.capabilities Capabilities
- * @param {function (err, channel)} cb Callback
- */
-Spire.prototype.channelFromUrlAndCapabilities = function (creds, cb) {
-  this.api.channelFromUrlAndCapabilities(creds, cb);
-};
-
-/**
- * Get Subscription from url and capabilities.
- * Use this method to get a subscription without starting a spire session.
- *
- * If you have a spire session, you should use <code>spire.subscription</code>.
- *
- * @example
- * var spire = new Spire();
- * spire.subscriptionFromUrlAndCapabilities({
- *   url: subscription_url,
- *   capabilities: subscription_capabilities
- * }, function (err, subscription) {
- *   if (!err) {
- *     // ...
- *   }
- * })
- *
- * @param {object} creds Url and Capabilities
- * @param {string} creds.url Url
- * @param {string} creds.capabilities Capabilities
- * @param {function (err, subscription)} cb Callback
- */
-Spire.prototype.subscriptionFromUrlAndCapabilities = function (creds, cb) {
-  this.api.subscriptionFromUrlAndCapabilities(creds, cb);
-};
-
-/**
- * Start the Spire session with the url and capabilities for the session.
- *
- * @example
- * var spire = new Spire();
- * var creds = {
- *   url: session_url,
- *   capabilities: session_capabilities
- * };
- * spire._startSessionFromUrlAndCapabilities(creds, function (err) {
- *   if (!err) {
- *     // You now have a spire session.
- *     // Start creating channels and subscripions.
- *   }
- * });
- *
- * @param {object} creds Url and Capabilities
- * @param {string} creds.url Url
- * @param {string} creds.capabilities Capabilities
- * @param {function (err)} cb Callback
- */
-Spire.prototype._startSessionFromUrlAndCapabilities = function (creds, cb) {
-  var spire = this;
-  this.api.sessionFromUrlAndCapabilities(creds, function (err, session) {
-    if (err) return cb(err);
-    spire.session = session;
-    cb(null);
-  });
-};
-
-/**
  * Number of times to retry creating a channel or subscription before giving up.
  */
 Spire.prototype.CREATION_RETRY_LIMIT = 5;
-
-/**
- * Returns the channel with name 'name', creating it if necessary.
- * You should use `Spire.prototype.channel` method instead of this one.  This
- * method ignores cached channels.
- *
- * @param {string} name Channel name
- * @param {function (err, channel)} cb Callback
- */
-Spire.prototype._findOrCreateChannel = function (name, cb) {
-  var spire = this;
-  var creationCount = 0;
-
-  function createChannel() {
-    creationCount++;
-    spire.session.createChannel(name, function (err, channel) {
-      if (!err) return cb(null, channel);
-      if (err.status !== 409) return cb(err);
-      if (creationCount >= spire.CREATION_RETRY_LIMIT) {
-        return cb(new Error("Could not create channel: " + name));
-      }
-      getChannel();
-    });
-  }
-
-  function getChannel() {
-    spire.session.channelByName(name, function (err, channel) {
-      if (err && err.status !== 404) return cb(err);
-      if (channel) return cb(null, channel);
-      createChannel();
-    });
-  }
-
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    getChannel();
-  });
-};
-
-/**
- * Returns the subvscription with name 'name', creating it if necessary.
- * You should use `Spire.prototype.subscribe` method instead of this one.  This
- * method ignores cached subscriptions, and does not create the channels.
- *
- * @param {string} name Subscription name
- * @param {string} channelNames Channel names
- * @param {function (err, subscription)} cb Callback
- */
-Spire.prototype._findOrCreateSubscription = function (name, channelNames, cb) {
-  var spire = this;
-  var creationCount = 0;
-
-  function createSubscription() {
-    creationCount++;
-    spire.session.createSubscription({
-      name: name,
-      channelNames: channelNames
-    }, function (err, sub) {
-      if (!err) return cb(null, sub);
-      if (err.status !== 409) return cb(err);
-      if (creationCount >= spire.CREATION_RETRY_LIMIT) {
-        return cb(new Error("Could not create subscription: " + name));
-      }
-      getSubscription();
-    });
-  }
-
-  function getSubscription() {
-    spire.session.subscriptionByName(name, function (err, subscription) {
-      if (err && err.status !== 404) return cb(err);
-      if (subscription) return cb(null, subscription);
-      createSubscription();
-    });
-  }
-
-  this._ensureSession(function (err) {
-    if (err) return cb(err);
-    createSubscription();
-  });
-};
-
-function NoSessionError(message) {
-  this.name = "No Session Error";
-  this.message = message ||
-    "You need a Spire session to do that.\n" +
-    "Call one of:\n" +
-    "spire.start(callback)\n" +
-    "spire.login(email, password, callback)\n" +
-    "spire.register(user, callback)\n";
-}
-
-NoSessionError.prototype = new Error();
-NoSessionError.constructor = NoSessionError;
-
-Spire.prototype._ensureSession = function (cb) {
-  if (this.session) {
-    if (cb) return cb(null);
-    return;
-  }
-
-  if (!this._opts_secret) {
-    var noSessionError = new NoSessionError();
-    if (cb) return cb(noSessionError);
-    throw noSessionError;
-  }
-
-  if (!cb) {
-    throw new NoSessionError();
-  }
-
-  this.start(this._opts_secret, cb);
-};
-
-
-
-});
-
-require.define("/node_modules/async/package.json", function (require, module, exports, __dirname, __filename) {
-    module.exports = {"main":"./index"}
-});
-
-require.define("/node_modules/async/index.js", function (require, module, exports, __dirname, __filename) {
-    // This file is just added for convenience so this repository can be
-// directly checked out into a project's deps folder
-module.exports = require('./lib/async');
-
-});
-
-require.define("/node_modules/async/lib/async.js", function (require, module, exports, __dirname, __filename) {
-    /*global setTimeout: false, console: false */
-(function () {
-
-    var async = {};
-
-    // global on the server, window in the browser
-    var root = this,
-        previous_async = root.async;
-
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = async;
-    }
-    else {
-        root.async = async;
-    }
-
-    async.noConflict = function () {
-        root.async = previous_async;
-        return async;
-    };
-
-    //// cross-browser compatiblity functions ////
-
-    var _forEach = function (arr, iterator) {
-        if (arr.forEach) {
-            return arr.forEach(iterator);
-        }
-        for (var i = 0; i < arr.length; i += 1) {
-            iterator(arr[i], i, arr);
-        }
-    };
-
-    var _map = function (arr, iterator) {
-        if (arr.map) {
-            return arr.map(iterator);
-        }
-        var results = [];
-        _forEach(arr, function (x, i, a) {
-            results.push(iterator(x, i, a));
-        });
-        return results;
-    };
-
-    var _reduce = function (arr, iterator, memo) {
-        if (arr.reduce) {
-            return arr.reduce(iterator, memo);
-        }
-        _forEach(arr, function (x, i, a) {
-            memo = iterator(memo, x, i, a);
-        });
-        return memo;
-    };
-
-    var _keys = function (obj) {
-        if (Object.keys) {
-            return Object.keys(obj);
-        }
-        var keys = [];
-        for (var k in obj) {
-            if (obj.hasOwnProperty(k)) {
-                keys.push(k);
-            }
-        }
-        return keys;
-    };
-
-    var _indexOf = function (arr, item) {
-        if (arr.indexOf) {
-            return arr.indexOf(item);
-        }
-        for (var i = 0; i < arr.length; i += 1) {
-            if (arr[i] === item) {
-                return i;
-            }
-        }
-        return -1;
-    };
-
-    //// exported async module functions ////
-
-    //// nextTick implementation with browser-compatible fallback ////
-    if (typeof process === 'undefined' || !(process.nextTick)) {
-        async.nextTick = function (fn) {
-            setTimeout(fn, 0);
-        };
-    }
-    else {
-        async.nextTick = process.nextTick;
-    }
-
-    async.forEach = function (arr, iterator, callback) {
-        if (!arr.length) {
-            return callback();
-        }
-        var completed = 0;
-        _forEach(arr, function (x) {
-            iterator(x, function (err) {
-                if (err) {
-                    callback(err);
-                    callback = function () {};
-                }
-                else {
-                    completed += 1;
-                    if (completed === arr.length) {
-                        callback();
-                    }
-                }
-            });
-        });
-    };
-
-    async.forEachSeries = function (arr, iterator, callback) {
-        if (!arr.length) {
-            return callback();
-        }
-        var completed = 0;
-        var iterate = function () {
-            iterator(arr[completed], function (err) {
-                if (err) {
-                    callback(err);
-                    callback = function () {};
-                }
-                else {
-                    completed += 1;
-                    if (completed === arr.length) {
-                        callback();
-                    }
-                    else {
-                        iterate();
-                    }
-                }
-            });
-        };
-        iterate();
-    };
-    
-    async.forEachLimit = function (arr, limit, iterator, callback) {
-        if (!arr.length || limit <= 0) {
-            return callback(); 
-        }
-        var completed = 0;
-        var started = 0;
-        var running = 0;
-        
-        (function replenish () {
-          if (completed === arr.length) {
-              return callback();
-          }
-          
-          while (running < limit && started < arr.length) {
-            iterator(arr[started], function (err) {
-              if (err) {
-                  callback(err);
-                  callback = function () {};
-              }
-              else {
-                  completed += 1;
-                  running -= 1;
-                  if (completed === arr.length) {
-                      callback();
-                  }
-                  else {
-                      replenish();
-                  }
-              }
-            });
-            started += 1;
-            running += 1;
-          }
-        })();
-    };
-
-
-    var doParallel = function (fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [async.forEach].concat(args));
-        };
-    };
-    var doSeries = function (fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [async.forEachSeries].concat(args));
-        };
-    };
-
-
-    var _asyncMap = function (eachfn, arr, iterator, callback) {
-        var results = [];
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (err, v) {
-                results[x.index] = v;
-                callback(err);
-            });
-        }, function (err) {
-            callback(err, results);
-        });
-    };
-    async.map = doParallel(_asyncMap);
-    async.mapSeries = doSeries(_asyncMap);
-
-
-    // reduce only has a series version, as doing reduce in parallel won't
-    // work in many situations.
-    async.reduce = function (arr, memo, iterator, callback) {
-        async.forEachSeries(arr, function (x, callback) {
-            iterator(memo, x, function (err, v) {
-                memo = v;
-                callback(err);
-            });
-        }, function (err) {
-            callback(err, memo);
-        });
-    };
-    // inject alias
-    async.inject = async.reduce;
-    // foldl alias
-    async.foldl = async.reduce;
-
-    async.reduceRight = function (arr, memo, iterator, callback) {
-        var reversed = _map(arr, function (x) {
-            return x;
-        }).reverse();
-        async.reduce(reversed, memo, iterator, callback);
-    };
-    // foldr alias
-    async.foldr = async.reduceRight;
-
-    var _filter = function (eachfn, arr, iterator, callback) {
-        var results = [];
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (v) {
-                if (v) {
-                    results.push(x);
-                }
-                callback();
-            });
-        }, function (err) {
-            callback(_map(results.sort(function (a, b) {
-                return a.index - b.index;
-            }), function (x) {
-                return x.value;
-            }));
-        });
-    };
-    async.filter = doParallel(_filter);
-    async.filterSeries = doSeries(_filter);
-    // select alias
-    async.select = async.filter;
-    async.selectSeries = async.filterSeries;
-
-    var _reject = function (eachfn, arr, iterator, callback) {
-        var results = [];
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (v) {
-                if (!v) {
-                    results.push(x);
-                }
-                callback();
-            });
-        }, function (err) {
-            callback(_map(results.sort(function (a, b) {
-                return a.index - b.index;
-            }), function (x) {
-                return x.value;
-            }));
-        });
-    };
-    async.reject = doParallel(_reject);
-    async.rejectSeries = doSeries(_reject);
-
-    var _detect = function (eachfn, arr, iterator, main_callback) {
-        eachfn(arr, function (x, callback) {
-            iterator(x, function (result) {
-                if (result) {
-                    main_callback(x);
-                    main_callback = function () {};
-                }
-                else {
-                    callback();
-                }
-            });
-        }, function (err) {
-            main_callback();
-        });
-    };
-    async.detect = doParallel(_detect);
-    async.detectSeries = doSeries(_detect);
-
-    async.some = function (arr, iterator, main_callback) {
-        async.forEach(arr, function (x, callback) {
-            iterator(x, function (v) {
-                if (v) {
-                    main_callback(true);
-                    main_callback = function () {};
-                }
-                callback();
-            });
-        }, function (err) {
-            main_callback(false);
-        });
-    };
-    // any alias
-    async.any = async.some;
-
-    async.every = function (arr, iterator, main_callback) {
-        async.forEach(arr, function (x, callback) {
-            iterator(x, function (v) {
-                if (!v) {
-                    main_callback(false);
-                    main_callback = function () {};
-                }
-                callback();
-            });
-        }, function (err) {
-            main_callback(true);
-        });
-    };
-    // all alias
-    async.all = async.every;
-
-    async.sortBy = function (arr, iterator, callback) {
-        async.map(arr, function (x, callback) {
-            iterator(x, function (err, criteria) {
-                if (err) {
-                    callback(err);
-                }
-                else {
-                    callback(null, {value: x, criteria: criteria});
-                }
-            });
-        }, function (err, results) {
-            if (err) {
-                return callback(err);
-            }
-            else {
-                var fn = function (left, right) {
-                    var a = left.criteria, b = right.criteria;
-                    return a < b ? -1 : a > b ? 1 : 0;
-                };
-                callback(null, _map(results.sort(fn), function (x) {
-                    return x.value;
-                }));
-            }
-        });
-    };
-
-    async.auto = function (tasks, callback) {
-        callback = callback || function () {};
-        var keys = _keys(tasks);
-        if (!keys.length) {
-            return callback(null);
-        }
-
-        var results = {};
-
-        var listeners = [];
-        var addListener = function (fn) {
-            listeners.unshift(fn);
-        };
-        var removeListener = function (fn) {
-            for (var i = 0; i < listeners.length; i += 1) {
-                if (listeners[i] === fn) {
-                    listeners.splice(i, 1);
-                    return;
-                }
-            }
-        };
-        var taskComplete = function () {
-            _forEach(listeners, function (fn) {
-                fn();
-            });
-        };
-
-        addListener(function () {
-            if (_keys(results).length === keys.length) {
-                callback(null, results);
-            }
-        });
-
-        _forEach(keys, function (k) {
-            var task = (tasks[k] instanceof Function) ? [tasks[k]]: tasks[k];
-            var taskCallback = function (err) {
-                if (err) {
-                    callback(err);
-                    // stop subsequent errors hitting callback multiple times
-                    callback = function () {};
-                }
-                else {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    if (args.length <= 1) {
-                        args = args[0];
-                    }
-                    results[k] = args;
-                    taskComplete();
-                }
-            };
-            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
-            var ready = function () {
-                return _reduce(requires, function (a, x) {
-                    return (a && results.hasOwnProperty(x));
-                }, true);
-            };
-            if (ready()) {
-                task[task.length - 1](taskCallback, results);
-            }
-            else {
-                var listener = function () {
-                    if (ready()) {
-                        removeListener(listener);
-                        task[task.length - 1](taskCallback, results);
-                    }
-                };
-                addListener(listener);
-            }
-        });
-    };
-
-    async.waterfall = function (tasks, callback) {
-        if (!tasks.length) {
-            return callback();
-        }
-        callback = callback || function () {};
-        var wrapIterator = function (iterator) {
-            return function (err) {
-                if (err) {
-                    callback(err);
-                    callback = function () {};
-                }
-                else {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    var next = iterator.next();
-                    if (next) {
-                        args.push(wrapIterator(next));
-                    }
-                    else {
-                        args.push(callback);
-                    }
-                    async.nextTick(function () {
-                        iterator.apply(null, args);
-                    });
-                }
-            };
-        };
-        wrapIterator(async.iterator(tasks))();
-    };
-
-    async.parallel = function (tasks, callback) {
-        callback = callback || function () {};
-        if (tasks.constructor === Array) {
-            async.map(tasks, function (fn, callback) {
-                if (fn) {
-                    fn(function (err) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        if (args.length <= 1) {
-                            args = args[0];
-                        }
-                        callback.call(null, err, args);
-                    });
-                }
-            }, callback);
-        }
-        else {
-            var results = {};
-            async.forEach(_keys(tasks), function (k, callback) {
-                tasks[k](function (err) {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    if (args.length <= 1) {
-                        args = args[0];
-                    }
-                    results[k] = args;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-
-    async.series = function (tasks, callback) {
-        callback = callback || function () {};
-        if (tasks.constructor === Array) {
-            async.mapSeries(tasks, function (fn, callback) {
-                if (fn) {
-                    fn(function (err) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        if (args.length <= 1) {
-                            args = args[0];
-                        }
-                        callback.call(null, err, args);
-                    });
-                }
-            }, callback);
-        }
-        else {
-            var results = {};
-            async.forEachSeries(_keys(tasks), function (k, callback) {
-                tasks[k](function (err) {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    if (args.length <= 1) {
-                        args = args[0];
-                    }
-                    results[k] = args;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-
-    async.iterator = function (tasks) {
-        var makeCallback = function (index) {
-            var fn = function () {
-                if (tasks.length) {
-                    tasks[index].apply(null, arguments);
-                }
-                return fn.next();
-            };
-            fn.next = function () {
-                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
-            };
-            return fn;
-        };
-        return makeCallback(0);
-    };
-
-    async.apply = function (fn) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        return function () {
-            return fn.apply(
-                null, args.concat(Array.prototype.slice.call(arguments))
-            );
-        };
-    };
-
-    var _concat = function (eachfn, arr, fn, callback) {
-        var r = [];
-        eachfn(arr, function (x, cb) {
-            fn(x, function (err, y) {
-                r = r.concat(y || []);
-                cb(err);
-            });
-        }, function (err) {
-            callback(err, r);
-        });
-    };
-    async.concat = doParallel(_concat);
-    async.concatSeries = doSeries(_concat);
-
-    async.whilst = function (test, iterator, callback) {
-        if (test()) {
-            iterator(function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                async.whilst(test, iterator, callback);
-            });
-        }
-        else {
-            callback();
-        }
-    };
-
-    async.until = function (test, iterator, callback) {
-        if (!test()) {
-            iterator(function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                async.until(test, iterator, callback);
-            });
-        }
-        else {
-            callback();
-        }
-    };
-
-    async.queue = function (worker, concurrency) {
-        var workers = 0;
-        var q = {
-            tasks: [],
-            concurrency: concurrency,
-            saturated: null,
-            empty: null,
-            drain: null,
-            push: function (data, callback) {
-                q.tasks.push({data: data, callback: callback});
-                if(q.saturated && q.tasks.length == concurrency) q.saturated();
-                async.nextTick(q.process);
-            },
-            process: function () {
-                if (workers < q.concurrency && q.tasks.length) {
-                    var task = q.tasks.shift();
-                    if(q.empty && q.tasks.length == 0) q.empty();
-                    workers += 1;
-                    worker(task.data, function () {
-                        workers -= 1;
-                        if (task.callback) {
-                            task.callback.apply(task, arguments);
-                        }
-                        if(q.drain && q.tasks.length + workers == 0) q.drain();
-                        q.process();
-                    });
-                }
-            },
-            length: function () {
-                return q.tasks.length;
-            },
-            running: function () {
-                return workers;
-            }
-        };
-        return q;
-    };
-
-    var _console_fn = function (name) {
-        return function (fn) {
-            var args = Array.prototype.slice.call(arguments, 1);
-            fn.apply(null, args.concat([function (err) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                if (typeof console !== 'undefined') {
-                    if (err) {
-                        if (console.error) {
-                            console.error(err);
-                        }
-                    }
-                    else if (console[name]) {
-                        _forEach(args, function (x) {
-                            console[name](x);
-                        });
-                    }
-                }
-            }]));
-        };
-    };
-    async.log = _console_fn('log');
-    async.dir = _console_fn('dir');
-    /*async.info = _console_fn('info');
-    async.warn = _console_fn('warn');
-    async.error = _console_fn('error');*/
-
-    async.memoize = function (fn, hasher) {
-        var memo = {};
-        var queues = {};
-        hasher = hasher || function (x) {
-            return x;
-        };
-        var memoized = function () {
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            var key = hasher.apply(null, args);
-            if (key in memo) {
-                callback.apply(null, memo[key]);
-            }
-            else if (key in queues) {
-                queues[key].push(callback);
-            }
-            else {
-                queues[key] = [callback];
-                fn.apply(null, args.concat([function () {
-                    memo[key] = arguments;
-                    var q = queues[key];
-                    delete queues[key];
-                    for (var i = 0, l = q.length; i < l; i++) {
-                      q[i].apply(null, arguments);
-                    }
-                }]));
-            }
-        };
-        memoized.unmemoized = fn;
-        return memoized;
-    };
-
-    async.unmemoize = function (fn) {
-      return function () {
-        return (fn.unmemoized || fn).apply(null, arguments);
-      }
-    };
-
-}());
 
 });
 
@@ -1921,6 +703,21 @@ API.prototype.billing = function (cb) {
 /**
  * Get Account from url and capabilities.
  *
+ * Use this method to get the account without starting a spire session.
+ *
+ * If you have a spire session, you should use <code>spire.session.account</code>.
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.api.accountFromUrlAndCapabilities({
+ *   url: account_url,
+ *   capabilities: account_capabilities
+ * }, function (err, account) {
+ *   if (!err) {
+ *     // ...
+ *   }
+ * })
+ *
  * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
  * @param {string} creds.capabilities Capabilities
@@ -1958,6 +755,21 @@ API.prototype.updateAccountWithUrlAndCapability = function (accountData, cb) {
 /**
  * Get Channel from url and capabilities.
  *
+ * Use this method to get a channel without starting a spire session.
+ *
+ * If you have a spire session, you should use <code>spire.channel</code>.
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.api.channelFromUrlAndCapabilities({
+ *   url: channel_url,
+ *   capabilities: channel_capabilities
+ * }, function (err, channel) {
+ *   if (!err) {
+ *     // ...
+ *   }
+ * })
+ *
  * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
  * @param {string} creds.capabilities Capabilities
@@ -1985,12 +797,28 @@ API.prototype.sessionFromUrlAndCapabilities = function (creds, cb) {
   this.discover(function (err) {
     if (err) return cb(err);
     var session = new Session(api.spire, creds);
+    api.spire.session = session;
     session.getIfCapable(cb);
   });
 };
 
 /**
  * Get Subscription from url and capabilities.
+ *
+ * Use this method to get a subscription without starting a spire session.
+ *
+ * If you have a spire session, you should use <code>spire.subscription</code>.
+ *
+ * @example
+ * var spire = new Spire();
+ * spire.api.subscriptionFromUrlAndCapabilities({
+ *   url: subscription_url,
+ *   capabilities: subscription_capabilities
+ * }, function (err, subscription) {
+ *   if (!err) {
+ *     // ...
+ *   }
+ * })
  *
  * @param {object} creds Url and Capabilities
  * @param {string} creds.url Url
@@ -4518,6 +3346,711 @@ Resource.defineRequest(Subscription.prototype, 'events', function (options) {
 
 });
 
+require.define("/node_modules/async/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {"main":"./index"}
+});
+
+require.define("/node_modules/async/index.js", function (require, module, exports, __dirname, __filename) {
+    // This file is just added for convenience so this repository can be
+// directly checked out into a project's deps folder
+module.exports = require('./lib/async');
+
+});
+
+require.define("/node_modules/async/lib/async.js", function (require, module, exports, __dirname, __filename) {
+    /*global setTimeout: false, console: false */
+(function () {
+
+    var async = {};
+
+    // global on the server, window in the browser
+    var root = this,
+        previous_async = root.async;
+
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = async;
+    }
+    else {
+        root.async = async;
+    }
+
+    async.noConflict = function () {
+        root.async = previous_async;
+        return async;
+    };
+
+    //// cross-browser compatiblity functions ////
+
+    var _forEach = function (arr, iterator) {
+        if (arr.forEach) {
+            return arr.forEach(iterator);
+        }
+        for (var i = 0; i < arr.length; i += 1) {
+            iterator(arr[i], i, arr);
+        }
+    };
+
+    var _map = function (arr, iterator) {
+        if (arr.map) {
+            return arr.map(iterator);
+        }
+        var results = [];
+        _forEach(arr, function (x, i, a) {
+            results.push(iterator(x, i, a));
+        });
+        return results;
+    };
+
+    var _reduce = function (arr, iterator, memo) {
+        if (arr.reduce) {
+            return arr.reduce(iterator, memo);
+        }
+        _forEach(arr, function (x, i, a) {
+            memo = iterator(memo, x, i, a);
+        });
+        return memo;
+    };
+
+    var _keys = function (obj) {
+        if (Object.keys) {
+            return Object.keys(obj);
+        }
+        var keys = [];
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    };
+
+    var _indexOf = function (arr, item) {
+        if (arr.indexOf) {
+            return arr.indexOf(item);
+        }
+        for (var i = 0; i < arr.length; i += 1) {
+            if (arr[i] === item) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
+    //// exported async module functions ////
+
+    //// nextTick implementation with browser-compatible fallback ////
+    if (typeof process === 'undefined' || !(process.nextTick)) {
+        async.nextTick = function (fn) {
+            setTimeout(fn, 0);
+        };
+    }
+    else {
+        async.nextTick = process.nextTick;
+    }
+
+    async.forEach = function (arr, iterator, callback) {
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        _forEach(arr, function (x) {
+            iterator(x, function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    completed += 1;
+                    if (completed === arr.length) {
+                        callback();
+                    }
+                }
+            });
+        });
+    };
+
+    async.forEachSeries = function (arr, iterator, callback) {
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        var iterate = function () {
+            iterator(arr[completed], function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    completed += 1;
+                    if (completed === arr.length) {
+                        callback();
+                    }
+                    else {
+                        iterate();
+                    }
+                }
+            });
+        };
+        iterate();
+    };
+    
+    async.forEachLimit = function (arr, limit, iterator, callback) {
+        if (!arr.length || limit <= 0) {
+            return callback(); 
+        }
+        var completed = 0;
+        var started = 0;
+        var running = 0;
+        
+        (function replenish () {
+          if (completed === arr.length) {
+              return callback();
+          }
+          
+          while (running < limit && started < arr.length) {
+            iterator(arr[started], function (err) {
+              if (err) {
+                  callback(err);
+                  callback = function () {};
+              }
+              else {
+                  completed += 1;
+                  running -= 1;
+                  if (completed === arr.length) {
+                      callback();
+                  }
+                  else {
+                      replenish();
+                  }
+              }
+            });
+            started += 1;
+            running += 1;
+          }
+        })();
+    };
+
+
+    var doParallel = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.forEach].concat(args));
+        };
+    };
+    var doSeries = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.forEachSeries].concat(args));
+        };
+    };
+
+
+    var _asyncMap = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (err, v) {
+                results[x.index] = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, results);
+        });
+    };
+    async.map = doParallel(_asyncMap);
+    async.mapSeries = doSeries(_asyncMap);
+
+
+    // reduce only has a series version, as doing reduce in parallel won't
+    // work in many situations.
+    async.reduce = function (arr, memo, iterator, callback) {
+        async.forEachSeries(arr, function (x, callback) {
+            iterator(memo, x, function (err, v) {
+                memo = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, memo);
+        });
+    };
+    // inject alias
+    async.inject = async.reduce;
+    // foldl alias
+    async.foldl = async.reduce;
+
+    async.reduceRight = function (arr, memo, iterator, callback) {
+        var reversed = _map(arr, function (x) {
+            return x;
+        }).reverse();
+        async.reduce(reversed, memo, iterator, callback);
+    };
+    // foldr alias
+    async.foldr = async.reduceRight;
+
+    var _filter = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.filter = doParallel(_filter);
+    async.filterSeries = doSeries(_filter);
+    // select alias
+    async.select = async.filter;
+    async.selectSeries = async.filterSeries;
+
+    var _reject = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (!v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.reject = doParallel(_reject);
+    async.rejectSeries = doSeries(_reject);
+
+    var _detect = function (eachfn, arr, iterator, main_callback) {
+        eachfn(arr, function (x, callback) {
+            iterator(x, function (result) {
+                if (result) {
+                    main_callback(x);
+                    main_callback = function () {};
+                }
+                else {
+                    callback();
+                }
+            });
+        }, function (err) {
+            main_callback();
+        });
+    };
+    async.detect = doParallel(_detect);
+    async.detectSeries = doSeries(_detect);
+
+    async.some = function (arr, iterator, main_callback) {
+        async.forEach(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (v) {
+                    main_callback(true);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(false);
+        });
+    };
+    // any alias
+    async.any = async.some;
+
+    async.every = function (arr, iterator, main_callback) {
+        async.forEach(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (!v) {
+                    main_callback(false);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(true);
+        });
+    };
+    // all alias
+    async.all = async.every;
+
+    async.sortBy = function (arr, iterator, callback) {
+        async.map(arr, function (x, callback) {
+            iterator(x, function (err, criteria) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, {value: x, criteria: criteria});
+                }
+            });
+        }, function (err, results) {
+            if (err) {
+                return callback(err);
+            }
+            else {
+                var fn = function (left, right) {
+                    var a = left.criteria, b = right.criteria;
+                    return a < b ? -1 : a > b ? 1 : 0;
+                };
+                callback(null, _map(results.sort(fn), function (x) {
+                    return x.value;
+                }));
+            }
+        });
+    };
+
+    async.auto = function (tasks, callback) {
+        callback = callback || function () {};
+        var keys = _keys(tasks);
+        if (!keys.length) {
+            return callback(null);
+        }
+
+        var results = {};
+
+        var listeners = [];
+        var addListener = function (fn) {
+            listeners.unshift(fn);
+        };
+        var removeListener = function (fn) {
+            for (var i = 0; i < listeners.length; i += 1) {
+                if (listeners[i] === fn) {
+                    listeners.splice(i, 1);
+                    return;
+                }
+            }
+        };
+        var taskComplete = function () {
+            _forEach(listeners, function (fn) {
+                fn();
+            });
+        };
+
+        addListener(function () {
+            if (_keys(results).length === keys.length) {
+                callback(null, results);
+            }
+        });
+
+        _forEach(keys, function (k) {
+            var task = (tasks[k] instanceof Function) ? [tasks[k]]: tasks[k];
+            var taskCallback = function (err) {
+                if (err) {
+                    callback(err);
+                    // stop subsequent errors hitting callback multiple times
+                    callback = function () {};
+                }
+                else {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    taskComplete();
+                }
+            };
+            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
+            var ready = function () {
+                return _reduce(requires, function (a, x) {
+                    return (a && results.hasOwnProperty(x));
+                }, true);
+            };
+            if (ready()) {
+                task[task.length - 1](taskCallback, results);
+            }
+            else {
+                var listener = function () {
+                    if (ready()) {
+                        removeListener(listener);
+                        task[task.length - 1](taskCallback, results);
+                    }
+                };
+                addListener(listener);
+            }
+        });
+    };
+
+    async.waterfall = function (tasks, callback) {
+        if (!tasks.length) {
+            return callback();
+        }
+        callback = callback || function () {};
+        var wrapIterator = function (iterator) {
+            return function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    var next = iterator.next();
+                    if (next) {
+                        args.push(wrapIterator(next));
+                    }
+                    else {
+                        args.push(callback);
+                    }
+                    async.nextTick(function () {
+                        iterator.apply(null, args);
+                    });
+                }
+            };
+        };
+        wrapIterator(async.iterator(tasks))();
+    };
+
+    async.parallel = function (tasks, callback) {
+        callback = callback || function () {};
+        if (tasks.constructor === Array) {
+            async.map(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            async.forEach(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.series = function (tasks, callback) {
+        callback = callback || function () {};
+        if (tasks.constructor === Array) {
+            async.mapSeries(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            async.forEachSeries(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.iterator = function (tasks) {
+        var makeCallback = function (index) {
+            var fn = function () {
+                if (tasks.length) {
+                    tasks[index].apply(null, arguments);
+                }
+                return fn.next();
+            };
+            fn.next = function () {
+                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
+            };
+            return fn;
+        };
+        return makeCallback(0);
+    };
+
+    async.apply = function (fn) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        return function () {
+            return fn.apply(
+                null, args.concat(Array.prototype.slice.call(arguments))
+            );
+        };
+    };
+
+    var _concat = function (eachfn, arr, fn, callback) {
+        var r = [];
+        eachfn(arr, function (x, cb) {
+            fn(x, function (err, y) {
+                r = r.concat(y || []);
+                cb(err);
+            });
+        }, function (err) {
+            callback(err, r);
+        });
+    };
+    async.concat = doParallel(_concat);
+    async.concatSeries = doSeries(_concat);
+
+    async.whilst = function (test, iterator, callback) {
+        if (test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.whilst(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.until = function (test, iterator, callback) {
+        if (!test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.until(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.queue = function (worker, concurrency) {
+        var workers = 0;
+        var q = {
+            tasks: [],
+            concurrency: concurrency,
+            saturated: null,
+            empty: null,
+            drain: null,
+            push: function (data, callback) {
+                q.tasks.push({data: data, callback: callback});
+                if(q.saturated && q.tasks.length == concurrency) q.saturated();
+                async.nextTick(q.process);
+            },
+            process: function () {
+                if (workers < q.concurrency && q.tasks.length) {
+                    var task = q.tasks.shift();
+                    if(q.empty && q.tasks.length == 0) q.empty();
+                    workers += 1;
+                    worker(task.data, function () {
+                        workers -= 1;
+                        if (task.callback) {
+                            task.callback.apply(task, arguments);
+                        }
+                        if(q.drain && q.tasks.length + workers == 0) q.drain();
+                        q.process();
+                    });
+                }
+            },
+            length: function () {
+                return q.tasks.length;
+            },
+            running: function () {
+                return workers;
+            }
+        };
+        return q;
+    };
+
+    var _console_fn = function (name) {
+        return function (fn) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            fn.apply(null, args.concat([function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (typeof console !== 'undefined') {
+                    if (err) {
+                        if (console.error) {
+                            console.error(err);
+                        }
+                    }
+                    else if (console[name]) {
+                        _forEach(args, function (x) {
+                            console[name](x);
+                        });
+                    }
+                }
+            }]));
+        };
+    };
+    async.log = _console_fn('log');
+    async.dir = _console_fn('dir');
+    /*async.info = _console_fn('info');
+    async.warn = _console_fn('warn');
+    async.error = _console_fn('error');*/
+
+    async.memoize = function (fn, hasher) {
+        var memo = {};
+        var queues = {};
+        hasher = hasher || function (x) {
+            return x;
+        };
+        var memoized = function () {
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            var key = hasher.apply(null, args);
+            if (key in memo) {
+                callback.apply(null, memo[key]);
+            }
+            else if (key in queues) {
+                queues[key].push(callback);
+            }
+            else {
+                queues[key] = [callback];
+                fn.apply(null, args.concat([function () {
+                    memo[key] = arguments;
+                    var q = queues[key];
+                    delete queues[key];
+                    for (var i = 0, l = q.length; i < l; i++) {
+                      q[i].apply(null, arguments);
+                    }
+                }]));
+            }
+        };
+        memoized.unmemoized = fn;
+        return memoized;
+    };
+
+    async.unmemoize = function (fn) {
+      return function () {
+        return (fn.unmemoized || fn).apply(null, arguments);
+      }
+    };
+
+}());
+
+});
+
 require.define("/spire/api/session.js", function (require, module, exports, __dirname, __filename) {
     /**
  * @fileOverview Session Resource class definition
@@ -4530,6 +4063,7 @@ var Resource = require('./resource')
   , Application = require('./application')
   , Member = require('./member')
   , _ = require('underscore')
+  , async = require('async')
   ;
 
 /**
@@ -4594,7 +4128,7 @@ Session.prototype.get = function (cb) {
  * Returns a value from the cache, if one if available.
  *
  * @example
- * spire.session.account(function (err, account) {
+ * session.account(function (err, account) {
  *   if (!err) {
  *     // `account` is account resource.
  *   }
@@ -4614,7 +4148,7 @@ Session.prototype.account = function (cb) {
  * Always gets a fresh value from the api.
  *
  * @example
- * spire.session.account$(function (err, account) {
+ * session.account$(function (err, account) {
  *   if (!err) {
  *     // `account` is account resource.
  *   }
@@ -4635,7 +4169,7 @@ Session.prototype.account$ = function (cb) {
  * with an email and password.
  * *
  * @example
- * spire.session.resetAccount(function (err, session) {
+ * session.resetAccount(function (err, session) {
  *   if (!err) {
  *     // `session` is session with new account resource.
  *   }
@@ -4658,7 +4192,7 @@ Session.prototype.resetAccount = function (cb) {
  * Returns a value from the cache, if one if available.
  *
  * @example
- * spire.session.applications(function (err, applications) {
+ * session.applications(function (err, applications) {
  *   if (!err) {
  *     // `applications` is a hash of all the account's applications
  *   }
@@ -4677,7 +4211,7 @@ Session.prototype.applications = function (cb) {
  * Always gets a fresh value from the api.
  *
  * @example
- * spire.session.applications$(function (err, applications) {
+ * session.applications$(function (err, applications) {
  *   if (!err) {
  *     // `applications` is a hash of all the account's applications
  *   }
@@ -4702,7 +4236,7 @@ Session.prototype.applications$ = function (cb) {
  * Always gets a fresh value from the api.
  *
  * @example
- * spire.session.applicationByName('name_of_application', function (err, application) {
+ * session.applicationByName('name_of_application', function (err, application) {
  *   if (!err) {
  *     // `application` now contains an application object
  *   }
@@ -4727,7 +4261,7 @@ Session.prototype.applicationByName = function (applicationName, cb) {
  * Returns a value from the cache, if one if available.
  *
  * @example
- * spire.session.channels(function (err, channels) {
+ * session.channels(function (err, channels) {
  *   if (!err) {
  *     // `channels` is a hash of all the account's channels
  *   }
@@ -4746,7 +4280,7 @@ Session.prototype.channels = function (cb) {
  * Always gets a fresh value from the api.
  *
  * @example
- * spire.session.channels$(function (err, channels) {
+ * session.channels$(function (err, channels) {
  *   if (!err) {
  *     // `channels` is a hash of all the account's channels
  *   }
@@ -4771,7 +4305,7 @@ Session.prototype.channels$ = function (cb) {
  * Always gets a fresh value from the api.
  *
  * @example
- * spire.session.channelByName('name_of_channel', function (err, channel) {
+ * session.channelByName('name_of_channel', function (err, channel) {
  *   if (!err) {
  *     // `channel` now contains a channel object
  *   }
@@ -4796,7 +4330,7 @@ Session.prototype.channelByName = function (channelName, cb) {
  * Returns a value from the cache, if one if available.
  *
  * @example
- * spire.session.subscriptions(function (err, subscriptions) {
+ * session.subscriptions(function (err, subscriptions) {
  *   if (!err) {
  *     // `subscriptions` is a hash of all the account's subscriptions
  *   }
@@ -4815,7 +4349,7 @@ Session.prototype.subscriptions = function (cb) {
  * Always gets a fresh value from the api.
  *
  * @example
- * spire.session.subscriptions$(function (err, subscriptions) {
+ * session.subscriptions$(function (err, subscriptions) {
  *   if (!err) {
  *     // `subscriptions` is a hash of all the account's subscriptions
  *   }
@@ -4841,7 +4375,7 @@ Session.prototype.subscriptions$ = function (cb) {
  * Always gets a fresh value from the api.
  *
  * @example
- * spire.session.subscriptionByName('name_of_subscription', function (err, subscription) {
+ * session.subscriptionByName('name_of_subscription', function (err, subscription) {
  *   if (!err) {
  *     // `subscription` now contains a subscription object
  *   }
@@ -4864,6 +4398,12 @@ Session.prototype.subscriptionByName = function (subscriptionName, cb) {
  * Creates an application.  Returns an application resource.  Errors if an application with the
  * specified name exists.
  *
+ * @example
+ * session.createApplication('name_of_application', function (err, application) {
+ *   if (!err) {
+ *     // `application` now contains a application object
+ *   }
+ * });
  * @param {string} name Application name
  * @param {function (err, application)} cb Callback
  */
@@ -4881,8 +4421,14 @@ Session.prototype.createApplication = function (name, cb) {
  * Creates a channel.  Returns a Channel resource.  Errors if a channel with the
  * specified name exists.
  *
+ * @example
+ * session.createChannel('foo', function (err, channel) {
+ *   if (!err) {
+ *     // `channel` is the channel named "foo".
+ *   }
+ * });
  * @param {string} name Channel name
- * @param {number} limit Number of messages to keep in channel
+ * @param {number} [limit] Number of messages to keep in channel
  * @param {function (err, channel)} cb Callback
  */
 Session.prototype.createChannel = function (name, limit, cb) {
@@ -4909,8 +4455,71 @@ Session.prototype.createChannel = function (name, limit, cb) {
 };
 
 /**
+ * Find or creates a channel
+ *
+ * @example
+ * session.findOrCreateChannel('foo', function (err, channel) {
+ *   if (!err) {
+ *     // `channel` is the channel named "foo".
+ *   }
+ * });
+ *
+ * @param {string} name Channel name to get or create
+ * @param {number} [limit] Number of messages to keep in channel
+ * @param {function(err, channel)} cb Callback
+ */
+Session.prototype.findOrCreateChannel = function (name, limit, cb) {
+  var session = this;
+  var spire = this.spire;
+
+  if (!cb) {
+    cb = limit;
+    limit = null;
+  }
+
+  if (session._channels[name]) {
+    return cb(null, session._channels[name]);
+  }
+
+  var creationCount = 0;
+
+  function createChannel() {
+    creationCount++;
+    session.createChannel(name, limit, function (err, channel) {
+      if (!err) return cb(null, channel);
+      if (err.status !== 409) return cb(err);
+      if (creationCount >= spire.CREATION_RETRY_LIMIT) {
+        return cb(new Error("Could not create channel: " + name));
+      }
+      getChannel();
+    });
+  }
+
+  function getChannel() {
+    spire.session.channelByName(name, function (err, channel) {
+      if (err && err.status !== 404) return cb(err);
+      if (channel) return cb(null, channel);
+      createChannel();
+    });
+  }
+
+  getChannel();
+};
+
+/**
  * Creates a subscription to any number of channels.  Returns a Subscription
  * resource.  Errors if a subscription with the specified name exists.
+ *
+ * @example
+ * session.findOrCreateSubscription({
+ *   name: 'my-sub',
+ *   channelNames: ['foo', 'bar']
+ * },
+ * function (err, subscription) {
+ *   if (!err) {
+ *     // `subscription` is the new subscription
+ *   }
+ * });
  *
  * @param {object} options Options
  * @param {string} options.name Subscription name
@@ -4920,22 +4529,163 @@ Session.prototype.createChannel = function (name, limit, cb) {
  * @param {function (err, subscription)} cb Callback
  */
 Session.prototype.createSubscription = function (options, cb) {
+  var session = this;
+
   var name = options.name;
   var channelNames = options.channelNames || [];
   var channelUrls = options.channelUrls || [];
   var expiration = options.expiration;
 
+  function createSubscription() {
+    session.channels(function (channels) {
+      channelUrls.push.apply(channelUrls, _.map(channelNames, function (name) {
+        return session._channels[name].url();
+      }));
+      session.request('create_subscription', name, channelUrls, expiration, function (err, sub) {
+        if (err) return cb(err);
+        var subscription = new Subscription(session.spire, sub);
+        session._memoizeSubscription(subscription);
+        cb(null, subscription);
+      });
+    });
+  }
+
+  if (channelNames.length) {
+    async.forEach(
+      channelNames,
+      function (channelName, innerCB) {
+        session.findOrCreateChannel(channelName, innerCB);
+      },
+      function (err) {
+        if (err) return cb(err);
+        createSubscription();
+      }
+    );
+  } else {
+    createSubscription();
+  }
+};
+
+/**
+ * Gets a subscription to the given channels.  Creates the channels and the
+ * subscription if necessary.
+ *
+ * @example
+ * session.findOrCreateSubscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
+ *   if (!err) {
+ *     // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
+ *   }
+ * });
+ *
+ * @param {string} Subscription name
+ * @param {array or string} channelOrChannels Either a single channel name, or an array of
+ *   channel names to subscribe to
+ * @param {function (err, subscription)} cb Callback
+ */
+Session.prototype.findOrCreateSubscription = function (options, cb) {
+  var name = options.name;
+
   var session = this;
-  this.channels(function (channels) {
-    channelUrls.push.apply(channelUrls, _.map(channelNames, function (name) {
-      return session._channels[name].url();
-    }));
-    session.request('create_subscription', name, channelUrls, expiration, function (err, sub) {
-      if (err) return cb(err);
-      var subscription = new Subscription(session.spire, sub);
-      session._memoizeSubscription(subscription);
+  var spire = this.spire;
+
+  var creationCount = 0;
+
+  function createSubscription() {
+    creationCount++;
+    session.createSubscription(options, function (err, sub) {
+      if (!err) return cb(null, sub);
+      if (err.status !== 409) return cb(err);
+      if (creationCount >= spire.CREATION_RETRY_LIMIT) {
+        return cb(new Error("Could not create subscription: " + name));
+      }
+      getSubscription();
+    });
+  }
+
+  function getSubscription() {
+    session.subscriptionByName(options.name, function (err, subscription) {
+      if (err && err.status !== 404) return cb(err);
+      if (subscription) return cb(null, subscription);
+      createSubscription();
+    });
+  }
+
+  createSubscription();
+};
+
+/**
+ * Creates an new subscription to a channel or channels, and adds a listener.
+ *
+ * @example
+ * session.subscribe('myChannel', options, function (messages) {
+ *   // `messages` is array of messages sent to the channel
+ * }, function (err) {
+ *   // `err` will be non-null if there was a problem creating the subscription.
+ * });
+ *
+ * By default this will get all events from the beginning of time.
+ * If you only want messages created from this point forward, pass { last: 'now' } in the options:
+ *
+ * @example
+ * session.subscribe('myChannel', options, function (messages) {
+ *   // `messages` is array of messages sent to the channel
+ * }, function (err) {
+ *   // `err` will be non-null if there was a problem creating the subscription.
+ * });
+ *
+ * @param {array or string} channelOrChannels Either a single channel name, or an array of
+ *   channel names to subscribe to
+ * @param {object} [options] Options to pass to the listener
+ * @param {function (messages)} listener Listener that will get called with each batch of messages
+ * @param {function (err, subscription)} [cb] Callback
+ */
+Session.prototype.subscribe = function (channelOrChannels, options, listener, cb) {
+  if (typeof options === 'function') {
+    cb = listener;
+    listener = options;
+    options = {}
+  }
+
+  if (typeof channelOrChannels === "string") {
+    channels = [channelOrChannels];
+  } else {
+    channels = channelOrChannels;
+  }
+
+  cb = cb || function () {};
+
+  this.findOrCreateSubscription({
+    channelNames: channels
+  }, function (err, subscription) {
+    if (err) return cb(err);
+    subscription.addListener('messages', listener);
+    subscription.startListening(options);
+    process.nextTick(function () {
       cb(null, subscription);
     });
+  });
+};
+
+/**
+ * Publish to a channel.
+ *
+ * Creates the channel if necessary.
+ *
+ * @example
+ * session.publish('my_channel', 'my message', function (err, message) {
+ *   if (!err) {
+ *     //  Message sent successfully
+ *   }
+ * });
+ *
+ * @param {string} channelName Channel name
+ * @param {object, string} message Message
+ * @param {function (err, message)} cb Callback
+ */
+Session.prototype.publish = function (channelName, message, cb) {
+  this.findOrCreateChannel(channelName, function (err, channel) {
+    if (err) { return cb(err); }
+    channel.publish(message, cb);
   });
 };
 
@@ -4983,6 +4733,7 @@ Session.prototype._storeResources = function () {
 
   this.resources = resources;
 };
+
 /**
  * Requests
  * These define API calls and have no side effects.  They can be run by calling

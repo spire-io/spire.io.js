@@ -195,9 +195,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/API.html">API</a></li>
 	
+	<li><a href="../symbols/Application.html">Application</a></li>
+	
 	<li><a href="../symbols/Billing.html">Billing</a></li>
 	
 	<li><a href="../symbols/Channel.html">Channel</a></li>
+	
+	<li><a href="../symbols/Member.html">Member</a></li>
 	
 	<li><a href="../symbols/Message.html">Message</a></li>
 	
@@ -299,7 +303,34 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Session.html#channelByName">channelByName</a></b>(cb, cb)
+								<div class="fixedFont"><b><a href="../symbols/Session.html#applicationByName">applicationByName</a></b>(applicationName, cb)
+								</div>
+								<div class="description">Gets an application by name.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Session.html#applications">applications</a></b>(cb)
+								</div>
+								<div class="description">Gets the applications collection.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Session.html#applications$">applications$</a></b>(cb)
+								</div>
+								<div class="description">Gets the applications collection.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Session.html#channelByName">channelByName</a></b>(channelName, cb)
 								</div>
 								<div class="description">Gets a channel by name.</div>
 							</td>
@@ -320,6 +351,15 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/Session.html#channels$">channels$</a></b>(cb)
 								</div>
 								<div class="description">Gets the channels collection.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Session.html#createApplication">createApplication</a></b>(name, cb)
+								</div>
+								<div class="description">Creates an application.</div>
 							</td>
 						</tr>
 					
@@ -362,7 +402,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Session.html#subscriptionByName">subscriptionByName</a></b>(cb, cb)
+								<div class="fixedFont"><b><a href="../symbols/Session.html#subscriptionByName">subscriptionByName</a></b>(subscriptionName, cb)
 								</div>
 								<div class="description">Gets a subscription by name.</div>
 							</td>
@@ -392,7 +432,7 @@ ul.inheritsList
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/Resource.html">Resource</a>: </dt><dd><a href="../symbols/Resource.html#authorization">authorization</a>, <a href="../symbols/Resource.html#capabilities">capabilities</a>, <a href="../symbols/Resource.html#capability">capability</a>, <a href="../symbols/Resource.html#mediaType">mediaType</a>, <a href="../symbols/Resource.html#request">request</a>, <a href="../symbols/Resource.html#schema">schema</a>, <a href="../symbols/Resource.html#update">update</a>, <a href="../symbols/Resource.html#url">url</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/Resource.html">Resource</a>: </dt><dd><a href="../symbols/Resource.html#authorization">authorization</a>, <a href="../symbols/Resource.html#capabilities">capabilities</a>, <a href="../symbols/Resource.html#capability">capability</a>, <a href="../symbols/Resource.html#getIfCapable">getIfCapable</a>, <a href="../symbols/Resource.html#mediaType">mediaType</a>, <a href="../symbols/Resource.html#request">request</a>, <a href="../symbols/Resource.html#schema">schema</a>, <a href="../symbols/Resource.html#update">update</a>, <a href="../symbols/Resource.html#url">url</a></dd>
 				</dl>
 				
 			
@@ -563,24 +603,26 @@ Always gets a fresh value from the api.
 
 					<hr />
 				
-					<a name="channelByName"> </a>
+					<a name="applicationByName"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>channelByName</b>(cb, cb)
+					<b>applicationByName</b>(applicationName, cb)
 					
 					</div>
 					<div class="description">
-						Gets a channel by name.
+						Gets an application by name.  Returns an Application resource
+
+Always gets a fresh value from the api.
 						
 						
 					</div>
 					
 					
 					
-					<pre class="code">spire.session.channelByName('channel-name', function (err, channel) {
+					<pre class="code">spire.session.applicationByName('name_of_application', function (err, application) {
   if (!err) {
-    // `channel` is a channel object
+    // `application` now contains an application object
   }
 });</pre>
 					
@@ -591,16 +633,160 @@ Always gets a fresh value from the api.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
+									<span class="light fixedFont">{String}</span> <b>applicationName</b>
+									
+								</dt>
+								<dd>Name of application</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|application)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
 							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="applications"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>applications</b>(cb)
+					
+					</div>
+					<div class="description">
+						Gets the applications collection.  Returns a hash of Application resources.
+
+Returns a value from the cache, if one if available.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">spire.session.applications(function (err, applications) {
+  if (!err) {
+    // `applications` is a hash of all the account's applications
+  }
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
 								<dt>
-									<b>cb</b>
+									<span class="light fixedFont">{function (err|applications)}</span> <b>cb</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="applications$"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>applications$</b>(cb)
+					
+					</div>
+					<div class="description">
+						Gets the applications collection.  Returns a hash of Application resources.
+
+Always gets a fresh value from the api.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">spire.session.applications$(function (err, applications) {
+  if (!err) {
+    // `applications` is a hash of all the account's applications
+  }
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|applications)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="channelByName"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>channelByName</b>(channelName, cb)
+					
+					</div>
+					<div class="description">
+						Gets a channel by name.  Returns a Channel resource
+
+Always gets a fresh value from the api.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">spire.session.channelByName('name_of_channel', function (err, channel) {
+  if (!err) {
+    // `channel` now contains a channel object
+  }
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>channelName</b>
+									
+								</dt>
+								<dd>Name of channel</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
 							
 							</dl>
 						
@@ -667,7 +853,7 @@ Returns a value from the cache, if one if available.
 					
 					</div>
 					<div class="description">
-						Gets the channels collection.  Returns a hasg of Channel resources.
+						Gets the channels collection.  Returns a hash of Channel resources.
 
 Always gets a fresh value from the api.
 						
@@ -690,6 +876,49 @@ Always gets a fresh value from the api.
 							
 								<dt>
 									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="createApplication"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>createApplication</b>(name, cb)
+					
+					</div>
+					<div class="description">
+						Creates an application.  Returns an application resource.  Errors if an application with the
+specified name exists.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>name</b>
+									
+								</dt>
+								<dd>Application name</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|application)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -907,20 +1136,22 @@ with an email and password.
 					<div class="fixedFont">
 					
 					
-					<b>subscriptionByName</b>(cb, cb)
+					<b>subscriptionByName</b>(subscriptionName, cb)
 					
 					</div>
 					<div class="description">
-						Gets a subscription by name.
+						Gets a subscription by name.  Returns a Subscription resource
+
+Always gets a fresh value from the api.
 						
 						
 					</div>
 					
 					
 					
-					<pre class="code">spire.session.subscriptionByName('subscription-name', function (err, subscription) {
+					<pre class="code">spire.session.subscriptionByName('name_of_subscription', function (err, subscription) {
   if (!err) {
-    // `subscription` is a subscription object
+    // `subscription` now contains a subscription object
   }
 });</pre>
 					
@@ -931,16 +1162,16 @@ with an email and password.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
+									<span class="light fixedFont">{String}</span> <b>subscriptionName</b>
+									
+								</dt>
+								<dd>Name of subscription</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
-							
-								<dt>
-									<b>cb</b>
-									
-								</dt>
-								<dd></dd>
 							
 							</dl>
 						
@@ -1029,7 +1260,7 @@ Always gets a fresh value from the api.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
+									<span class="light fixedFont">{function (err|subscriptions)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -1057,7 +1288,7 @@ Always gets a fresh value from the api.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue May 01 2012 14:32:46 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed May 16 2012 17:43:43 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

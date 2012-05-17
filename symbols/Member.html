@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - Account</title>
+		<title>JsDoc Reference - Member</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -224,7 +224,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class Account
+				Class Member
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -234,16 +234,16 @@ ul.inheritsList
 					<a href="../symbols/Resource.html">Resource</a>.<br />
 				
 			
-				Account resource
+				Member Resource
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/lib_spire_api_account.js.html">account.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/lib_spire_api_member.js.html">member.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Account.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Member.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -256,9 +256,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/Account.html#constructor">Account</a></b>(spire, data)
+								<b><a href="../symbols/Member.html#constructor">Member</a></b>(spire, data)
 							</div>
-							<div class="description">Represents an account in the spire api.</div>
+							<div class="description">Represents a member in the spire api.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -272,7 +272,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class Account.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class Member.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -285,29 +285,18 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Account.html#reset">reset</a></b>(cb)
+								<div class="fixedFont"><b><a href="../symbols/Member.html#login">login</a></b>()
 								</div>
-								<div class="description">Resets the account
-
-Note that this passes a session to the callback, and not an account.</div>
+								<div class="description">Returns the member login.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Account.html#secret">secret</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/Member.html#profile">profile</a></b>()
 								</div>
-								<div class="description">Gets the account secret</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Account.html#updateBillingSubscription">updateBillingSubscription</a></b>(info, cb)
-								</div>
-								<div class="description">Updates the billing plan for the account.</div>
+								<div class="description">Returns the members profile.</div>
 							</td>
 						</tr>
 					
@@ -332,11 +321,11 @@ Note that this passes a session to the callback, and not an account.</div>
 				</div>
 				
 				<div class="fixedFont">
-						<b>Account</b>(spire, data)
+						<b>Member</b>(spire, data)
 				</div>
 				
 				<div class="description">
-					Represents an account in the spire api.
+					Represents a member in the spire api.
 					
 				</div>
 				
@@ -348,16 +337,16 @@ Note that this passes a session to the callback, and not an account.</div>
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								 <b>spire</b>
+								<span class="light fixedFont">{object}</span>  <b>spire</b>
 								
 							</dt>
-								<dd>{object} Spire object</dd>
+								<dd>Spire object</dd>
 						
 							<dt>
-								 <b>data</b>
+								<span class="light fixedFont">{object}</span>  <b>data</b>
 								
 							</dt>
-								<dd>{object} Account data from the spire api</dd>
+								<dd>Member data from the spire api</dd>
 						
 						</dl>
 					
@@ -380,18 +369,15 @@ Note that this passes a session to the callback, and not an account.</div>
 					Method Detail
 				</div>
 				
-					<a name="reset"> </a>
+					<a name="login"> </a>
 					<div class="fixedFont">
 					
-					
-					<b>reset</b>(cb)
+					<span class="light">{string}</span>
+					<b>login</b>()
 					
 					</div>
 					<div class="description">
-						Resets the account
-
-Note that this passes a session to the callback, and not an account.
-This is because many of the session urls will have changed.
+						Returns the member login.
 						
 						
 					</div>
@@ -399,35 +385,31 @@ This is because many of the session urls will have changed.
 					
 					
 						
+						
+						
+						
+						
 							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
+							<dt class="heading">Returns:</dt>
 							
-								<dt>
-									<span class="light fixedFont">{function (err|session)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
+								<dd><span class="light fixedFont">{string}</span> Member login</dd>
 							
 							</dl>
-						
-						
-						
-						
 						
 						
 						
 
 					<hr />
 				
-					<a name="secret"> </a>
+					<a name="profile"> </a>
 					<div class="fixedFont">
 					
-					
-					<b>secret</b>()
+					<span class="light">{string}</span>
+					<b>profile</b>()
 					
 					</div>
 					<div class="description">
-						Gets the account secret
+						Returns the members profile.
 						
 						
 					</div>
@@ -438,48 +420,13 @@ This is because many of the session urls will have changed.
 						
 						
 						
-						
-						
-						
-
-					<hr />
-				
-					<a name="updateBillingSubscription"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>updateBillingSubscription</b>(info, cb)
-					
-					</div>
-					<div class="description">
-						Updates the billing plan for the account.
-						
-						
-					</div>
-					
-					
-					
 						
 							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
+							<dt class="heading">Returns:</dt>
 							
-								<dt>
-									<span class="light fixedFont">{object}</span> <b>info</b>
-									
-								</dt>
-								<dd>New billing plan data</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
+								<dd><span class="light fixedFont">{string}</span> Member profile</dd>
 							
 							</dl>
-						
-						
-						
-						
 						
 						
 						
@@ -498,7 +445,7 @@ This is because many of the session urls will have changed.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed May 16 2012 17:43:42 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed May 16 2012 17:43:43 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

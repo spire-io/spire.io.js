@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - API</title>
+		<title>JsDoc Reference - Application</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -224,24 +224,26 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class API
+				Class Application
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					<a href="../symbols/Resource.html">Resource</a>.<br />
 				
 			
-				Collection of API methods
+				Application Resource
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/lib_spire_api.js.html">api.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/lib_spire_api_application.js.html">application.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class API.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Application.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -254,9 +256,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/API.html#constructor">API</a></b>(spire, opts)
+								<b><a href="../symbols/Application.html#constructor">Application</a></b>(spire, data)
 							</div>
-							<div class="description">Abstraction for the Spire API</div>
+							<div class="description">Represents an application in the spire api.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -270,7 +272,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class API.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class Application.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -283,135 +285,126 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#accountFromUrlAndCapabilities">accountFromUrlAndCapabilities</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#authenticateMember">authenticateMember</a></b>(login, password, cb)
 								</div>
-								<div class="description">Get Account from url and capabilities.</div>
+								<div class="description">Authenticates a member.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#authorization">authorization</a></b>(resource, method)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#channelByName">channelByName</a></b>(channelName, cb)
 								</div>
-								<div class="description">Returns the Authorization header for the resource and method.</div>
+								<div class="description">Gets a channel by name.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#billing">billing</a></b>(cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#channels">channels</a></b>(cb)
 								</div>
-								<div class="description">Get billing information for the account.</div>
+								<div class="description">Gets the channels collection.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#channelFromUrlAndCapabilities">channelFromUrlAndCapabilities</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#channels$">channels$</a></b>(cb)
 								</div>
-								<div class="description">Get Channel from url and capabilities.</div>
+								<div class="description">Gets the channels collection.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#createAccount">createAccount</a></b>(user, cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#createChannel">createChannel</a></b>(name, cb)
 								</div>
-								<div class="description">Register for a new spire account, and authenticates as the newly created account</div>
+								<div class="description">Creates a channel.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#createSession">createSession</a></b>(secret, cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#createMember">createMember</a></b>(login, password, cb)
 								</div>
-								<div class="description">Creates a spire session from an account secret.</div>
+								<div class="description">Creates a member.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#discover">discover</a></b>(cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#createSubscription">createSubscription</a></b>(options, timeout, cb)
 								</div>
-								<div class="description">Discovers urls from Spire API.</div>
+								<div class="description">Creates a subscription to any number of channels.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#getApplication">getApplication</a></b>(key, cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#memberByEmail">memberByEmail</a></b>(memberEmail, cb)
 								</div>
-								<div class="description">Returns an application when passed an application key.</div>
+								<div class="description">Gets a member by login.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#login">login</a></b>(email, password, cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#members">members</a></b>(cb)
 								</div>
-								<div class="description">Logs in with the given email and password.</div>
+								<div class="description">Gets the members collection.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#mediaType">mediaType</a></b>(name)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#members$">members$</a></b>(cb)
 								</div>
-								<div class="description">Returns the MIME type for resourceName.</div>
+								<div class="description">Gets the members collection.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#passwordResetRequest">passwordResetRequest</a></b>(email, cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#name">name</a></b>()
 								</div>
-								<div class="description">Request a password reset for email.</div>
+								<div class="description">Returns the application name.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#request">request</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/Application.html#subscriptionByName">subscriptionByName</a></b>(subscriptionName, cb)
 								</div>
-								<div class="description">Make requests to the api.</div>
+								<div class="description">Gets a subscription by name.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#sessionFromUrlAndCapabilities">sessionFromUrlAndCapabilities</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#subscriptions">subscriptions</a></b>(cb)
 								</div>
-								<div class="description">Get Session from url and capabilities.</div>
+								<div class="description">Gets the subscriptions collection.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#subscriptionFromUrlAndCapabilities">subscriptionFromUrlAndCapabilities</a></b>(creds, cb)
+								<div class="fixedFont"><b><a href="../symbols/Application.html#subscriptions$">subscriptions$</a></b>(cb)
 								</div>
-								<div class="description">Get Subscription from url and capabilities.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/API.html#updateAccountWithUrlAndCapability">updateAccountWithUrlAndCapability</a></b>(account, cb)
-								</div>
-								<div class="description">Update Account from url and capability.</div>
+								<div class="description">Gets the subscriptions collection.</div>
 							</td>
 						</tr>
 					
@@ -419,6 +412,10 @@ ul.inheritsList
 				</table>
 				
 				
+				
+				<dl class="inheritsList">
+				<dt>Methods borrowed from class <a href="../symbols/Resource.html">Resource</a>: </dt><dd><a href="../symbols/Resource.html#authorization">authorization</a>, <a href="../symbols/Resource.html#capabilities">capabilities</a>, <a href="../symbols/Resource.html#capability">capability</a>, <a href="../symbols/Resource.html#get">get</a>, <a href="../symbols/Resource.html#getIfCapable">getIfCapable</a>, <a href="../symbols/Resource.html#mediaType">mediaType</a>, <a href="../symbols/Resource.html#request">request</a>, <a href="../symbols/Resource.html#schema">schema</a>, <a href="../symbols/Resource.html#update">update</a>, <a href="../symbols/Resource.html#url">url</a></dd>
+				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -432,17 +429,13 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>API</b>(spire, opts)
+						<b>Application</b>(spire, data)
 				</div>
 				
 				<div class="description">
-					Abstraction for the Spire API
+					Represents an application in the spire api.
 					
 				</div>
-				
-				
-				
-				<pre class="code">var api = new API(options);</pre>
 				
 				
 				
@@ -458,28 +451,10 @@ ul.inheritsList
 								<dd>Spire object</dd>
 						
 							<dt>
-								<span class="light fixedFont">{object}</span>  <b>opts</b>
-								<i>Optional</i>
+								<span class="light fixedFont">{object}</span>  <b>data</b>
+								
 							</dt>
-								<dd>Options</dd>
-						
-							<dt>
-								<span class="light fixedFont">{string}</span>  <b>opts.url</b>
-								<i>Optional</i>
-							</dt>
-								<dd>Spire api url</dd>
-						
-							<dt>
-								<span class="light fixedFont">{string}</span>  <b>opts.version</b>
-								<i>Optional</i>
-							</dt>
-								<dd>Version of the Spire api to use</dd>
-						
-							<dt>
-								<span class="light fixedFont">{string}</span>  <b>opts.timeout</b>
-								<i>Optional</i>
-							</dt>
-								<dd>Timeout for requests</dd>
+								<dd>Application data from the spire api</dd>
 						
 						</dl>
 					
@@ -502,15 +477,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name="accountFromUrlAndCapabilities"> </a>
+					<a name="authenticateMember"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>accountFromUrlAndCapabilities</b>(creds, cb)
+					<b>authenticateMember</b>(login, password, cb)
 					
 					</div>
 					<div class="description">
-						Get Account from url and capabilities.
+						Authenticates a member.  Returns a Member resource.  Error if authenication fails.
 						
 						
 					</div>
@@ -522,25 +497,19 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{object}</span> <b>creds</b>
+									<span class="light fixedFont">{string}</span> <b>login</b>
 									
 								</dt>
-								<dd>Url and Capabilities</dd>
+								<dd>Member login</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.url</b>
+									<span class="light fixedFont">{string}</span> <b>password</b>
 									
 								</dt>
-								<dd>Url</dd>
+								<dd>Member password</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
-									
-								</dt>
-								<dd>Capabilities</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
+									<span class="light fixedFont">{function (err|member)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -556,67 +525,28 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="authorization"> </a>
+					<a name="channelByName"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{string}</span>
-					<b>authorization</b>(resource, method)
+					
+					<b>channelByName</b>(channelName, cb)
 					
 					</div>
 					<div class="description">
-						Returns the Authorization header for the resource and method.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{<a href="../symbols/Resource.html">Resource</a>}</span> <b>resource</b>
-									
-								</dt>
-								<dd>Resource</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>method</b>
-									
-								</dt>
-								<dd>Method</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{string}</span> Authorization header for the resource</dd>
-							
-							</dl>
-						
-						
-						
+						Gets a channel by name.  Returns a Channel resource
 
-					<hr />
-				
-					<a name="billing"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>billing</b>(cb)
-					
-					</div>
-					<div class="description">
-						Get billing information for the account.
+Always gets a fresh value from the api.
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">spire.session.channelByName('name_of_channel', function (err, channel) {
+  if (!err) {
+    // `channel` now contains a channel object
+  }
+});</pre>
 					
 					
 					
@@ -625,58 +555,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{function (err|billingResource)}</span> <b>cb</b>
+									<span class="light fixedFont">{String}</span> <b>channelName</b>
 									
 								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="channelFromUrlAndCapabilities"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>channelFromUrlAndCapabilities</b>(creds, cb)
-					
-					</div>
-					<div class="description">
-						Get Channel from url and capabilities.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{object}</span> <b>creds</b>
-									
-								</dt>
-								<dd>Url and Capabilities</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.url</b>
-									
-								</dt>
-								<dd>Url</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
-									
-								</dt>
-								<dd>Capabilities</dd>
+								<dd>Name of channel</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
@@ -695,127 +577,26 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="createAccount"> </a>
+					<a name="channels"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>createAccount</b>(user, cb)
+					<b>channels</b>(cb)
 					
 					</div>
 					<div class="description">
-						Register for a new spire account, and authenticates as the newly created account
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{object}</span> <b>user</b>
-									
-								</dt>
-								<dd>User info</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>user.email</b>
-									
-								</dt>
-								<dd>Email</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>user.password</b>
-									
-								</dt>
-								<dd>Password</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>user.password_confirmation</b>
-									<i>Optional</i>
-								</dt>
-								<dd>Optional password confirmation</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
+						Gets the channels collection.  Returns a hash of Channel resources.
 
-					<hr />
-				
-					<a name="createSession"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>createSession</b>(secret, cb)
-					
-					</div>
-					<div class="description">
-						Creates a spire session from an account secret.
+Returns a value from the cache, if one if available.
 						
 						
 					</div>
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>secret</b>
-									
-								</dt>
-								<dd>The acccount secret</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="discover"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>discover</b>(cb)
-					
-					</div>
-					<div class="description">
-						Discovers urls from Spire API.  Since this description does not change often,
-we only make the request once and cache the result for subsequent calls.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">api.discover(function (err, discovered) {
+					<pre class="code">application.channels(function (err, channels) {
   if (!err) {
-    // ...
+    // `channels` is a hash of all the applications's channels
   }
 });</pre>
 					
@@ -826,7 +607,7 @@ we only make the request once and cache the result for subsequent calls.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{function(err|discovered)}</span> <b>cb</b>
+									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -842,18 +623,28 @@ we only make the request once and cache the result for subsequent calls.
 
 					<hr />
 				
-					<a name="getApplication"> </a>
+					<a name="channels$"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>getApplication</b>(key, cb)
+					<b>channels$</b>(cb)
 					
 					</div>
 					<div class="description">
-						Returns an application when passed an application key.
+						Gets the channels collection.  Returns a hash of Channel resources.
+
+Always gets a fresh value from the api.
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">application.channels$(function (err, channels) {
+  if (!err) {
+    // `channels` is a hash of all the applications's channels
+  }
+});</pre>
 					
 					
 					
@@ -862,13 +653,7 @@ we only make the request once and cache the result for subsequent calls.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>key</b>
-									
-								</dt>
-								<dd>Application key</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
+									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -884,63 +669,16 @@ we only make the request once and cache the result for subsequent calls.
 
 					<hr />
 				
-					<a name="login"> </a>
+					<a name="createChannel"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>login</b>(email, password, cb)
+					<b>createChannel</b>(name, cb)
 					
 					</div>
 					<div class="description">
-						Logs in with the given email and password.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>email</b>
-									
-								</dt>
-								<dd>Email</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>password</b>
-									
-								</dt>
-								<dd>Password</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="mediaType"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{string}</span>
-					<b>mediaType</b>(name)
-					
-					</div>
-					<div class="description">
-						Returns the MIME type for resourceName.
+						Creates a channel.  Returns a Channel resource.  Errors if a channel with the
+specified name exists.
 						
 						
 					</div>
@@ -953,11 +691,302 @@ we only make the request once and cache the result for subsequent calls.
 							
 								<dt>
 									<span class="light fixedFont">{string}</span> <b>name</b>
-									<i>Optional</i>
+									
 								</dt>
-								<dd>Name of the resource MIME type to return</dd>
+								<dd>Channel name</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
 							
 							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="createMember"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>createMember</b>(login, password, cb)
+					
+					</div>
+					<div class="description">
+						Creates a member.  Returns a Member resource.  Errors if a member with the
+specified login exists.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>login</b>
+									
+								</dt>
+								<dd>Member login</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>password</b>
+									
+								</dt>
+								<dd>Member password</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|member)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="createSubscription"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>createSubscription</b>(options, timeout, cb)
+					
+					</div>
+					<div class="description">
+						Creates a subscription to any number of channels.  Returns a Subscription
+resource.  Errors if a subscription with the specified name exists.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>options</b>
+									
+								</dt>
+								<dd>Options</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>options.name</b>
+									
+								</dt>
+								<dd>Subscription name</dd>
+							
+								<dt>
+									<span class="light fixedFont">{array}</span> <b>options.channelNames</b>
+									
+								</dt>
+								<dd>Channel names to subscribe to</dd>
+							
+								<dt>
+									<span class="light fixedFont">{array}</span> <b>options.channelUrls</b>
+									
+								</dt>
+								<dd>Channel urls to subscribe to</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>timeout</b>
+									
+								</dt>
+								<dd>Subscription timeout</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="memberByEmail"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>memberByEmail</b>(memberEmail, cb)
+					
+					</div>
+					<div class="description">
+						Gets a member by login.  Returns a Member resource
+
+Always gets a fresh value from the api.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">spire.session.memberByEmail('login_of_member', function (err, member) {
+  if (!err) {
+    // `member` now contains a member object
+  }
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>memberEmail</b>
+									
+								</dt>
+								<dd>Email of member</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|member)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="members"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>members</b>(cb)
+					
+					</div>
+					<div class="description">
+						Gets the members collection.  Returns a hash of Member resources.
+
+Returns a value from the cache, if one if available.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">application.members(function (err, members) {
+  if (!err) {
+    // `members` is a hash of all the applications's members
+  }
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|members)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="members$"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>members$</b>(cb)
+					
+					</div>
+					<div class="description">
+						Gets the members collection.  Returns a hash of Members resources.
+
+Always gets a fresh value from the api.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">application.members$(function (err, members) {
+  if (!err) {
+    // `members` is a hash of all the applications's members
+  }
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|members)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="name"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{string}</span>
+					<b>name</b>()
+					
+					</div>
+					<div class="description">
+						Returns the application name.
+						
+						
+					</div>
+					
+					
+					
 						
 						
 						
@@ -966,7 +995,7 @@ we only make the request once and cache the result for subsequent calls.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{string}</span> MIME type of the resource</dd>
+								<dd><span class="light fixedFont">{string}</span> Application name</dd>
 							
 							</dl>
 						
@@ -975,18 +1004,28 @@ we only make the request once and cache the result for subsequent calls.
 
 					<hr />
 				
-					<a name="passwordResetRequest"> </a>
+					<a name="subscriptionByName"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>passwordResetRequest</b>(email, cb)
+					<b>subscriptionByName</b>(subscriptionName, cb)
 					
 					</div>
 					<div class="description">
-						Request a password reset for email.
+						Gets a subscription by name.  Returns a Subscription resource
+
+Always gets a fresh value from the api.
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">spire.session.subscriptionByName('name_of_subscription', function (err, subscription) {
+  if (!err) {
+    // `subscription` now contains a subscription object
+  }
+});</pre>
 					
 					
 					
@@ -995,96 +1034,10 @@ we only make the request once and cache the result for subsequent calls.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>email</b>
+									<span class="light fixedFont">{String}</span> <b>subscriptionName</b>
 									
 								</dt>
-								<dd>Email</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="request"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>request</b>()
-					
-					</div>
-					<div class="description">
-						Make requests to the api.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">See:</dt>
-							
-								<dd>Resourse.prototype.request</dd>
-							
-							</dl>
-						
-
-					<hr />
-				
-					<a name="sessionFromUrlAndCapabilities"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>sessionFromUrlAndCapabilities</b>(creds, cb)
-					
-					</div>
-					<div class="description">
-						Get Session from url and capabilities.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{object}</span> <b>creds</b>
-									
-								</dt>
-								<dd>Url and Capabilities</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.url</b>
-									
-								</dt>
-								<dd>Url</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
-									
-								</dt>
-								<dd>Capabilities</dd>
+								<dd>Name of subscription</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
@@ -1103,18 +1056,28 @@ we only make the request once and cache the result for subsequent calls.
 
 					<hr />
 				
-					<a name="subscriptionFromUrlAndCapabilities"> </a>
+					<a name="subscriptions"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>subscriptionFromUrlAndCapabilities</b>(creds, cb)
+					<b>subscriptions</b>(cb)
 					
 					</div>
 					<div class="description">
-						Get Subscription from url and capabilities.
+						Gets the subscriptions collection.  Returns a hash of Subscription resources.
+
+Returns a value from the cache, if one if available.
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">application.subscriptions(function (err, subscriptions) {
+  if (!err) {
+    // `subscriptions` is a hash of all the applications's subscriptions
+  }
+});</pre>
 					
 					
 					
@@ -1123,25 +1086,7 @@ we only make the request once and cache the result for subsequent calls.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{object}</span> <b>creds</b>
-									
-								</dt>
-								<dd>Url and Capabilities</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.url</b>
-									
-								</dt>
-								<dd>Url</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
-									
-								</dt>
-								<dd>Capabilities</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									<span class="light fixedFont">{function (err|subscriptions)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -1157,18 +1102,28 @@ we only make the request once and cache the result for subsequent calls.
 
 					<hr />
 				
-					<a name="updateAccountWithUrlAndCapability"> </a>
+					<a name="subscriptions$"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>updateAccountWithUrlAndCapability</b>(account, cb)
+					<b>subscriptions$</b>(cb)
 					
 					</div>
 					<div class="description">
-						Update Account from url and capability.
+						Gets the subscriptions collection.  Returns a hash of Subscription resources.
+
+Always gets a fresh value from the api.
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">application.subscriptions$(function (err, subscriptions) {
+  if (!err) {
+    // `subscriptions` is a hash of all the application's subscriptions
+  }
+});</pre>
 					
 					
 					
@@ -1177,25 +1132,7 @@ we only make the request once and cache the result for subsequent calls.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{object}</span> <b>account</b>
-									
-								</dt>
-								<dd>Must contain at least Url and Capability</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.url</b>
-									
-								</dt>
-								<dd>Url</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-									
-								</dt>
-								<dd>Capability</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
+									<span class="light fixedFont">{function (err|subscriptions)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>

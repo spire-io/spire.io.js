@@ -195,9 +195,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/API.html">API</a></li>
 	
+	<li><a href="../symbols/Application.html">Application</a></li>
+	
 	<li><a href="../symbols/Billing.html">Billing</a></li>
 	
 	<li><a href="../symbols/Channel.html">Channel</a></li>
+	
+	<li><a href="../symbols/Member.html">Member</a></li>
 	
 	<li><a href="../symbols/Message.html">Message</a></li>
 	
@@ -370,7 +374,7 @@ ul.inheritsList
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/Resource.html">Resource</a>: </dt><dd><a href="../symbols/Resource.html#authorization">authorization</a>, <a href="../symbols/Resource.html#capabilities">capabilities</a>, <a href="../symbols/Resource.html#capability">capability</a>, <a href="../symbols/Resource.html#mediaType">mediaType</a>, <a href="../symbols/Resource.html#request">request</a>, <a href="../symbols/Resource.html#schema">schema</a>, <a href="../symbols/Resource.html#update">update</a>, <a href="../symbols/Resource.html#url">url</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/Resource.html">Resource</a>: </dt><dd><a href="../symbols/Resource.html#authorization">authorization</a>, <a href="../symbols/Resource.html#capabilities">capabilities</a>, <a href="../symbols/Resource.html#capability">capability</a>, <a href="../symbols/Resource.html#getIfCapable">getIfCapable</a>, <a href="../symbols/Resource.html#mediaType">mediaType</a>, <a href="../symbols/Resource.html#request">request</a>, <a href="../symbols/Resource.html#schema">schema</a>, <a href="../symbols/Resource.html#update">update</a>, <a href="../symbols/Resource.html#url">url</a></dd>
 				</dl>
 				
 			
@@ -428,10 +432,10 @@ listen for new events on the subscription.
 </code></pre>
 
 <p>By default this will get all events from the beginning of time.
-If you only want messages created from this point forward, pass { last: 'now' } in the options to `startListening`:
+If you only want messages created from this point forward, pass { min_timestamp: 'now' } in the options to `startListening`:
 
 <p><pre><code>
-   subscription.startListening({ last: 'now' });
+   subscription.startListening({ min_timestamp: 'now' });
 </code></pre>
 					
 				</div>
@@ -550,12 +554,6 @@ poll repeatedly.
 								<dd>Optional delay</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
-									<i>Optional</i>
-								</dt>
-								<dd>Optional ordering ('asc' or 'desc')</dd>
-							
-								<dt>
 									<span class="light fixedFont">{number}</span> <b>options.timeout</b>
 									<i>Optional</i>
 								</dt>
@@ -655,12 +653,6 @@ array of events if there are no new ones.
 								<dd>Optional delay</dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
-									<i>Optional</i>
-								</dt>
-								<dd>Optional ordering ('asc' or 'desc')</dd>
-							
-								<dt>
 									<span class="light fixedFont">{function (err|events)}</span> <b>cb</b>
 									
 								</dt>
@@ -714,10 +706,22 @@ array of events if there are no new ones.
 								<dd>Optional options argument</dd>
 							
 								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.min_timestamp</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional min_timestamp of events to receive</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.max_timestamp</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional max_timestamp of events to receive</dd>
+							
+								<dt>
 									<span class="light fixedFont">{number}</span> <b>options.last</b>
 									<i>Optional</i>
 								</dt>
-								<dd>Optional last event</dd>
+								<dd>Optional last message (same as min_timestamp)</dd>
 							
 								<dt>
 									<span class="light fixedFont">{number}</span> <b>options.delay</b>
@@ -730,12 +734,6 @@ array of events if there are no new ones.
 									<i>Optional</i>
 								</dt>
 								<dd>Optional timeout</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
-									<i>Optional</i>
-								</dt>
-								<dd>Optional ordering ('asc' or 'desc')</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
@@ -786,10 +784,10 @@ setTimout(function () {
  }, 100000);
 
 <p>By default this will get all events from the beginning of time.
-If you only want messages created from this point forward, pass { last: 'now' } in the options to `startListening`:
+If you only want messages created from this point forward, pass { min_timestamp: 'now' } in the options to `startListening`:
 
 <p><pre><code>
-   subscription.startListening({ last: 'now' });
+   subscription.startListening({ min_timestamp: 'now' });
 </code></pre></pre>
 					
 					
@@ -805,10 +803,22 @@ If you only want messages created from this point forward, pass { last: 'now' } 
 								<dd>Optional options argument</dd>
 							
 								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.min_timestamp</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional min_timestamp of events to receive</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>options.max_timestamp</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Optional max_timestamp of events to receive</dd>
+							
+								<dt>
 									<span class="light fixedFont">{number}</span> <b>options.last</b>
 									<i>Optional</i>
 								</dt>
-								<dd>Optional last message</dd>
+								<dd>Optional last message (same as min_timestamp)</dd>
 							
 								<dt>
 									<span class="light fixedFont">{number}</span> <b>options.delay</b>
@@ -821,12 +831,6 @@ If you only want messages created from this point forward, pass { last: 'now' } 
 									<i>Optional</i>
 								</dt>
 								<dd>Optional timeout</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>options.orderBy</b>
-									<i>Optional</i>
-								</dt>
-								<dd>Optional ordering ('asc' or 'desc')</dd>
 							
 								<dt>
 									<span class="light fixedFont">{function (err|messages)}</span> <b>cb</b>
@@ -882,7 +886,7 @@ If you only want messages created from this point forward, pass { last: 'now' } 
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue May 01 2012 14:32:46 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed May 16 2012 17:43:43 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

@@ -361,6 +361,7 @@ require.define("/spire.io.js", function (require, module, exports, __dirname, __
 
 var async = require('async')
   , API = require('./spire/api')
+  , Shred = require('shred')
   ;
 
 /**
@@ -387,12 +388,16 @@ var async = require('async')
  * @param {string} [opts.url] Spire url do use (defaults to 'https://api.spire.io')
  * @param {string} opts.version Version of Spire api to use (defaults to '1.0')
  * @param {number} opts.timeout Timeout for requests (defaults to 30 seconds)
+ * @param {boolean} opts.logCurl Log all requests as curl commands (defaults to false)
  */
 function Spire(opts) {
   opts = opts || {};
   this.api = new API(this, opts);
   this.session = null;
   this._opts_secret = opts.secret;
+  this.shred = new Shred({
+    logCurl: opts.logCurl
+  });
 }
 
 module.exports = Spire;
@@ -2199,8 +2204,6 @@ require.define("/spire/api/resource.js", function (require, module, exports, __d
  */
 
 var _ = require('underscore')
-  , Shred = require('shred')
-  , shred = new Shred()
   , ResponseError = require('./response_error')
   , EventEmitter = require('events').EventEmitter
   ;
@@ -2285,6 +2288,8 @@ module.exports = Resource;
  */
 Resource.defineRequest = function (obj, name, fn) {
   obj['_req_' + name] = function () {
+    var shred = this.spire.shred;
+
     var args = Array.prototype.slice.call(arguments);
     var callback = args.pop();
 
@@ -3532,1147 +3537,32 @@ require.define("/node_modules/underscore/underscore.js", function (require, modu
 
 });
 
-require.define("/node_modules/shred/package.json", function (require, module, exports, __dirname, __filename) {
-    module.exports = {"main":"./lib/shred.js"}
-});
+require.define("/spire/api/response_error.js", function (require, module, exports, __dirname, __filename) {
+    /**
+ * @fileOverview ResponseError class definition
+ */
 
-require.define("/node_modules/shred/lib/shred.js", function (require, module, exports, __dirname, __filename) {
-    // Shred is an HTTP client library intended to simplify the use of Node's
-// built-in HTTP library. In particular, we wanted to make it easier to interact
-// with HTTP-based APIs.
-// 
-// See the [examples](./examples.html) for more details.
-
-var _ = require("underscore")
-// Ax is a nice logging library we wrote. You can use any logger, providing it
-// has `info`, `warn`, `debug`, and `error` methods that take a string.
-  , Ax = require("ax")
-  , CookieJarLib = require( "cookiejar" )
-  , CookieJar = CookieJarLib.CookieJar
-;
-
-// Shred takes some options, including a logger and request defaults.
-
-var Shred = function(options) {
-  options = (options||{});
-  this.agent = options.agent;
-  this.defaults = options.defaults||{};
-  this.log = options.logger||(new Ax({ level: "info" }));
-  this._sharedCookieJar = new CookieJar();
-  this.logCurl = options.logCurl || false;
+/**
+ * ResponseError is a wrapper for request errors, this makes it easier to pass
+ * an error to the callbacks of the async functions that still retain their
+ * extra contextual information passed into the arguments of requests's error
+ * handler
+ *
+ * @class HTTP Response Error
+ * @constructor
+ * @param {object} response Response HTTP client
+ * @param {object} request Request description
+ */
+var ResponseError = function (response, request) {
+  this.message = 'ResponseError: ' + response.status;
+  this.response = response;
+  this.status = response.status;
+  this.request = request;
 };
 
-// Most of the real work is done in the request and reponse classes.
- 
-Shred.Request = require("./shred/request");
-Shred.Response = require("./shred/response");
+ResponseError.prototype = new Error();
 
-// The `request` method kicks off a new request, instantiating a new `Request`
-// object and passing along whatever default options we were given.
-
-Shred.prototype = {
-  request: function(options) {
-    options.logger = this.log;
-    options.logCurl = options.logCurl || this.logCurl;
-    options.cookieJar = ( 'cookieJar' in options ) ? options.cookieJar : this._sharedCookieJar; // let them set cookieJar = null
-    options.agent = options.agent || this.agent;
-    return new Shred.Request(_.defaults(options,this.defaults));
-  }
-};
-
-// Define a bunch of convenience methods so that you don't have to include
-// a `method` property in your request options.
-
-"get put post delete".split(" ").forEach(function(method) {
-  Shred.prototype[method] = function(options) {
-    options.method = method;
-    return this.request(options);
-  };
-});
-
-
-module.exports = Shred;
-
-});
-
-require.define("/node_modules/shred/node_modules/ax/package.json", function (require, module, exports, __dirname, __filename) {
-    module.exports = {"main":"./lib/ax.js"}
-});
-
-require.define("/node_modules/shred/node_modules/ax/lib/ax.js", function (require, module, exports, __dirname, __filename) {
-    var inspect = require("util").inspect
-  , fs = require("fs")
-  , colors = require('colors')
-  , _ = require('underscore')
-;
-
-
-// this is a quick-and-dirty logger. there are other nicer loggers out there
-// but the ones i found were also somewhat involved. this one has a Ruby
-// logger type interface and color codes the console output
-//
-// we can easily replace this, provide the info, debug, etc. methods are the
-// same. or, we can change Haiku to use a more standard node.js interface
-
-var format = function(level,message) {
-  var debug = (level=="debug"||level=="error");
-  if (!message) { return message.toString(); }
-  if (typeof(message) == "object") {
-    if (message instanceof Error && debug) {
-      return message.stack;
-    } else {
-      return inspect(message);
-    }
-  } else {
-    return message.toString();
-  }
-};
-
-var noOp = function(message) { return this; }
-var makeLogger = function(level,fn) {
-  return function(message) { 
-    this.stream.write(this.format(level, message)+"\n");
-    return this;
-  }
-};
-
-var Logger = function(options) {
-  var logger = this;
-	var options = options||{};
-
-  // Default options
-  logger.options = _.defaults(options, {
-      level: 'info'
-    , timestamp: true
-    , colors: {
-        info: 'green'
-      , warn: 'yellow'
-      , debug: 'cyan'
-      , error: 'red'
-      }
-    , prefix: ''
-  });
-
-  // Allows a prefix to be added to the message.
-  //
-  //    var logger = new Ax({ module: 'Haiku' })
-  //    logger.warn('this is going to be awesome!');
-  //    //=> Haiku: this is going to be awesome!
-  //
-  if (logger.options.module){
-    logger.options.prefix = logger.options.module;
-  }
-
-  // Write to stderr or a file
-  if (logger.options.file){
-    logger.stream = fs.createWriteStream(logger.options.file, {"flags": "a"});
-  } else {
-      if(process.title === "node")
-	  logger.stream = process.stderr;
-      else if(process.title === "browser")
-	  logger.stream = function () {
-      // Work around weird console context issue: http://code.google.com/p/chromium/issues/detail?id=48662
-      return console[logger.options.level].apply(console, arguments);
-    };
-  }
-
-  switch(logger.options.level){
-    case 'debug':
-      _.each(['debug', 'info', 'warn'], function(level){
-        logger[level] = Logger.writer(level);
-      });
-    case 'info':
-      _.each(['info', 'warn'], function(level){
-        logger[level] = Logger.writer(level);
-      });
-    case 'warn':
-      logger.warn = Logger.writer('warn');
-  }
-}
-
-// Used to define logger methods
-Logger.writer = function(level){
-  return function(message){
-    var logger = this;
-
-    if(process.title === "node")
-	logger.stream.write(logger.format(level, message) + '\n');
-    else if(process.title === "browser")
-	logger.stream(logger.format(level, message) + '\n');
-
-  };
-}
-
-
-Logger.prototype = {
-  info: function(){},
-  debug: function(){},
-  warn: function(){},
-  error: Logger.writer('error'),
-  format: function(level, message){
-    if (! message) return '';
-
-    var logger = this
-      , prefix = logger.options.prefix
-      , timestamp = logger.options.timestamp ? " " + (new Date().toISOString()) : ""
-      , color = logger.options.colors[level]
-    ;
-
-    return (prefix + timestamp + ": " + message)[color];
-  }
-};
-
-module.exports = Logger;
-
-});
-
-require.define("util", function (require, module, exports, __dirname, __filename) {
-    // todo
-
-});
-
-require.define("fs", function (require, module, exports, __dirname, __filename) {
-    // nothing to see here... no file methods for the browser
-
-});
-
-require.define("/node_modules/shred/node_modules/ax/node_modules/colors/package.json", function (require, module, exports, __dirname, __filename) {
-    module.exports = {"main":"colors"}
-});
-
-require.define("/node_modules/shred/node_modules/ax/node_modules/colors/colors.js", function (require, module, exports, __dirname, __filename) {
-    /*
-colors.js
-
-Copyright (c) 2010 Alexis Sellier (cloudhead) , Marak Squires
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-*/
-
-// prototypes the string object to have additional method calls that add terminal colors
-var isHeadless = (typeof module !== 'undefined');
-['bold', 'underline', 'italic', 'inverse', 'grey', 'yellow', 'red', 'green', 'blue', 'white', 'cyan', 'magenta'].forEach(function (style) {
-
-  // __defineGetter__ at the least works in more browsers
-  // http://robertnyman.com/javascript/javascript-getters-setters.html
-  // Object.defineProperty only works in Chrome
-  String.prototype.__defineGetter__(style, function () {
-    return isHeadless ?
-             stylize(this, style) : // for those running in node (headless environments)
-             this.replace(/( )/, '$1'); // and for those running in browsers:
-             // re: ^ you'd think 'return this' works (but doesn't) so replace coerces the string to be a real string
-  });
-});
-
-// prototypes string with method "rainbow"
-// rainbow will apply a the color spectrum to a string, changing colors every letter
-String.prototype.__defineGetter__('rainbow', function () {
-  if (!isHeadless) {
-    return this.replace(/( )/, '$1');
-  }
-  var rainbowcolors = ['red','yellow','green','blue','magenta']; //RoY G BiV
-  var exploded = this.split("");
-  var i=0;
-  exploded = exploded.map(function(letter) {
-    if (letter==" ") {
-      return letter;
-    }
-    else {
-      return stylize(letter,rainbowcolors[i++ % rainbowcolors.length]);
-    }
-  });
-  return exploded.join("");
-});
-
-function stylize(str, style) {
-  var styles = {
-  //styles
-  'bold'      : [1,  22],
-  'italic'    : [3,  23],
-  'underline' : [4,  24],
-  'inverse'   : [7,  27],
-  //grayscale
-  'white'     : [37, 39],
-  'grey'      : [90, 39],
-  'black'     : [90, 39],
-  //colors
-  'blue'      : [34, 39],
-  'cyan'      : [36, 39],
-  'green'     : [32, 39],
-  'magenta'   : [35, 39],
-  'red'       : [31, 39],
-  'yellow'    : [33, 39]
-  };
-  return '\033[' + styles[style][0] + 'm' + str +
-         '\033[' + styles[style][1] + 'm';
-};
-
-// don't summon zalgo
-String.prototype.__defineGetter__('zalgo', function () {
-  return zalgo(this);
-});
-
-// please no
-function zalgo(text, options) {
-  var soul = {
-    "up" : [
-      '̍','̎','̄','̅',
-      '̿','̑','̆','̐',
-      '͒','͗','͑','̇',
-      '̈','̊','͂','̓',
-      '̈','͊','͋','͌',
-      '̃','̂','̌','͐',
-      '̀','́','̋','̏',
-      '̒','̓','̔','̽',
-      '̉','ͣ','ͤ','ͥ',
-      'ͦ','ͧ','ͨ','ͩ',
-      'ͪ','ͫ','ͬ','ͭ',
-      'ͮ','ͯ','̾','͛',
-      '͆','̚'
-      ],
-    "down" : [
-      '̖','̗','̘','̙',
-      '̜','̝','̞','̟',
-      '̠','̤','̥','̦',
-      '̩','̪','̫','̬',
-      '̭','̮','̯','̰',
-      '̱','̲','̳','̹',
-      '̺','̻','̼','ͅ',
-      '͇','͈','͉','͍',
-      '͎','͓','͔','͕',
-      '͖','͙','͚','̣'
-      ],
-    "mid" : [
-      '̕','̛','̀','́',
-      '͘','̡','̢','̧',
-      '̨','̴','̵','̶',
-      '͜','͝','͞',
-      '͟','͠','͢','̸',
-      '̷','͡',' ҉'
-      ]
-  },
-  all = [].concat(soul.up, soul.down, soul.mid),
-  zalgo = {};
-
-  function randomNumber(range) {
-    r = Math.floor(Math.random()*range);
-    return r;
-  };
-
-  function is_char(character) {
-    var bool = false;
-    all.filter(function(i){
-     bool = (i == character);
-    });
-    return bool;
-  }
-
-  function heComes(text, options){
-      result = '';
-      options = options || {};
-      options["up"] = options["up"] || true;
-      options["mid"] = options["mid"] || true;
-      options["down"] = options["down"] || true;
-      options["size"] = options["size"] || "maxi";
-      var counts;
-      text = text.split('');
-       for(var l in text){
-         if(is_char(l)) { continue; }
-         result = result + text[l];
-
-        counts = {"up" : 0, "down" : 0, "mid" : 0};
-
-        switch(options.size) {
-          case 'mini':
-            counts.up = randomNumber(8);
-            counts.min= randomNumber(2);
-            counts.down = randomNumber(8);
-          break;
-          case 'maxi':
-            counts.up = randomNumber(16) + 3;
-            counts.min = randomNumber(4) + 1;
-            counts.down = randomNumber(64) + 3;
-          break;
-          default:
-            counts.up = randomNumber(8) + 1;
-            counts.mid = randomNumber(6) / 2;
-            counts.down= randomNumber(8) + 1;
-          break;
-        }
-
-        var arr = ["up", "mid", "down"];
-        for(var d in arr){
-          var index = arr[d];
-          for (var i = 0 ; i <= counts[index]; i++)
-          {
-            if(options[index]) {
-                result = result + soul[index][randomNumber(soul[index].length)];
-              }
-            }
-          }
-        }
-      return result;
-  };
-  return heComes(text);
-}
-
-});
-
-require.define("/node_modules/shred/node_modules/cookiejar/package.json", function (require, module, exports, __dirname, __filename) {
-    module.exports = {"main":"cookiejar.js"}
-});
-
-require.define("/node_modules/shred/node_modules/cookiejar/cookiejar.js", function (require, module, exports, __dirname, __filename) {
-    exports.CookieAccessInfo=CookieAccessInfo=function CookieAccessInfo(domain,path,secure,script) {
-    if(this instanceof CookieAccessInfo) {
-    	this.domain=domain||undefined;
-    	this.path=path||"/";
-    	this.secure=!!secure;
-    	this.script=!!script;
-    	return this;
-    }
-    else {
-        return new CookieAccessInfo(domain,path,secure,script)    
-    }
-}
-
-exports.Cookie=Cookie=function Cookie(cookiestr) {
-	if(cookiestr instanceof Cookie) {
-		return cookiestr;
-	}
-    else {
-        if(this instanceof Cookie) {
-        	this.name = null;
-        	this.value = null;
-        	this.expiration_date = Infinity;
-        	this.path = "/";
-        	this.domain = null;
-        	this.secure = false; //how to define?
-        	this.noscript = false; //httponly
-        	if(cookiestr) {
-        		this.parse(cookiestr)
-        	}
-        	return this;
-        }
-        return new Cookie(cookiestr)
-    }
-}
-
-Cookie.prototype.toString = function toString() {
-	var str=[this.name+"="+this.value];
-	if(this.expiration_date !== Infinity) {
-		str.push("expires="+(new Date(this.expiration_date)).toGMTString());
-	}
-	if(this.domain) {
-		str.push("domain="+this.domain);
-	}
-	if(this.path) {
-		str.push("path="+this.path);
-	}
-	if(this.secure) {
-		str.push("secure");
-	}
-	if(this.noscript) {
-		str.push("httponly");
-	}
-	return str.join("; ");
-}
-
-Cookie.prototype.toValueString = function toValueString() {
-	return this.name+"="+this.value;
-}
-
-var cookie_str_splitter=/[:](?=\s*[a-zA-Z0-9_\-]+\s*[=])/g
-Cookie.prototype.parse = function parse(str) {
-	if(this instanceof Cookie) {
-    	var parts=str.split(";")
-    	, pair=parts[0].match(/([^=]+)=((?:.|\n)*)/)
-    	, key=pair[1]
-    	, value=pair[2];
-    	this.name = key;
-    	this.value = value;
-    
-    	for(var i=1;i<parts.length;i++) {
-    		pair=parts[i].match(/([^=]+)(?:=((?:.|\n)*))?/)
-    		, key=pair[1].trim().toLowerCase()
-    		, value=pair[2];
-    		switch(key) {
-    			case "httponly":
-    				this.noscript = true;
-    			break;
-    			case "expires":
-    				this.expiration_date = value
-    					? Number(Date.parse(value))
-    					: Infinity;
-    			break;
-    			case "path":
-    				this.path = value
-    					? value.trim()
-    					: "";
-    			break;
-    			case "domain":
-    				this.domain = value
-    					? value.trim()
-    					: "";
-    			break;
-    			case "secure":
-    				this.secure = true;
-    			break
-    		}
-    	}
-    
-    	return this;
-	}
-    return new Cookie().parse(str)
-}
-
-Cookie.prototype.matches = function matches(access_info) {
-	if(this.noscript && access_info.script
-	|| this.secure && !access_info.secure
-	|| !this.collidesWith(access_info)) {
-		return false
-	}
-	return true;
-}
-
-Cookie.prototype.collidesWith = function collidesWith(access_info) {
-	if((this.path && !access_info.path) || (this.domain && !access_info.domain)) {
-		return false
-	}
-	if(this.path && access_info.path.indexOf(this.path) !== 0) {
-		return false;
-	}
-	if (this.domain===access_info.domain) {
-		return true;
-	}
-	else if(this.domain && this.domain.charAt(0)===".")
-	{
-		var wildcard=access_info.domain.indexOf(this.domain.slice(1))
-		if(wildcard===-1 || wildcard!==access_info.domain.length-this.domain.length+1) {
-			return false;
-		}
-	}
-	else if(this.domain){
-		return false
-	}
-	return true;
-}
-
-exports.CookieJar=CookieJar=function CookieJar() {
-	if(this instanceof CookieJar) {
-    	var cookies = {} //name: [Cookie]
-    
-    	this.setCookie = function setCookie(cookie) {
-    		cookie = Cookie(cookie);
-    		//Delete the cookie if the set is past the current time
-    		var remove = cookie.expiration_date <= Date.now();
-    		if(cookie.name in cookies) {
-    			var cookies_list = cookies[cookie.name];
-    			for(var i=0;i<cookies_list.length;i++) {
-    				var collidable_cookie = cookies_list[i];
-    				if(collidable_cookie.collidesWith(cookie)) {
-    					if(remove) {
-    						cookies_list.splice(i,1);
-    						if(cookies_list.length===0) {
-    							delete cookies[cookie.name]
-    						}
-    						return false;
-    					}
-    					else {
-    						return cookies_list[i]=cookie;
-    					}
-    				}
-    			}
-    			if(remove) {
-    				return false;
-    			}
-    			cookies_list.push(cookie);
-    			return cookie;
-    		}
-    		else if(remove){
-    			return false;
-    		}
-    		else {
-    			return cookies[cookie.name]=[cookie];
-    		}
-    	}
-    	//returns a cookie
-    	this.getCookie = function getCookie(cookie_name,access_info) {
-    		var cookies_list = cookies[cookie_name];
-    		for(var i=0;i<cookies_list.length;i++) {
-    			var cookie = cookies_list[i];
-    			if(cookie.expiration_date <= Date.now()) {
-    				if(cookies_list.length===0) {
-    					delete cookies[cookie.name]
-    				}
-    				continue;
-    			}
-    			if(cookie.matches(access_info)) {
-    				return cookie;
-    			}
-    		}
-    	}
-    	//returns a list of cookies
-    	this.getCookies = function getCookies(access_info) {
-    		var matches=[];
-    		for(var cookie_name in cookies) {
-    			var cookie=this.getCookie(cookie_name,access_info);
-    			if (cookie) {
-    				matches.push(cookie);
-    			}
-    		}
-    		matches.toString=function toString(){return matches.join(":");}
-            matches.toValueString=function() {return matches.map(function(c){return c.toValueString();}).join(';');}
-    		return matches;
-    	}
-    
-    	return this;
-	}
-    return new CookieJar()
-}
-
-
-//returns list of cookies that were set correctly
-CookieJar.prototype.setCookies = function setCookies(cookies) {
-	cookies=Array.isArray(cookies)
-		?cookies
-		:cookies.split(cookie_str_splitter);
-	var successful=[]
-	for(var i=0;i<cookies.length;i++) {
-		var cookie = Cookie(cookies[i]);
-		if(this.setCookie(cookie)) {
-			successful.push(cookie);
-		}
-	}
-	return successful;
-}
-
-});
-
-require.define("/node_modules/shred/lib/shred/request.js", function (require, module, exports, __dirname, __filename) {
-    // The request object encapsulates a request, creating a Node.js HTTP request and
-// then handling the response.
-
-var HTTP = require("http")
-  , HTTPS = require("https")
-  , parseUri = require("./parseUri")
-  , Emitter = require('events').EventEmitter
-  , sprintf = require("sprintf").sprintf
-  , _ = require("underscore")
-  , Response = require("./response")
-  , HeaderMixins = require("./mixins/headers")
-  , Content = require("./content")
-;
-
-var STATUS_CODES = HTTP.STATUS_CODES;
-
-// The Shred object itself constructs the `Request` object. You should rarely
-// need to do this directly.
-
-var Request = function(options) {
-  this.log = options.logger;
-  this.cookieJar = options.cookieJar;
-  this.encoding = options.encoding;
-  this.logCurl = options.logCurl;
-  processOptions(this,options||{});
-  createRequest(this);
-};
-
-// A `Request` has a number of properties, many of which help with details like
-// URL parsing or defaulting the port for the request.
-
-Object.defineProperties(Request.prototype, {
-
-// - **url**. You can set the `url` property with a valid URL string and all the
-//   URL-related properties (host, port, etc.) will be automatically set on the
-//   request object.
-
-  url: {
-    get: function() {
-      if (!this.scheme) { return null; }
-      return sprintf("%s://%s:%s%s",
-          this.scheme, this.host, this.port,
-          (this.proxy ? "/" : this.path) +
-          (this.query ? ("?" + this.query) : ""));
-    },
-    set: function(_url) {
-      _url = parseUri(_url);
-      this.scheme = _url.protocol;
-      this.host = _url.host;
-      this.port = _url.port;
-      this.path = _url.path;
-      this.query = _url.query;
-      return this;
-    },
-    enumerable: true
-  },
-
-// - **headers**. Returns a hash representing the request headers. You can't set
-//   this directly, only get it. You can add or modify headers by using the
-//   `setHeader` or `setHeaders` method. This ensures that the headers are
-//   normalized - that is, you don't accidentally send `Content-Type` and
-//   `content-type` headers. Keep in mind that if you modify the returned hash,
-//   it will *not* modify the request headers.
-
-  headers: {
-    get: function() {
-      return this.getHeaders();
-    },
-    enumerable: true
-  },
-
-// - **port**. Unless you set the `port` explicitly or include it in the URL, it
-//   will default based on the scheme.
-
-  port: {
-    get: function() {
-      if (!this._port) {
-        switch(this.scheme) {
-          case "https": return this._port = 443;
-          case "http":
-          default: return this._port = 80;
-        }
-      }
-      return this._port;
-    },
-    set: function(value) { this._port = value; return this; },
-    enumerable: true
-  },
-
-// - **method**. The request method - `get`, `put`, `post`, etc. that will be
-//   used to make the request. Defaults to `get`.
-
-  method: {
-    get: function() {
-      return this._method = (this._method||"GET");
-    },
-    set: function(value) {
-      this._method = value; return this;
-    },
-    enumerable: true
-  },
-
-// - **query**. Can be set either with a query string or a hash (object). Get
-//   will always return a properly escaped query string or null if there is no
-//   query component for the request.
-
-  query: {
-    get: function() {return this._query;},
-    set: function(value) {
-      var stringify = function (hash) {
-        var query = "";
-        for (var key in hash) {
-          query += encodeURIComponent(key) + '=' + encodeURIComponent(hash[key]) + '&';
-        }
-        // Remove the last '&'
-        query = query.slice(0, -1);
-        return query;
-      }
-
-      if (value) {
-        if (typeof value === 'object') {
-          value = stringify(value);
-        }
-        this._query = value;
-      } else {
-        this._query = "";
-      }
-      return this;
-    },
-    enumerable: true
-  },
-
-// - **parameters**. This will return the query parameters in the form of a hash
-//   (object).
-
-  parameters: {
-    get: function() { return QueryString.parse(this._query||""); },
-    enumerable: true
-  },
-
-// - **content**. (Aliased as `body`.) Set this to add a content entity to the
-//   request. Attempts to use the `content-type` header to determine what to do
-//   with the content value. Get this to get back a [`Content`
-//   object](./content.html).
-
-  body: {
-    get: function() { return this._body; },
-    set: function(value) {
-      this._body = new Content({
-        data: value,
-        type: this.getHeader("Content-Type")
-      });
-      this.setHeader("Content-Type",this.content.type);
-      this.setHeader("Content-Length",this.content.length);
-      return this;
-    },
-    enumerable: true
-  },
-
-// - **timeout**. Used to determine how long to wait for a response. Does not
-//   distinguish between connect timeouts versus request timeouts. Set either in
-//   milliseconds or with an object with temporal attributes (hours, minutes,
-//   seconds) and convert it into milliseconds. Get will always return
-//   milliseconds.
-
-  timeout: {
-    get: function() { return this._timeout; }, // in milliseconds
-    set: function(timeout) {
-      var request = this
-        , milliseconds = 0;
-      ;
-      if (!timeout) return this;
-      if (typeof timeout==="number") { milliseconds = timeout; }
-      else {
-        milliseconds = (timeout.milliseconds||0) +
-          (1000 * ((timeout.seconds||0) +
-              (60 * ((timeout.minutes||0) +
-                (60 * (timeout.hours||0))))));
-      }
-      this._timeout = milliseconds;
-      return this;
-    },
-    enumerable: true
-  }
-});
-
-// Alias `body` property to `content`. Since the [content object](./content.html)
-// has a `body` attribute, it's preferable to use `content` since you can then
-// access the raw content data using `content.body`.
-
-Object.defineProperty(Request.prototype,"content",
-    Object.getOwnPropertyDescriptor(Request.prototype, "body"));
-
-// The `Request` object can be pretty overwhelming to view using the built-in
-// Node.js inspect method. We want to make it a bit more manageable. This
-// probably goes [too far in the other
-// direction](https://github.com/spire-io/shred/issues/2).
-
-_.extend(Request.prototype,{
-  inspect: function() {
-    var request = this;
-    var headers = _(request.headers).reduce(function(array,value,key){
-      array.push("\t" + key + ": " + value); return array;
-    },[]).join("\n");
-    var summary = ["<Shred Request> ", request.method.toUpperCase(),
-        request.url].join(" ")
-    return [ summary, "- Headers:", headers].join("\n");
-  }
-});
-
-// Allow chainable 'on's:  shred.get({ ... }).on( ... ).  You can pass in a
-// single function, a pair (event, function), or a hash:
-// { event: function, event: function }
-_.extend(Request.prototype,{
-  on: function(eventOrHash, listener) {
-    var emitter = this.emitter;
-    // Pass in a single argument as a function then make it the default response handler
-    if (arguments.length === 1 && typeof(eventOrHash) === 'function') {
-      emitter.on('response', eventOrHash);
-    } else if (arguments.length === 1 && typeof(eventOrHash) === 'object') {
-      _(eventOrHash).each(function(value,key) {
-        emitter.on(key,value);
-      });
-    } else {
-      emitter.on(eventOrHash, listener);
-    }
-    return this;
-  }
-});
-
-// Add in the header methods. Again, these ensure we don't get the same header
-// multiple times with different case conventions.
-HeaderMixins.gettersAndSetters(Request);
-
-// `processOptions` is called from the constructor to handle all the work
-// associated with making sure we do our best to ensure we have a valid request.
-
-var processOptions = function(request,options) {
-
-  request.log.debug("Processing request options ..");
-
-  // We'll use `request.emitter` to manage the `on` event handlers.
-  request.emitter = (new Emitter);
-
-  request.agent = options.agent;
-
-  // Set up the handlers ...
-  if (options.on) {
-    _(options.on).each(function(value,key) {
-      request.emitter.on(key,value);
-    });
-  }
-
-  // Make sure we were give a URL or a host
-  if (!options.url && !options.host) {
-    request.emitter.emit("request_error",
-        new Error("No url or url options (host, port, etc.)"));
-    return;
-  }
-
-  // Allow for the [use of a proxy](http://www.jmarshall.com/easy/http/#proxies).
-
-  if (options.url) {
-    if (options.proxy) {
-      request.url = options.proxy;
-      request.path = options.url;
-    } else {
-      request.url = options.url;
-    }
-  }
-
-  // Set the remaining options.
-  request.query = options.query||options.parameters||request.query ;
-  request.method = options.method;
-  request.setHeader("user-agent",options.agent||"Shred for Node.js, Version 0.5.0");
-  request.setHeaders(options.headers);
-
-  if (request.cookieJar) {
-    var cookies = request.cookieJar.getCookies( CookieAccessInfo( request.host, request.path ) );
-    if (cookies.length) {
-      var cookieString = request.getHeader('cookie')||'';
-      for (var cookieIndex = 0; cookieIndex < cookies.length; ++cookieIndex) {
-          if ( cookieString.length && cookieString[ cookieString.length - 1 ] != ';' )
-          {
-              cookieString += ';';
-          }
-          cookieString += cookies[ cookieIndex ].name + '=' + cookies[ cookieIndex ].value + ';';
-      }
-      request.setHeader("cookie", cookieString);
-    }
-  }
-  
-  // The content entity can be set either using the `body` or `content` attributes.
-  if (options.body||options.content) {
-    request.content = options.body||options.content;
-  }
-  request.timeout = options.timeout;
-
-};
-
-// `createRequest` is also called by the constructor, after `processOptions`.
-// This actually makes the request and processes the response, so `createRequest`
-// is a bit of a misnomer.
-
-var createRequest = function(request) {
-  var timeout ;
-
-  request.log.debug("Creating request ..");
-  request.log.debug(request);
-
-  var reqParams = {
-    host: request.host,
-    port: request.port,
-    method: request.method,
-    path: request.path + (request.query ? '?'+request.query : ""),
-    headers: request.getHeaders(),
-    // Node's HTTP/S modules will ignore this, but we are using the
-    // browserify-http module in the browser for both HTTP and HTTPS, and this
-    // is how you differentiate the two.
-    scheme: request.scheme,
-    // Use a provided agent.  'Undefined' is the default, which uses a global
-    // agent.
-    agent: request.agent
-  };
-
-  if (request.logCurl) {
-    logCurl(request);
-  }
-
-  var http = request.scheme == "http" ? HTTP : HTTPS;
-
-  // Set up the real request using the selected library. The request won't be
-  // sent until we call `.end()`.
-  request._raw = http.request(reqParams, function(response) {
-    request.log.debug("Received response ..");
-
-    // We haven't timed out and we have a response, so make sure we clear the
-    // timeout so it doesn't fire while we're processing the response.
-    clearTimeout(timeout);
-
-    // Construct a Shred `Response` object from the response. This will stream
-    // the response, thus the need for the callback. We can access the response
-    // entity safely once we're in the callback.
-    response = new Response(response, request, function(response) {
-
-      // Set up some event magic. The precedence is given first to
-      // status-specific handlers, then to responses for a given event, and then
-      // finally to the more general `response` handler. In the last case, we
-      // need to first make sure we're not dealing with a a redirect.
-      var emit = function(event) {
-        var emitter = request.emitter;
-        var textStatus = STATUS_CODES[response.status] ? STATUS_CODES[response.status].toLowerCase() : null;
-        if (emitter.listeners(response.status).length > 0 || emitter.listeners(textStatus).length > 0) {
-          emitter.emit(response.status, response);
-          emitter.emit(textStatus, response);
-        } else {
-          if (emitter.listeners(event).length>0) {
-            emitter.emit(event, response);
-          } else if (!response.isRedirect) {
-            emitter.emit("response", response);
-            console.warn("Request has no event listener for status code " + response.status);
-          }
-        }
-      };
-
-      // Next, check for a redirect. We simply repeat the request with the URL
-      // given in the `Location` header. We fire a `redirect` event.
-      if (response.isRedirect) {
-        request.log.debug("Redirecting to "
-            + response.getHeader("Location"));
-        request.url = response.getHeader("Location");
-        emit("redirect");
-        createRequest(request);
-
-      // Okay, it's not a redirect. Is it an error of some kind?
-      } else if (response.isError) {
-        emit("error");
-      } else {
-      // It looks like we're good shape. Trigger the `success` event.
-        emit("success");
-      }
-    });
-  });
-
-  // We're still setting up the request. Next, we're going to handle error cases
-  // where we have no response. We don't emit an error event because that event
-  // takes a response. We don't response handlers to have to check for a null
-  // value. However, we [should introduce a different event
-  // type](https://github.com/spire-io/shred/issues/3) for this type of error.
-  request._raw.on("error", function(error) {
-    request.emitter.emit("request_error", error);
-  });
-
-  request._raw.on("socket", function(socket) {
-    request.emitter.emit("socket", socket);
-  });
-
-  // TCP timeouts should also trigger the "response_error" event.
-  request._raw.on('socket', function () {
-    request._raw.socket.on('timeout', function () {
-      // This should trigger the "error" event on the raw request, which will
-      // trigger the "response_error" on the shred request.
-      request._raw.abort();
-    });
-  });
-
-
-  // We're almost there. Next, we need to write the request entity to the
-  // underlying request object.
-  if (request.content) {
-    request.log.debug("Streaming body: '" +
-        request.content.body.slice(0,59) + "' ... ");
-    request._raw.write(request.content.body);
-  }
-
-  // Finally, we need to set up the timeout. We do this last so that we don't
-  // start the clock ticking until the last possible moment.
-  if (request.timeout) {
-    timeout = setTimeout(function() {
-      request.log.debug("Timeout fired, aborting request ...");
-      request._raw.abort();
-      request.emitter.emit("timeout", request);
-    },request.timeout);
-  }
-
-  // The `.end()` method will cause the request to fire. Technically, it might
-  // have already sent the headers and body.
-  request.log.debug("Sending request ...");
-  request._raw.end();
-};
-
-// Logs the curl command for the request.
-var logCurl = function (req) {
-  var headers = req.getHeaders();
-  var headerString = "";
-
-  for (var key in headers) {
-    headerString += '-H "' + key + ": " + headers[key] + '" ';
-  }
-
-  var bodyString = ""
-
-  if (req.content) {
-    bodyString += "-d '" + req.content.body + " ";
-  }
-
-  var query = req.query ? '?' + req.query : "";
-
-  console.log("curl " +
-    "-X " + req.method.toUpperCase() + " " +
-    req.scheme + "://" + req.host + ":" + req.port + req.path + query + " " +
-    headerString +
-    bodyString
-  );
-};
-
-
-module.exports = Request;
-
-});
-
-require.define("http", function (require, module, exports, __dirname, __filename) {
-    // todo
-
-});
-
-require.define("https", function (require, module, exports, __dirname, __filename) {
-    // todo
-
-});
-
-require.define("/node_modules/shred/lib/shred/parseUri.js", function (require, module, exports, __dirname, __filename) {
-    // parseUri 1.2.2
-// (c) Steven Levithan <stevenlevithan.com>
-// MIT License
-
-function parseUri (str) {
-	var	o   = parseUri.options,
-		m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
-		uri = {},
-		i   = 14;
-
-	while (i--) uri[o.key[i]] = m[i] || "";
-
-	uri[o.q.name] = {};
-	uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
-		if ($1) uri[o.q.name][$1] = $2;
-	});
-
-	return uri;
-};
-
-parseUri.options = {
-	strictMode: false,
-	key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
-	q:   {
-		name:   "queryKey",
-		parser: /(?:^|&)([^&=]*)=?([^&]*)/g
-	},
-	parser: {
-		strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-		loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
-	}
-};
-
-module.exports = parseUri;
+module.exports = ResponseError;
 
 });
 
@@ -4848,945 +3738,6 @@ EventEmitter.prototype.listeners = function(type) {
   }
   return this._events[type];
 };
-
-});
-
-require.define("/node_modules/shred/node_modules/sprintf/package.json", function (require, module, exports, __dirname, __filename) {
-    module.exports = {"main":"./lib/sprintf"}
-});
-
-require.define("/node_modules/shred/node_modules/sprintf/lib/sprintf.js", function (require, module, exports, __dirname, __filename) {
-    /**
-sprintf() for JavaScript 0.7-beta1
-http://www.diveintojavascript.com/projects/javascript-sprintf
-
-Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of sprintf() for JavaScript nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-Changelog:
-2010.11.07 - 0.7-beta1-node
-  - converted it to a node.js compatible module
-
-2010.09.06 - 0.7-beta1
-  - features: vsprintf, support for named placeholders
-  - enhancements: format cache, reduced global namespace pollution
-
-2010.05.22 - 0.6:
- - reverted to 0.4 and fixed the bug regarding the sign of the number 0
- Note:
- Thanks to Raphael Pigulla <raph (at] n3rd [dot) org> (http://www.n3rd.org/)
- who warned me about a bug in 0.5, I discovered that the last update was
- a regress. I appologize for that.
-
-2010.05.09 - 0.5:
- - bug fix: 0 is now preceeded with a + sign
- - bug fix: the sign was not at the right position on padded results (Kamal Abdali)
- - switched from GPL to BSD license
-
-2007.10.21 - 0.4:
- - unit test and patch (David Baird)
-
-2007.09.17 - 0.3:
- - bug fix: no longer throws exception on empty paramenters (Hans Pufal)
-
-2007.09.11 - 0.2:
- - feature: added argument swapping
-
-2007.04.03 - 0.1:
- - initial release
-**/
-
-var sprintf = (function() {
-	function get_type(variable) {
-		return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
-	}
-	function str_repeat(input, multiplier) {
-		for (var output = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */}
-		return output.join('');
-	}
-
-	var str_format = function() {
-		if (!str_format.cache.hasOwnProperty(arguments[0])) {
-			str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
-		}
-		return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
-	};
-
-	str_format.format = function(parse_tree, argv) {
-		var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
-		for (i = 0; i < tree_length; i++) {
-			node_type = get_type(parse_tree[i]);
-			if (node_type === 'string') {
-				output.push(parse_tree[i]);
-			}
-			else if (node_type === 'array') {
-				match = parse_tree[i]; // convenience purposes only
-				if (match[2]) { // keyword argument
-					arg = argv[cursor];
-					for (k = 0; k < match[2].length; k++) {
-						if (!arg.hasOwnProperty(match[2][k])) {
-							throw(sprintf('[sprintf] property "%s" does not exist', match[2][k]));
-						}
-						arg = arg[match[2][k]];
-					}
-				}
-				else if (match[1]) { // positional argument (explicit)
-					arg = argv[match[1]];
-				}
-				else { // positional argument (implicit)
-					arg = argv[cursor++];
-				}
-
-				if (/[^s]/.test(match[8]) && (get_type(arg) != 'number')) {
-					throw(sprintf('[sprintf] expecting number but found %s', get_type(arg)));
-				}
-				switch (match[8]) {
-					case 'b': arg = arg.toString(2); break;
-					case 'c': arg = String.fromCharCode(arg); break;
-					case 'd': arg = parseInt(arg, 10); break;
-					case 'e': arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential(); break;
-					case 'f': arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg); break;
-					case 'o': arg = arg.toString(8); break;
-					case 's': arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg); break;
-					case 'u': arg = Math.abs(arg); break;
-					case 'x': arg = arg.toString(16); break;
-					case 'X': arg = arg.toString(16).toUpperCase(); break;
-				}
-				arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+'+ arg : arg);
-				pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
-				pad_length = match[6] - String(arg).length;
-				pad = match[6] ? str_repeat(pad_character, pad_length) : '';
-				output.push(match[5] ? arg + pad : pad + arg);
-			}
-		}
-		return output.join('');
-	};
-
-	str_format.cache = {};
-
-	str_format.parse = function(fmt) {
-		var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
-		while (_fmt) {
-			if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
-				parse_tree.push(match[0]);
-			}
-			else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
-				parse_tree.push('%');
-			}
-			else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
-				if (match[2]) {
-					arg_names |= 1;
-					var field_list = [], replacement_field = match[2], field_match = [];
-					if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
-						field_list.push(field_match[1]);
-						while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
-							if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
-								field_list.push(field_match[1]);
-							}
-							else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
-								field_list.push(field_match[1]);
-							}
-							else {
-								throw('[sprintf] huh?');
-							}
-						}
-					}
-					else {
-						throw('[sprintf] huh?');
-					}
-					match[2] = field_list;
-				}
-				else {
-					arg_names |= 2;
-				}
-				if (arg_names === 3) {
-					throw('[sprintf] mixing positional and named placeholders is not (yet) supported');
-				}
-				parse_tree.push(match);
-			}
-			else {
-				throw('[sprintf] huh?');
-			}
-			_fmt = _fmt.substring(match[0].length);
-		}
-		return parse_tree;
-	};
-
-	return str_format;
-})();
-
-var vsprintf = function(fmt, argv) {
-	argv.unshift(fmt);
-	return sprintf.apply(null, argv);
-};
-
-exports.sprintf = sprintf;
-exports.vsprintf = vsprintf;
-});
-
-require.define("/node_modules/shred/lib/shred/response.js", function (require, module, exports, __dirname, __filename) {
-    // The `Response object` encapsulates a Node.js HTTP response.
-
-var _ = require("underscore")
-  , Content = require("./content")
-  , HeaderMixins = require("./mixins/headers")
-  , CookieJarLib = require( "cookiejar" )
-  , Cookie = CookieJarLib.Cookie
-;
-
-// Browser doesn't have zlib.
-var zlib = null;
-try {
-  zlib = require('zlib');
-} catch (e) {
-  console.warn("no zlib library");
-}
-
-// Iconv doesn't work in browser
-var Iconv = null;
-try {
-  Iconv = require('iconv-lite');
-} catch (e) {
-  console.warn("no iconv library");
-}
-
-// Construct a `Response` object. You should never have to do this directly. The
-// `Request` object handles this, getting the raw response object and passing it
-// in here, along with the request. The callback allows us to stream the response
-// and then use the callback to let the request know when it's ready.
-var Response = function(raw, request, callback) { 
-  var response = this;
-  this._raw = raw;
-
-  // The `._setHeaders` method is "private"; you can't otherwise set headers on
-  // the response.
-  this._setHeaders.call(this,raw.headers);
-  
-  // store any cookies
-  if (request.cookieJar && this.getHeader('set-cookie')) {
-    var cookieStrings = this.getHeader('set-cookie');
-    var cookieObjs = []
-      , cookie;
-
-    for (var i = 0; i < cookieStrings.length; i++) {
-      var cookieString = cookieStrings[i];
-      if (!cookieString) {
-        continue;
-      }
-
-      if (!cookieString.match(/domain\=/i)) {
-        cookieString += '; domain=' + request.host;
-      }
-
-      if (!cookieString.match(/path\=/i)) {
-        cookieString += '; path=' + request.path;
-      }
-
-      try {
-        cookie = new Cookie(cookieString);
-        if (cookie) {
-          cookieObjs.push(cookie);
-        }
-      } catch (e) {
-        console.warn("Tried to set bad cookie: " + cookieString);
-      }
-    }
-
-    request.cookieJar.setCookies(cookieObjs);
-  }
-
-  this.request = request;
-  this.client = request.client;
-  this.log = this.request.log;
-
-  // Stream the response content entity and fire the callback when we're done.
-  // Store the incoming data in a array of Buffers which we concatinate into one
-  // buffer at the end.  We need to use buffers instead of strings here in order
-  // to preserve binary data.
-  var chunkBuffers = [];
-  var dataLength = 0;
-  raw.on("data", function(chunk) {
-    chunkBuffers.push(chunk);
-    dataLength += chunk.length;
-  });
-  raw.on("end", function() {
-    var body;
-    if (typeof Buffer === 'undefined') {
-      // Just concatinate into a string
-      body = chunkBuffers.join('');
-    } else {
-      // Initialize new buffer and add the chunks one-at-a-time.
-      body = new Buffer(dataLength);
-      for (var i = 0, pos = 0; i < chunkBuffers.length; i++) {
-        chunkBuffers[i].copy(body, pos);
-        pos += chunkBuffers[i].length;
-      }
-    }
-
-    var setBodyAndFinish = function (body) {
-      response._body = new Content({ 
-      	body: body,
-        type: response.getHeader("Content-Type")
-      });
-      callback(response);
-    }
-
-    if (zlib && response.getHeader("Content-Encoding") === 'gzip'){
-      zlib.gunzip(body, function (err, gunzippedBody) {
-        if (Iconv && response.request.encoding){
-          body = Iconv.fromEncoding(gunzippedBody,response.request.encoding);
-        } else {
-          body = gunzippedBody.toString();
-        }
-        setBodyAndFinish(body);
-      })
-    }
-    else{
-       if (response.request.encoding){
-            body = Iconv.fromEncoding(body,response.request.encoding);
-        }        
-      setBodyAndFinish(body);
-    }
-  });
-};
-
-// The `Response` object can be pretty overwhelming to view using the built-in
-// Node.js inspect method. We want to make it a bit more manageable. This
-// probably goes [too far in the other
-// direction](https://github.com/spire-io/shred/issues/2).
-
-Response.prototype = {
-  inspect: function() {
-    var response = this;
-    var headers = _(response.headers).reduce(function(array,value,key){
-      array.push("\t" + key + ": " + value); return array;
-    },[]).join("\n");
-    var summary = ["<Shred Response> ", response.status].join(" ")
-    return [ summary, "- Headers:", headers].join("\n");
-  }
-};
-
-// `Response` object properties, all of which are read-only:
-Object.defineProperties(Response.prototype, {
-  
-// - **status**. The HTTP status code for the response. 
-  status: {
-    get: function() { return this._raw.statusCode; },
-    enumerable: true
-  },
-
-// - **content**. The HTTP content entity, if any. Provided as a [content
-//   object](./content.html), which will attempt to convert the entity based upon
-//   the `content-type` header. The converted value is available as
-//   `content.data`. The original raw content entity is available as
-//   `content.body`.
-  body: {
-    get: function() { return this._body; }
-  },
-  content: {
-    get: function() { return this.body; },
-    enumerable: true
-  },
-
-// - **isRedirect**. Is the response a redirect? These are responses with 3xx
-//   status and a `Location` header.
-  isRedirect: {
-    get: function() {
-      return (this.status>299
-          &&this.status<400
-          &&this.getHeader("Location"));
-    },
-    enumerable: true
-  },
-
-// - **isError**. Is the response an error? These are responses with status of
-//   400 or greater.
-  isError: {
-    get: function() {
-      return (this.status === 0 || this.status > 399)
-    },
-    enumerable: true
-  }
-});
-
-// Add in the [getters for accessing the normalized headers](./headers.js).
-HeaderMixins.getters(Response);
-HeaderMixins.privateSetters(Response);
-
-// Work around Mozilla bug #608735 [https://bugzil.la/608735], which causes
-// getAllResponseHeaders() to return {} if the response is a CORS request.
-// xhr.getHeader still works correctly.
-var getHeader = Response.prototype.getHeader;
-Response.prototype.getHeader = function (name) {
-  return (getHeader.call(this,name) ||
-    (typeof this._raw.getHeader === 'function' && this._raw.getHeader(name)));
-};
-
-module.exports = Response;
-
-});
-
-require.define("/node_modules/shred/lib/shred/content.js", function (require, module, exports, __dirname, __filename) {
-    var _ = require("underscore");
-
-// The purpose of the `Content` object is to abstract away the data conversions
-// to and from raw content entities as strings. For example, you want to be able
-// to pass in a Javascript object and have it be automatically converted into a
-// JSON string if the `content-type` is set to a JSON-based media type.
-// Conversely, you want to be able to transparently get back a Javascript object
-// in the response if the `content-type` is a JSON-based media-type.
-
-// One limitation of the current implementation is that it [assumes the `charset` is UTF-8](https://github.com/spire-io/shred/issues/5).
-
-// The `Content` constructor takes an options object, which *must* have either a
-// `body` or `data` property and *may* have a `type` property indicating the
-// media type. If there is no `type` attribute, a default will be inferred.
-var Content = function(options) {
-  this.body = options.body;
-  this.data = options.data;
-  this.type = options.type;
-};
-
-Content.prototype = {
-  // Treat `toString()` as asking for the `content.body`. That is, the raw content entity.
-  //
-  //     toString: function() { return this.body; }
-  //
-  // Commented out, but I've forgotten why. :/
-};
-
-
-// `Content` objects have the following attributes:
-Object.defineProperties(Content.prototype,{
-  
-// - **type**. Typically accessed as `content.type`, reflects the `content-type`
-//   header associated with the request or response. If not passed as an options
-//   to the constructor or set explicitly, it will infer the type the `data`
-//   attribute, if possible, and, failing that, will default to `text/plain`.
-  type: {
-    get: function() {
-      if (this._type) {
-        return this._type;
-      } else {
-        if (this._data) {
-          switch(typeof this._data) {
-            case "string": return "text/plain";
-            case "object": return "application/json";
-          }
-        }
-      }
-      return "text/plain";
-    },
-    set: function(value) {
-      this._type = value;
-      return this;
-    },
-    enumerable: true
-  },
-
-// - **data**. Typically accessed as `content.data`, reflects the content entity
-//   converted into Javascript data. This can be a string, if the `type` is, say,
-//   `text/plain`, but can also be a Javascript object. The conversion applied is
-//   based on the `processor` attribute. The `data` attribute can also be set
-//   directly, in which case the conversion will be done the other way, to infer
-//   the `body` attribute.
-  data: {
-    get: function() {
-      if (this._body) {
-        return this.processor.parser(this._body);
-      } else {
-        return this._data;
-      }
-    },
-    set: function(data) {
-      if (this._body&&data) Errors.setDataWithBody(this);
-      this._data = data;
-      return this;
-    },
-    enumerable: true
-  },
-
-// - **body**. Typically accessed as `content.body`, reflects the content entity
-//   as a UTF-8 string. It is the mirror of the `data` attribute. If you set the
-//   `data` attribute, the `body` attribute will be inferred and vice-versa. If
-//   you attempt to set both, an exception is raised.
-  body: {
-    get: function() {
-      if (this._data) {
-        return this.processor.stringify(this._data);
-      } else {
-        return this.processor.stringify(this._body);
-      }
-    },
-    set: function(body) {
-      if (this._data&&body) Errors.setBodyWithData(this);
-      this._body = body;
-      return this;
-    },
-    enumerable: true
-  },
-
-// - **processor**. The functions that will be used to convert to/from `data` and
-//   `body` attributes. You can add processors. The two that are built-in are for
-//   `text/plain`, which is basically an identity transformation and
-//   `application/json` and other JSON-based media types (including custom media
-//   types with `+json`). You can add your own processors. See below.
-  processor: {
-    get: function() {
-      var processor = Content.processors[this.type];
-      if (processor) {
-        return processor;
-      } else {
-        // Return the first processor that matches any part of the
-        // content type. ex: application/vnd.foobar.baz+json will match json.
-        processor = _(this.type.split(";")[0]
-          .split(/\+|\//)).detect(function(type) {
-            return Content.processors[type];
-          });
-        return Content.processors[processor]||
-          {parser:identity,stringify:toString};
-      }
-    },
-    enumerable: true
-  },
-
-// - **length**. Typically accessed as `content.length`, returns the length in
-//   bytes of the raw content entity.
-  length: {
-    get: function() {
-      if (typeof Buffer !== 'undefined') {
-        return Buffer.byteLength(this.body);
-      }
-      return this.body.length;
-    }
-  }
-});
-
-Content.processors = {};
-
-// The `registerProcessor` function allows you to add your own processors to
-// convert content entities. Each processor consists of a Javascript object with
-// two properties:
-// - **parser**. The function used to parse a raw content entity and convert it
-//   into a Javascript data type.
-// - **stringify**. The function used to convert a Javascript data type into a
-//   raw content entity.
-Content.registerProcessor = function(types,processor) {
-  
-// You can pass an array of types that will trigger this processor, or just one.
-// We determine the array via duck-typing here.
-  if (types.forEach) {
-    types.forEach(function(type) {
-      Content.processors[type] = processor;
-    });
-  } else {
-    // If you didn't pass an array, we just use what you pass in.
-    Content.processors[types] = processor;
-  }
-};
-
-// Register the identity processor, which is used for text-based media types.
-var identity = function(x) { return x; }
-  , toString = function(x) { return x.toString(); }
-Content.registerProcessor(
-  ["text/html","text/plain","text"],
-  { parser: identity, stringify: toString });
-
-// Register the JSON processor, which is used for JSON-based media types.
-Content.registerProcessor(
-  ["application/json; charset=utf-8","application/json","json"],
-  {
-    parser: function(string) {
-      return JSON.parse(string);
-    },
-    stringify: function(data) {
-      return JSON.stringify(data); }});
-
-// Error functions are defined separately here in an attempt to make the code
-// easier to read.
-var Errors = {
-  setDataWithBody: function(object) {
-    throw new Error("Attempt to set data attribute of a content object " +
-        "when the body attributes was already set.");
-  },
-  setBodyWithData: function(object) {
-    throw new Error("Attempt to set body attribute of a content object " +
-        "when the data attributes was already set.");
-  }
-}
-module.exports = Content;
-
-});
-
-require.define("/node_modules/shred/lib/shred/mixins/headers.js", function (require, module, exports, __dirname, __filename) {
-    // The header mixins allow you to add HTTP header support to any object. This
-// might seem pointless: why not simply use a hash? The main reason is that, per
-// the [HTTP spec](http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2),
-// headers are case-insensitive. So, for example, `content-type` is the same as
-// `CONTENT-TYPE` which is the same as `Content-Type`. Since there is no way to
-// overload the index operator in Javascript, using a hash to represent the
-// headers means it's possible to have two conflicting values for a single
-// header.
-// 
-// The solution to this is to provide explicit methods to set or get headers.
-// This also has the benefit of allowing us to introduce additional variations,
-// including snake case, which we automatically convert to what Matthew King has
-// dubbed "corset case" - the hyphen-separated names with initial caps:
-// `Content-Type`. We use corset-case just in case we're dealing with servers
-// that haven't properly implemented the spec.
-var _ = require("underscore")
-;
-
-// Convert headers to corset-case. **Example:** `CONTENT-TYPE` will be converted
-// to `Content-Type`.
-
-var corsetCase = function(string) {
-  return string.toLowerCase()
-      .replace("_","-")
-      .replace(/(^|-)(\w)/g, 
-          function(s) { return s.toUpperCase(); });
-};
-
-// We suspect that `initializeHeaders` was once more complicated ...
-var initializeHeaders = function(object) {
-  return {};
-};
-
-// Access the `_headers` property using lazy initialization. **Warning:** If you
-// mix this into an object that is using the `_headers` property already, you're
-// going to have trouble.
-var $H = function(object) {
-  return object._headers||(object._headers=initializeHeaders(object));
-};
-
-// Hide the implementations as private functions, separate from how we expose them.
-
-// The "real" `getHeader` function: get the header after normalizing the name.
-var getHeader = function(object,name) {
-  return $H(object)[corsetCase(name)];
-};
-
-// The "real" `getHeader` function: get one or more headers, or all of them
-// if you don't ask for any specifics. 
-var getHeaders = function(object,names) {
-  var keys = (names && names.length>0) ? names : Object.keys($H(object));
-  var hash = keys.reduce(function(hash,key) {
-    hash[key] = getHeader(object,key);
-    return hash;
-  },{});
-  // Freeze the resulting hash so you don't mistakenly think you're modifying
-  // the real headers.
-  Object.freeze(hash);
-  return hash;
-};
-
-// The "real" `setHeader` function: set a header, after normalizing the name.
-var setHeader = function(object,name,value) {
-  $H(object)[corsetCase(name)] = value;
-  return object;
-};
-
-// The "real" `setHeaders` function: set multiple headers based on a hash.
-var setHeaders = function(object,hash) {
-  for( var key in hash ) { setHeader(object,key,hash[key]); };
-  return this;
-};
-
-// Here's where we actually bind the functionality to an object. These mixins work by
-// exposing mixin functions. Each function mixes in a specific batch of features.
-module.exports = {
-  
-  // Add getters.
-  getters: function(constructor) {
-    constructor.prototype.getHeader = function(name) { return getHeader(this,name); };
-    constructor.prototype.getHeaders = function() { return getHeaders(this,_(arguments)); };
-  },
-  // Add setters but as "private" methods.
-  privateSetters: function(constructor) {
-    constructor.prototype._setHeader = function(key,value) { return setHeader(this,key,value); };
-    constructor.prototype._setHeaders = function(hash) { return setHeaders(this,hash); };
-  },
-  // Add setters.
-  setters: function(constructor) {
-    constructor.prototype.setHeader = function(key,value) { return setHeader(this,key,value); };
-    constructor.prototype.setHeaders = function(hash) { return setHeaders(this,hash); };
-  },
-  // Add both getters and setters.
-  gettersAndSetters: function(constructor) {
-    constructor.prototype.getHeader = function(name) { return getHeader(this,name); };
-    constructor.prototype.getHeaders = function() { return getHeaders(this,_(arguments)); };
-    constructor.prototype.setHeader = function(key,value) { return setHeader(this,key,value); };
-    constructor.prototype.setHeaders = function(hash) { return setHeaders(this,hash); };
-  },
-};
-});
-
-require.define("/node_modules/shred/node_modules/iconv-lite/package.json", function (require, module, exports, __dirname, __filename) {
-    module.exports = {}
-});
-
-require.define("/node_modules/shred/node_modules/iconv-lite/index.js", function (require, module, exports, __dirname, __filename) {
-    // Module exports
-var iconv = module.exports = {
-    toEncoding: function(str, encoding) {
-        return iconv.getCodec(encoding).toEncoding(str);
-    },
-    fromEncoding: function(buf, encoding) {
-        return iconv.getCodec(encoding).fromEncoding(buf);
-    },
-    
-    defaultCharUnicode: '�',
-    defaultCharSingleByte: '?',
-    
-    // Get correct codec for given encoding.
-    getCodec: function(encoding) {
-        var enc = encoding || "utf8";
-        var codecOptions = undefined;
-        while (1) {
-            if (getType(enc) === "String")
-                enc = enc.replace(/[- ]/g, "").toLowerCase();
-            var codec = iconv.encodings[enc];
-            var type = getType(codec);
-            if (type === "String") {
-                // Link to other encoding.
-                codecOptions = {originalEncoding: enc};
-                enc = codec;
-            }
-            else if (type === "Object" && codec.type != undefined) {
-                // Options for other encoding.
-                codecOptions = codec;
-                enc = codec.type;
-            } 
-            else if (type === "Function")
-                // Codec itself.
-                return codec(codecOptions);
-            else
-                throw new Error("Encoding not recognized: '" + encoding + "' (searched as: '"+enc+"')");
-        }
-    },
-    
-    // Define basic encodings
-    encodings: {
-        internal: function(options) {
-            return {
-                toEncoding: function(str) {
-                    return new Buffer(ensureString(str), options.originalEncoding);
-                },
-                fromEncoding: function(buf) {
-                    return ensureBuffer(buf).toString(options.originalEncoding);
-                }
-            };
-        },
-        utf8: "internal",
-        ucs2: "internal",
-        binary: "internal",
-        ascii: "internal",
-        base64: "internal",
-        
-        // Codepage single-byte encodings.
-        singlebyte: function(options) {
-            // Prepare chars if needed
-            if (!options.chars || (options.chars.length !== 128 && options.chars.length !== 256))
-                throw new Error("Encoding '"+options.type+"' has incorrect 'chars' (must be of len 128 or 256)");
-            
-            if (options.chars.length === 128)
-                options.chars = asciiString + options.chars;
-            
-            if (!options.charsBuf) {
-                options.charsBuf = new Buffer(256*2);
-                for (var i = 0; i < options.chars.length; i++) {
-                    var code = options.chars.charCodeAt(i);
-                    options.charsBuf[i*2+0] = code & 0xFF;
-                    options.charsBuf[i*2+1] = code >>> 8;
-                }
-            }
-            
-            if (!options.revCharsBuf) {
-                options.revCharsBuf = new Buffer(65536);
-                var defChar = iconv.defaultCharSingleByte.charCodeAt(0);
-                for (var i = 0; i < options.revCharsBuf.length; i++)
-                    options.revCharsBuf[i] = defChar;
-                for (var i = 0; i < options.chars.length; i++)
-                    options.revCharsBuf[options.chars.charCodeAt(i)] = i;
-            }
-            
-            return {
-                toEncoding: function(str) {
-                    str = ensureString(str);
-                    
-                    var buf = new Buffer(str.length);
-                    var revCharsBuf = options.revCharsBuf;
-                    for (var i = 0; i < str.length; i++)
-                        buf[i] = revCharsBuf[str.charCodeAt(i)];
-                    
-                    return buf;
-                },
-                fromEncoding: function(buf) {
-                    buf = ensureBuffer(buf);
-                    
-                    // As string are immutable in JS, we use ucs2 buffer to speed up computations.
-                    var charsBuf = options.charsBuf;
-                    var newBuf = new Buffer(buf.length*2);
-                    var idx1 = 0, idx2 = 0;
-                    for (var i = 0, _len = buf.length; i < _len; i++) {
-                        idx1 = buf[i]*2; idx2 = i*2;
-                        newBuf[idx2] = charsBuf[idx1];
-                        newBuf[idx2+1] = charsBuf[idx1+1];
-                    }
-                    return newBuf.toString('ucs2');
-                }
-            };
-        },
-
-        // Codepage double-byte encodings.
-        table: function(options) {
-            var table = options.table, key, revCharsTable = options.revCharsTable;
-            if (!table) {
-                throw new Error("Encoding '" + options.type +"' has incorect 'table' option");
-            }
-            if(!revCharsTable) {
-                revCharsTable = options.revCharsTable = {};
-                for (key in table) {
-                    revCharsTable[table[key]] = parseInt(key);
-                }
-            }
-            
-            return {
-                toEncoding: function(str) {
-                    str = ensureString(str);
-                    var len = 0, strLen = str.length;
-                    for (var i = 0; i < strLen; i++) {
-                        if (!!(str.charCodeAt(i) >> 8)) {
-                            len += 2;
-                        } else {
-                            len ++;
-                        }
-                    }
-                    var newBuf = new Buffer(len);
-                    for (var i = 0, j = 0; i < strLen; i++) {
-                        var unicode = str.charCodeAt(i);
-                        if (!!(unicode >> 7)) {
-                            var gbkcode = revCharsTable[unicode] || revCharsTable[iconv.defaultCharUnicode.charCodeAt(0)];//not found in table ,replace it
-                            newBuf[j++] = gbkcode >> 8;//high byte;
-                            newBuf[j++] = gbkcode & 0xFF;//low byte
-                        } else {//ascii
-                            newBuf[j++] = unicode;
-                        }
-                    }
-                    return newBuf;
-                },
-                fromEncoding: function(buf) {
-                    buf = ensureBuffer(buf);
-                    var idx = 0, len = 0,
-                        newBuf = new Buffer(len*2),unicode,gbkcode;
-                    for (var i = 0, _len = buf.length; i < _len; i++, len++) {
-                        if (!!(buf[i] & 0x80)) {//the high bit is 1, so this byte is gbkcode's high byte.skip next byte
-                            i++;
-                        }
-                    }
-                    var newBuf = new Buffer(len*2);
-                    for (var i = 0, j = 0, _len = buf.length; i < _len; i++, j++) {
-                        var temp = buf[i], gbkcode, unicode;
-                        if (temp & 0x80) {
-                            gbkcode = (temp << 8) + buf[++i];
-                            unicode = table[gbkcode] || iconv.defaultCharUnicode.charCodeAt(0);//not found in table, replace with defaultCharUnicode
-                        }else {
-                            unicode = temp;
-                        }
-                        newBuf[j*2] = unicode & 0xFF;//low byte
-                        newBuf[j*2+1] = unicode >> 8;//high byte
-                    }
-                    return newBuf.toString('ucs2');
-                }
-            }
-        }
-    }
-};
-
-// Add aliases to convert functions
-iconv.encode = iconv.toEncoding;
-iconv.decode = iconv.fromEncoding;
-
-// Load other encodings from files in /encodings dir.
-var encodingsDir = __dirname+"/encodings/",
-    fs = require('fs');
-fs.readdirSync(encodingsDir).forEach(function(file) {
-    if(fs.statSync(encodingsDir + file).isDirectory()) return;
-    var encodings = require(encodingsDir + file)
-    for (var key in encodings)
-        iconv.encodings[key] = encodings[key]
-});
-
-// Utilities
-var asciiString = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f'+
-              ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f';
-
-var ensureBuffer = function(buf) {
-    buf = buf || new Buffer(0);
-    return (buf instanceof Buffer) ? buf : new Buffer(buf.toString(), "utf8");
-}
-
-var ensureString = function(str) {
-    str = str || "";
-    return (str instanceof String) ? str : str.toString((str instanceof Buffer) ? 'utf8' : undefined);
-}
-
-var getType = function(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1);
-}
-
-
-});
-
-require.define("/spire/api/response_error.js", function (require, module, exports, __dirname, __filename) {
-    /**
- * @fileOverview ResponseError class definition
- */
-
-/**
- * ResponseError is a wrapper for request errors, this makes it easier to pass
- * an error to the callbacks of the async functions that still retain their
- * extra contextual information passed into the arguments of requests's error
- * handler
- *
- * @class HTTP Response Error
- * @constructor
- * @param {object} response Response HTTP client
- * @param {object} request Request description
- */
-var ResponseError = function (response, request) {
-  this.message = 'ResponseError: ' + response.status;
-  this.response = response;
-  this.status = response.status;
-  this.request = request;
-};
-
-ResponseError.prototype = new Error();
-
-module.exports = ResponseError;
 
 });
 
@@ -7832,6 +5783,2060 @@ Member.prototype.login = function () {
 Member.prototype.profile = function () {
   return this.data.profile;
 };
+});
+
+require.define("/node_modules/shred/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {"main":"./lib/shred.js"}
+});
+
+require.define("/node_modules/shred/lib/shred.js", function (require, module, exports, __dirname, __filename) {
+    // Shred is an HTTP client library intended to simplify the use of Node's
+// built-in HTTP library. In particular, we wanted to make it easier to interact
+// with HTTP-based APIs.
+// 
+// See the [examples](./examples.html) for more details.
+
+var _ = require("underscore")
+// Ax is a nice logging library we wrote. You can use any logger, providing it
+// has `info`, `warn`, `debug`, and `error` methods that take a string.
+  , Ax = require("ax")
+  , CookieJarLib = require( "cookiejar" )
+  , CookieJar = CookieJarLib.CookieJar
+;
+
+// Shred takes some options, including a logger and request defaults.
+
+var Shred = function(options) {
+  options = (options||{});
+  this.agent = options.agent;
+  this.defaults = options.defaults||{};
+  this.log = options.logger||(new Ax({ level: "info" }));
+  this._sharedCookieJar = new CookieJar();
+  this.logCurl = options.logCurl || false;
+};
+
+// Most of the real work is done in the request and reponse classes.
+ 
+Shred.Request = require("./shred/request");
+Shred.Response = require("./shred/response");
+
+// The `request` method kicks off a new request, instantiating a new `Request`
+// object and passing along whatever default options we were given.
+
+Shred.prototype = {
+  request: function(options) {
+    options.logger = this.log;
+    options.logCurl = options.logCurl || this.logCurl;
+    options.cookieJar = ( 'cookieJar' in options ) ? options.cookieJar : this._sharedCookieJar; // let them set cookieJar = null
+    options.agent = options.agent || this.agent;
+    return new Shred.Request(_.defaults(options,this.defaults));
+  }
+};
+
+// Define a bunch of convenience methods so that you don't have to include
+// a `method` property in your request options.
+
+"get put post delete".split(" ").forEach(function(method) {
+  Shred.prototype[method] = function(options) {
+    options.method = method;
+    return this.request(options);
+  };
+});
+
+
+module.exports = Shred;
+
+});
+
+require.define("/node_modules/shred/node_modules/ax/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {"main":"./lib/ax.js"}
+});
+
+require.define("/node_modules/shred/node_modules/ax/lib/ax.js", function (require, module, exports, __dirname, __filename) {
+    var inspect = require("util").inspect
+  , fs = require("fs")
+  , colors = require('colors')
+  , _ = require('underscore')
+;
+
+
+// this is a quick-and-dirty logger. there are other nicer loggers out there
+// but the ones i found were also somewhat involved. this one has a Ruby
+// logger type interface and color codes the console output
+//
+// we can easily replace this, provide the info, debug, etc. methods are the
+// same. or, we can change Haiku to use a more standard node.js interface
+
+var format = function(level,message) {
+  var debug = (level=="debug"||level=="error");
+  if (!message) { return message.toString(); }
+  if (typeof(message) == "object") {
+    if (message instanceof Error && debug) {
+      return message.stack;
+    } else {
+      return inspect(message);
+    }
+  } else {
+    return message.toString();
+  }
+};
+
+var noOp = function(message) { return this; }
+var makeLogger = function(level,fn) {
+  return function(message) { 
+    this.stream.write(this.format(level, message)+"\n");
+    return this;
+  }
+};
+
+var Logger = function(options) {
+  var logger = this;
+	var options = options||{};
+
+  // Default options
+  logger.options = _.defaults(options, {
+      level: 'info'
+    , timestamp: true
+    , colors: {
+        info: 'green'
+      , warn: 'yellow'
+      , debug: 'cyan'
+      , error: 'red'
+      }
+    , prefix: ''
+  });
+
+  // Allows a prefix to be added to the message.
+  //
+  //    var logger = new Ax({ module: 'Haiku' })
+  //    logger.warn('this is going to be awesome!');
+  //    //=> Haiku: this is going to be awesome!
+  //
+  if (logger.options.module){
+    logger.options.prefix = logger.options.module;
+  }
+
+  // Write to stderr or a file
+  if (logger.options.file){
+    logger.stream = fs.createWriteStream(logger.options.file, {"flags": "a"});
+  } else {
+      if(process.title === "node")
+	  logger.stream = process.stderr;
+      else if(process.title === "browser")
+	  logger.stream = function () {
+      // Work around weird console context issue: http://code.google.com/p/chromium/issues/detail?id=48662
+      return console[logger.options.level].apply(console, arguments);
+    };
+  }
+
+  switch(logger.options.level){
+    case 'debug':
+      _.each(['debug', 'info', 'warn'], function(level){
+        logger[level] = Logger.writer(level);
+      });
+    case 'info':
+      _.each(['info', 'warn'], function(level){
+        logger[level] = Logger.writer(level);
+      });
+    case 'warn':
+      logger.warn = Logger.writer('warn');
+  }
+}
+
+// Used to define logger methods
+Logger.writer = function(level){
+  return function(message){
+    var logger = this;
+
+    if(process.title === "node")
+	logger.stream.write(logger.format(level, message) + '\n');
+    else if(process.title === "browser")
+	logger.stream(logger.format(level, message) + '\n');
+
+  };
+}
+
+
+Logger.prototype = {
+  info: function(){},
+  debug: function(){},
+  warn: function(){},
+  error: Logger.writer('error'),
+  format: function(level, message){
+    if (! message) return '';
+
+    var logger = this
+      , prefix = logger.options.prefix
+      , timestamp = logger.options.timestamp ? " " + (new Date().toISOString()) : ""
+      , color = logger.options.colors[level]
+    ;
+
+    return (prefix + timestamp + ": " + message)[color];
+  }
+};
+
+module.exports = Logger;
+
+});
+
+require.define("util", function (require, module, exports, __dirname, __filename) {
+    // todo
+
+});
+
+require.define("fs", function (require, module, exports, __dirname, __filename) {
+    // nothing to see here... no file methods for the browser
+
+});
+
+require.define("/node_modules/shred/node_modules/ax/node_modules/colors/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {"main":"colors"}
+});
+
+require.define("/node_modules/shred/node_modules/ax/node_modules/colors/colors.js", function (require, module, exports, __dirname, __filename) {
+    /*
+colors.js
+
+Copyright (c) 2010 Alexis Sellier (cloudhead) , Marak Squires
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+
+// prototypes the string object to have additional method calls that add terminal colors
+var isHeadless = (typeof module !== 'undefined');
+['bold', 'underline', 'italic', 'inverse', 'grey', 'yellow', 'red', 'green', 'blue', 'white', 'cyan', 'magenta'].forEach(function (style) {
+
+  // __defineGetter__ at the least works in more browsers
+  // http://robertnyman.com/javascript/javascript-getters-setters.html
+  // Object.defineProperty only works in Chrome
+  String.prototype.__defineGetter__(style, function () {
+    return isHeadless ?
+             stylize(this, style) : // for those running in node (headless environments)
+             this.replace(/( )/, '$1'); // and for those running in browsers:
+             // re: ^ you'd think 'return this' works (but doesn't) so replace coerces the string to be a real string
+  });
+});
+
+// prototypes string with method "rainbow"
+// rainbow will apply a the color spectrum to a string, changing colors every letter
+String.prototype.__defineGetter__('rainbow', function () {
+  if (!isHeadless) {
+    return this.replace(/( )/, '$1');
+  }
+  var rainbowcolors = ['red','yellow','green','blue','magenta']; //RoY G BiV
+  var exploded = this.split("");
+  var i=0;
+  exploded = exploded.map(function(letter) {
+    if (letter==" ") {
+      return letter;
+    }
+    else {
+      return stylize(letter,rainbowcolors[i++ % rainbowcolors.length]);
+    }
+  });
+  return exploded.join("");
+});
+
+function stylize(str, style) {
+  var styles = {
+  //styles
+  'bold'      : [1,  22],
+  'italic'    : [3,  23],
+  'underline' : [4,  24],
+  'inverse'   : [7,  27],
+  //grayscale
+  'white'     : [37, 39],
+  'grey'      : [90, 39],
+  'black'     : [90, 39],
+  //colors
+  'blue'      : [34, 39],
+  'cyan'      : [36, 39],
+  'green'     : [32, 39],
+  'magenta'   : [35, 39],
+  'red'       : [31, 39],
+  'yellow'    : [33, 39]
+  };
+  return '\033[' + styles[style][0] + 'm' + str +
+         '\033[' + styles[style][1] + 'm';
+};
+
+// don't summon zalgo
+String.prototype.__defineGetter__('zalgo', function () {
+  return zalgo(this);
+});
+
+// please no
+function zalgo(text, options) {
+  var soul = {
+    "up" : [
+      '̍','̎','̄','̅',
+      '̿','̑','̆','̐',
+      '͒','͗','͑','̇',
+      '̈','̊','͂','̓',
+      '̈','͊','͋','͌',
+      '̃','̂','̌','͐',
+      '̀','́','̋','̏',
+      '̒','̓','̔','̽',
+      '̉','ͣ','ͤ','ͥ',
+      'ͦ','ͧ','ͨ','ͩ',
+      'ͪ','ͫ','ͬ','ͭ',
+      'ͮ','ͯ','̾','͛',
+      '͆','̚'
+      ],
+    "down" : [
+      '̖','̗','̘','̙',
+      '̜','̝','̞','̟',
+      '̠','̤','̥','̦',
+      '̩','̪','̫','̬',
+      '̭','̮','̯','̰',
+      '̱','̲','̳','̹',
+      '̺','̻','̼','ͅ',
+      '͇','͈','͉','͍',
+      '͎','͓','͔','͕',
+      '͖','͙','͚','̣'
+      ],
+    "mid" : [
+      '̕','̛','̀','́',
+      '͘','̡','̢','̧',
+      '̨','̴','̵','̶',
+      '͜','͝','͞',
+      '͟','͠','͢','̸',
+      '̷','͡',' ҉'
+      ]
+  },
+  all = [].concat(soul.up, soul.down, soul.mid),
+  zalgo = {};
+
+  function randomNumber(range) {
+    r = Math.floor(Math.random()*range);
+    return r;
+  };
+
+  function is_char(character) {
+    var bool = false;
+    all.filter(function(i){
+     bool = (i == character);
+    });
+    return bool;
+  }
+
+  function heComes(text, options){
+      result = '';
+      options = options || {};
+      options["up"] = options["up"] || true;
+      options["mid"] = options["mid"] || true;
+      options["down"] = options["down"] || true;
+      options["size"] = options["size"] || "maxi";
+      var counts;
+      text = text.split('');
+       for(var l in text){
+         if(is_char(l)) { continue; }
+         result = result + text[l];
+
+        counts = {"up" : 0, "down" : 0, "mid" : 0};
+
+        switch(options.size) {
+          case 'mini':
+            counts.up = randomNumber(8);
+            counts.min= randomNumber(2);
+            counts.down = randomNumber(8);
+          break;
+          case 'maxi':
+            counts.up = randomNumber(16) + 3;
+            counts.min = randomNumber(4) + 1;
+            counts.down = randomNumber(64) + 3;
+          break;
+          default:
+            counts.up = randomNumber(8) + 1;
+            counts.mid = randomNumber(6) / 2;
+            counts.down= randomNumber(8) + 1;
+          break;
+        }
+
+        var arr = ["up", "mid", "down"];
+        for(var d in arr){
+          var index = arr[d];
+          for (var i = 0 ; i <= counts[index]; i++)
+          {
+            if(options[index]) {
+                result = result + soul[index][randomNumber(soul[index].length)];
+              }
+            }
+          }
+        }
+      return result;
+  };
+  return heComes(text);
+}
+
+});
+
+require.define("/node_modules/shred/node_modules/cookiejar/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {"main":"cookiejar.js"}
+});
+
+require.define("/node_modules/shred/node_modules/cookiejar/cookiejar.js", function (require, module, exports, __dirname, __filename) {
+    exports.CookieAccessInfo=CookieAccessInfo=function CookieAccessInfo(domain,path,secure,script) {
+    if(this instanceof CookieAccessInfo) {
+    	this.domain=domain||undefined;
+    	this.path=path||"/";
+    	this.secure=!!secure;
+    	this.script=!!script;
+    	return this;
+    }
+    else {
+        return new CookieAccessInfo(domain,path,secure,script)    
+    }
+}
+
+exports.Cookie=Cookie=function Cookie(cookiestr) {
+	if(cookiestr instanceof Cookie) {
+		return cookiestr;
+	}
+    else {
+        if(this instanceof Cookie) {
+        	this.name = null;
+        	this.value = null;
+        	this.expiration_date = Infinity;
+        	this.path = "/";
+        	this.domain = null;
+        	this.secure = false; //how to define?
+        	this.noscript = false; //httponly
+        	if(cookiestr) {
+        		this.parse(cookiestr)
+        	}
+        	return this;
+        }
+        return new Cookie(cookiestr)
+    }
+}
+
+Cookie.prototype.toString = function toString() {
+	var str=[this.name+"="+this.value];
+	if(this.expiration_date !== Infinity) {
+		str.push("expires="+(new Date(this.expiration_date)).toGMTString());
+	}
+	if(this.domain) {
+		str.push("domain="+this.domain);
+	}
+	if(this.path) {
+		str.push("path="+this.path);
+	}
+	if(this.secure) {
+		str.push("secure");
+	}
+	if(this.noscript) {
+		str.push("httponly");
+	}
+	return str.join("; ");
+}
+
+Cookie.prototype.toValueString = function toValueString() {
+	return this.name+"="+this.value;
+}
+
+var cookie_str_splitter=/[:](?=\s*[a-zA-Z0-9_\-]+\s*[=])/g
+Cookie.prototype.parse = function parse(str) {
+	if(this instanceof Cookie) {
+    	var parts=str.split(";")
+    	, pair=parts[0].match(/([^=]+)=((?:.|\n)*)/)
+    	, key=pair[1]
+    	, value=pair[2];
+    	this.name = key;
+    	this.value = value;
+    
+    	for(var i=1;i<parts.length;i++) {
+    		pair=parts[i].match(/([^=]+)(?:=((?:.|\n)*))?/)
+    		, key=pair[1].trim().toLowerCase()
+    		, value=pair[2];
+    		switch(key) {
+    			case "httponly":
+    				this.noscript = true;
+    			break;
+    			case "expires":
+    				this.expiration_date = value
+    					? Number(Date.parse(value))
+    					: Infinity;
+    			break;
+    			case "path":
+    				this.path = value
+    					? value.trim()
+    					: "";
+    			break;
+    			case "domain":
+    				this.domain = value
+    					? value.trim()
+    					: "";
+    			break;
+    			case "secure":
+    				this.secure = true;
+    			break
+    		}
+    	}
+    
+    	return this;
+	}
+    return new Cookie().parse(str)
+}
+
+Cookie.prototype.matches = function matches(access_info) {
+	if(this.noscript && access_info.script
+	|| this.secure && !access_info.secure
+	|| !this.collidesWith(access_info)) {
+		return false
+	}
+	return true;
+}
+
+Cookie.prototype.collidesWith = function collidesWith(access_info) {
+	if((this.path && !access_info.path) || (this.domain && !access_info.domain)) {
+		return false
+	}
+	if(this.path && access_info.path.indexOf(this.path) !== 0) {
+		return false;
+	}
+	if (this.domain===access_info.domain) {
+		return true;
+	}
+	else if(this.domain && this.domain.charAt(0)===".")
+	{
+		var wildcard=access_info.domain.indexOf(this.domain.slice(1))
+		if(wildcard===-1 || wildcard!==access_info.domain.length-this.domain.length+1) {
+			return false;
+		}
+	}
+	else if(this.domain){
+		return false
+	}
+	return true;
+}
+
+exports.CookieJar=CookieJar=function CookieJar() {
+	if(this instanceof CookieJar) {
+    	var cookies = {} //name: [Cookie]
+    
+    	this.setCookie = function setCookie(cookie) {
+    		cookie = Cookie(cookie);
+    		//Delete the cookie if the set is past the current time
+    		var remove = cookie.expiration_date <= Date.now();
+    		if(cookie.name in cookies) {
+    			var cookies_list = cookies[cookie.name];
+    			for(var i=0;i<cookies_list.length;i++) {
+    				var collidable_cookie = cookies_list[i];
+    				if(collidable_cookie.collidesWith(cookie)) {
+    					if(remove) {
+    						cookies_list.splice(i,1);
+    						if(cookies_list.length===0) {
+    							delete cookies[cookie.name]
+    						}
+    						return false;
+    					}
+    					else {
+    						return cookies_list[i]=cookie;
+    					}
+    				}
+    			}
+    			if(remove) {
+    				return false;
+    			}
+    			cookies_list.push(cookie);
+    			return cookie;
+    		}
+    		else if(remove){
+    			return false;
+    		}
+    		else {
+    			return cookies[cookie.name]=[cookie];
+    		}
+    	}
+    	//returns a cookie
+    	this.getCookie = function getCookie(cookie_name,access_info) {
+    		var cookies_list = cookies[cookie_name];
+    		for(var i=0;i<cookies_list.length;i++) {
+    			var cookie = cookies_list[i];
+    			if(cookie.expiration_date <= Date.now()) {
+    				if(cookies_list.length===0) {
+    					delete cookies[cookie.name]
+    				}
+    				continue;
+    			}
+    			if(cookie.matches(access_info)) {
+    				return cookie;
+    			}
+    		}
+    	}
+    	//returns a list of cookies
+    	this.getCookies = function getCookies(access_info) {
+    		var matches=[];
+    		for(var cookie_name in cookies) {
+    			var cookie=this.getCookie(cookie_name,access_info);
+    			if (cookie) {
+    				matches.push(cookie);
+    			}
+    		}
+    		matches.toString=function toString(){return matches.join(":");}
+            matches.toValueString=function() {return matches.map(function(c){return c.toValueString();}).join(';');}
+    		return matches;
+    	}
+    
+    	return this;
+	}
+    return new CookieJar()
+}
+
+
+//returns list of cookies that were set correctly
+CookieJar.prototype.setCookies = function setCookies(cookies) {
+	cookies=Array.isArray(cookies)
+		?cookies
+		:cookies.split(cookie_str_splitter);
+	var successful=[]
+	for(var i=0;i<cookies.length;i++) {
+		var cookie = Cookie(cookies[i]);
+		if(this.setCookie(cookie)) {
+			successful.push(cookie);
+		}
+	}
+	return successful;
+}
+
+});
+
+require.define("/node_modules/shred/lib/shred/request.js", function (require, module, exports, __dirname, __filename) {
+    // The request object encapsulates a request, creating a Node.js HTTP request and
+// then handling the response.
+
+var HTTP = require("http")
+  , HTTPS = require("https")
+  , parseUri = require("./parseUri")
+  , Emitter = require('events').EventEmitter
+  , sprintf = require("sprintf").sprintf
+  , _ = require("underscore")
+  , Response = require("./response")
+  , HeaderMixins = require("./mixins/headers")
+  , Content = require("./content")
+;
+
+var STATUS_CODES = HTTP.STATUS_CODES;
+
+// The Shred object itself constructs the `Request` object. You should rarely
+// need to do this directly.
+
+var Request = function(options) {
+  this.log = options.logger;
+  this.cookieJar = options.cookieJar;
+  this.encoding = options.encoding;
+  this.logCurl = options.logCurl;
+  processOptions(this,options||{});
+  createRequest(this);
+};
+
+// A `Request` has a number of properties, many of which help with details like
+// URL parsing or defaulting the port for the request.
+
+Object.defineProperties(Request.prototype, {
+
+// - **url**. You can set the `url` property with a valid URL string and all the
+//   URL-related properties (host, port, etc.) will be automatically set on the
+//   request object.
+
+  url: {
+    get: function() {
+      if (!this.scheme) { return null; }
+      return sprintf("%s://%s:%s%s",
+          this.scheme, this.host, this.port,
+          (this.proxy ? "/" : this.path) +
+          (this.query ? ("?" + this.query) : ""));
+    },
+    set: function(_url) {
+      _url = parseUri(_url);
+      this.scheme = _url.protocol;
+      this.host = _url.host;
+      this.port = _url.port;
+      this.path = _url.path;
+      this.query = _url.query;
+      return this;
+    },
+    enumerable: true
+  },
+
+// - **headers**. Returns a hash representing the request headers. You can't set
+//   this directly, only get it. You can add or modify headers by using the
+//   `setHeader` or `setHeaders` method. This ensures that the headers are
+//   normalized - that is, you don't accidentally send `Content-Type` and
+//   `content-type` headers. Keep in mind that if you modify the returned hash,
+//   it will *not* modify the request headers.
+
+  headers: {
+    get: function() {
+      return this.getHeaders();
+    },
+    enumerable: true
+  },
+
+// - **port**. Unless you set the `port` explicitly or include it in the URL, it
+//   will default based on the scheme.
+
+  port: {
+    get: function() {
+      if (!this._port) {
+        switch(this.scheme) {
+          case "https": return this._port = 443;
+          case "http":
+          default: return this._port = 80;
+        }
+      }
+      return this._port;
+    },
+    set: function(value) { this._port = value; return this; },
+    enumerable: true
+  },
+
+// - **method**. The request method - `get`, `put`, `post`, etc. that will be
+//   used to make the request. Defaults to `get`.
+
+  method: {
+    get: function() {
+      return this._method = (this._method||"GET");
+    },
+    set: function(value) {
+      this._method = value; return this;
+    },
+    enumerable: true
+  },
+
+// - **query**. Can be set either with a query string or a hash (object). Get
+//   will always return a properly escaped query string or null if there is no
+//   query component for the request.
+
+  query: {
+    get: function() {return this._query;},
+    set: function(value) {
+      var stringify = function (hash) {
+        var query = "";
+        for (var key in hash) {
+          query += encodeURIComponent(key) + '=' + encodeURIComponent(hash[key]) + '&';
+        }
+        // Remove the last '&'
+        query = query.slice(0, -1);
+        return query;
+      }
+
+      if (value) {
+        if (typeof value === 'object') {
+          value = stringify(value);
+        }
+        this._query = value;
+      } else {
+        this._query = "";
+      }
+      return this;
+    },
+    enumerable: true
+  },
+
+// - **parameters**. This will return the query parameters in the form of a hash
+//   (object).
+
+  parameters: {
+    get: function() { return QueryString.parse(this._query||""); },
+    enumerable: true
+  },
+
+// - **content**. (Aliased as `body`.) Set this to add a content entity to the
+//   request. Attempts to use the `content-type` header to determine what to do
+//   with the content value. Get this to get back a [`Content`
+//   object](./content.html).
+
+  body: {
+    get: function() { return this._body; },
+    set: function(value) {
+      this._body = new Content({
+        data: value,
+        type: this.getHeader("Content-Type")
+      });
+      this.setHeader("Content-Type",this.content.type);
+      this.setHeader("Content-Length",this.content.length);
+      return this;
+    },
+    enumerable: true
+  },
+
+// - **timeout**. Used to determine how long to wait for a response. Does not
+//   distinguish between connect timeouts versus request timeouts. Set either in
+//   milliseconds or with an object with temporal attributes (hours, minutes,
+//   seconds) and convert it into milliseconds. Get will always return
+//   milliseconds.
+
+  timeout: {
+    get: function() { return this._timeout; }, // in milliseconds
+    set: function(timeout) {
+      var request = this
+        , milliseconds = 0;
+      ;
+      if (!timeout) return this;
+      if (typeof timeout==="number") { milliseconds = timeout; }
+      else {
+        milliseconds = (timeout.milliseconds||0) +
+          (1000 * ((timeout.seconds||0) +
+              (60 * ((timeout.minutes||0) +
+                (60 * (timeout.hours||0))))));
+      }
+      this._timeout = milliseconds;
+      return this;
+    },
+    enumerable: true
+  }
+});
+
+// Alias `body` property to `content`. Since the [content object](./content.html)
+// has a `body` attribute, it's preferable to use `content` since you can then
+// access the raw content data using `content.body`.
+
+Object.defineProperty(Request.prototype,"content",
+    Object.getOwnPropertyDescriptor(Request.prototype, "body"));
+
+// The `Request` object can be pretty overwhelming to view using the built-in
+// Node.js inspect method. We want to make it a bit more manageable. This
+// probably goes [too far in the other
+// direction](https://github.com/spire-io/shred/issues/2).
+
+_.extend(Request.prototype,{
+  inspect: function() {
+    var request = this;
+    var headers = _(request.headers).reduce(function(array,value,key){
+      array.push("\t" + key + ": " + value); return array;
+    },[]).join("\n");
+    var summary = ["<Shred Request> ", request.method.toUpperCase(),
+        request.url].join(" ")
+    return [ summary, "- Headers:", headers].join("\n");
+  }
+});
+
+// Allow chainable 'on's:  shred.get({ ... }).on( ... ).  You can pass in a
+// single function, a pair (event, function), or a hash:
+// { event: function, event: function }
+_.extend(Request.prototype,{
+  on: function(eventOrHash, listener) {
+    var emitter = this.emitter;
+    // Pass in a single argument as a function then make it the default response handler
+    if (arguments.length === 1 && typeof(eventOrHash) === 'function') {
+      emitter.on('response', eventOrHash);
+    } else if (arguments.length === 1 && typeof(eventOrHash) === 'object') {
+      _(eventOrHash).each(function(value,key) {
+        emitter.on(key,value);
+      });
+    } else {
+      emitter.on(eventOrHash, listener);
+    }
+    return this;
+  }
+});
+
+// Add in the header methods. Again, these ensure we don't get the same header
+// multiple times with different case conventions.
+HeaderMixins.gettersAndSetters(Request);
+
+// `processOptions` is called from the constructor to handle all the work
+// associated with making sure we do our best to ensure we have a valid request.
+
+var processOptions = function(request,options) {
+
+  request.log.debug("Processing request options ..");
+
+  // We'll use `request.emitter` to manage the `on` event handlers.
+  request.emitter = (new Emitter);
+
+  request.agent = options.agent;
+
+  // Set up the handlers ...
+  if (options.on) {
+    _(options.on).each(function(value,key) {
+      request.emitter.on(key,value);
+    });
+  }
+
+  // Make sure we were give a URL or a host
+  if (!options.url && !options.host) {
+    request.emitter.emit("request_error",
+        new Error("No url or url options (host, port, etc.)"));
+    return;
+  }
+
+  // Allow for the [use of a proxy](http://www.jmarshall.com/easy/http/#proxies).
+
+  if (options.url) {
+    if (options.proxy) {
+      request.url = options.proxy;
+      request.path = options.url;
+    } else {
+      request.url = options.url;
+    }
+  }
+
+  // Set the remaining options.
+  request.query = options.query||options.parameters||request.query ;
+  request.method = options.method;
+  request.setHeader("user-agent",options.agent||"Shred for Node.js, Version 0.5.0");
+  request.setHeaders(options.headers);
+
+  if (request.cookieJar) {
+    var cookies = request.cookieJar.getCookies( CookieAccessInfo( request.host, request.path ) );
+    if (cookies.length) {
+      var cookieString = request.getHeader('cookie')||'';
+      for (var cookieIndex = 0; cookieIndex < cookies.length; ++cookieIndex) {
+          if ( cookieString.length && cookieString[ cookieString.length - 1 ] != ';' )
+          {
+              cookieString += ';';
+          }
+          cookieString += cookies[ cookieIndex ].name + '=' + cookies[ cookieIndex ].value + ';';
+      }
+      request.setHeader("cookie", cookieString);
+    }
+  }
+  
+  // The content entity can be set either using the `body` or `content` attributes.
+  if (options.body||options.content) {
+    request.content = options.body||options.content;
+  }
+  request.timeout = options.timeout;
+
+};
+
+// `createRequest` is also called by the constructor, after `processOptions`.
+// This actually makes the request and processes the response, so `createRequest`
+// is a bit of a misnomer.
+
+var createRequest = function(request) {
+  var timeout ;
+
+  request.log.debug("Creating request ..");
+  request.log.debug(request);
+
+  var reqParams = {
+    host: request.host,
+    port: request.port,
+    method: request.method,
+    path: request.path + (request.query ? '?'+request.query : ""),
+    headers: request.getHeaders(),
+    // Node's HTTP/S modules will ignore this, but we are using the
+    // browserify-http module in the browser for both HTTP and HTTPS, and this
+    // is how you differentiate the two.
+    scheme: request.scheme,
+    // Use a provided agent.  'Undefined' is the default, which uses a global
+    // agent.
+    agent: request.agent
+  };
+
+  if (request.logCurl) {
+    logCurl(request);
+  }
+
+  var http = request.scheme == "http" ? HTTP : HTTPS;
+
+  // Set up the real request using the selected library. The request won't be
+  // sent until we call `.end()`.
+  request._raw = http.request(reqParams, function(response) {
+    request.log.debug("Received response ..");
+
+    // We haven't timed out and we have a response, so make sure we clear the
+    // timeout so it doesn't fire while we're processing the response.
+    clearTimeout(timeout);
+
+    // Construct a Shred `Response` object from the response. This will stream
+    // the response, thus the need for the callback. We can access the response
+    // entity safely once we're in the callback.
+    response = new Response(response, request, function(response) {
+
+      // Set up some event magic. The precedence is given first to
+      // status-specific handlers, then to responses for a given event, and then
+      // finally to the more general `response` handler. In the last case, we
+      // need to first make sure we're not dealing with a a redirect.
+      var emit = function(event) {
+        var emitter = request.emitter;
+        var textStatus = STATUS_CODES[response.status] ? STATUS_CODES[response.status].toLowerCase() : null;
+        if (emitter.listeners(response.status).length > 0 || emitter.listeners(textStatus).length > 0) {
+          emitter.emit(response.status, response);
+          emitter.emit(textStatus, response);
+        } else {
+          if (emitter.listeners(event).length>0) {
+            emitter.emit(event, response);
+          } else if (!response.isRedirect) {
+            emitter.emit("response", response);
+            console.warn("Request has no event listener for status code " + response.status);
+          }
+        }
+      };
+
+      // Next, check for a redirect. We simply repeat the request with the URL
+      // given in the `Location` header. We fire a `redirect` event.
+      if (response.isRedirect) {
+        request.log.debug("Redirecting to "
+            + response.getHeader("Location"));
+        request.url = response.getHeader("Location");
+        emit("redirect");
+        createRequest(request);
+
+      // Okay, it's not a redirect. Is it an error of some kind?
+      } else if (response.isError) {
+        emit("error");
+      } else {
+      // It looks like we're good shape. Trigger the `success` event.
+        emit("success");
+      }
+    });
+  });
+
+  // We're still setting up the request. Next, we're going to handle error cases
+  // where we have no response. We don't emit an error event because that event
+  // takes a response. We don't response handlers to have to check for a null
+  // value. However, we [should introduce a different event
+  // type](https://github.com/spire-io/shred/issues/3) for this type of error.
+  request._raw.on("error", function(error) {
+    request.emitter.emit("request_error", error);
+  });
+
+  request._raw.on("socket", function(socket) {
+    request.emitter.emit("socket", socket);
+  });
+
+  // TCP timeouts should also trigger the "response_error" event.
+  request._raw.on('socket', function () {
+    request._raw.socket.on('timeout', function () {
+      // This should trigger the "error" event on the raw request, which will
+      // trigger the "response_error" on the shred request.
+      request._raw.abort();
+    });
+  });
+
+
+  // We're almost there. Next, we need to write the request entity to the
+  // underlying request object.
+  if (request.content) {
+    request.log.debug("Streaming body: '" +
+        request.content.body.slice(0,59) + "' ... ");
+    request._raw.write(request.content.body);
+  }
+
+  // Finally, we need to set up the timeout. We do this last so that we don't
+  // start the clock ticking until the last possible moment.
+  if (request.timeout) {
+    timeout = setTimeout(function() {
+      request.log.debug("Timeout fired, aborting request ...");
+      request._raw.abort();
+      request.emitter.emit("timeout", request);
+    },request.timeout);
+  }
+
+  // The `.end()` method will cause the request to fire. Technically, it might
+  // have already sent the headers and body.
+  request.log.debug("Sending request ...");
+  request._raw.end();
+};
+
+// Logs the curl command for the request.
+var logCurl = function (req) {
+  var headers = req.getHeaders();
+  var headerString = "";
+
+  for (var key in headers) {
+    headerString += '-H "' + key + ": " + headers[key] + '" ';
+  }
+
+  var bodyString = ""
+
+  if (req.content) {
+    bodyString += "-d '" + req.content.body + " ";
+  }
+
+  var query = req.query ? '?' + req.query : "";
+
+  console.log("curl " +
+    "-X " + req.method.toUpperCase() + " " +
+    req.scheme + "://" + req.host + ":" + req.port + req.path + query + " " +
+    headerString +
+    bodyString
+  );
+};
+
+
+module.exports = Request;
+
+});
+
+require.define("http", function (require, module, exports, __dirname, __filename) {
+    // todo
+
+});
+
+require.define("https", function (require, module, exports, __dirname, __filename) {
+    // todo
+
+});
+
+require.define("/node_modules/shred/lib/shred/parseUri.js", function (require, module, exports, __dirname, __filename) {
+    // parseUri 1.2.2
+// (c) Steven Levithan <stevenlevithan.com>
+// MIT License
+
+function parseUri (str) {
+	var	o   = parseUri.options,
+		m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
+		uri = {},
+		i   = 14;
+
+	while (i--) uri[o.key[i]] = m[i] || "";
+
+	uri[o.q.name] = {};
+	uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
+		if ($1) uri[o.q.name][$1] = $2;
+	});
+
+	return uri;
+};
+
+parseUri.options = {
+	strictMode: false,
+	key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
+	q:   {
+		name:   "queryKey",
+		parser: /(?:^|&)([^&=]*)=?([^&]*)/g
+	},
+	parser: {
+		strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+		loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+	}
+};
+
+module.exports = parseUri;
+
+});
+
+require.define("/node_modules/shred/node_modules/sprintf/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {"main":"./lib/sprintf"}
+});
+
+require.define("/node_modules/shred/node_modules/sprintf/lib/sprintf.js", function (require, module, exports, __dirname, __filename) {
+    /**
+sprintf() for JavaScript 0.7-beta1
+http://www.diveintojavascript.com/projects/javascript-sprintf
+
+Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of sprintf() for JavaScript nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Changelog:
+2010.11.07 - 0.7-beta1-node
+  - converted it to a node.js compatible module
+
+2010.09.06 - 0.7-beta1
+  - features: vsprintf, support for named placeholders
+  - enhancements: format cache, reduced global namespace pollution
+
+2010.05.22 - 0.6:
+ - reverted to 0.4 and fixed the bug regarding the sign of the number 0
+ Note:
+ Thanks to Raphael Pigulla <raph (at] n3rd [dot) org> (http://www.n3rd.org/)
+ who warned me about a bug in 0.5, I discovered that the last update was
+ a regress. I appologize for that.
+
+2010.05.09 - 0.5:
+ - bug fix: 0 is now preceeded with a + sign
+ - bug fix: the sign was not at the right position on padded results (Kamal Abdali)
+ - switched from GPL to BSD license
+
+2007.10.21 - 0.4:
+ - unit test and patch (David Baird)
+
+2007.09.17 - 0.3:
+ - bug fix: no longer throws exception on empty paramenters (Hans Pufal)
+
+2007.09.11 - 0.2:
+ - feature: added argument swapping
+
+2007.04.03 - 0.1:
+ - initial release
+**/
+
+var sprintf = (function() {
+	function get_type(variable) {
+		return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
+	}
+	function str_repeat(input, multiplier) {
+		for (var output = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */}
+		return output.join('');
+	}
+
+	var str_format = function() {
+		if (!str_format.cache.hasOwnProperty(arguments[0])) {
+			str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
+		}
+		return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
+	};
+
+	str_format.format = function(parse_tree, argv) {
+		var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
+		for (i = 0; i < tree_length; i++) {
+			node_type = get_type(parse_tree[i]);
+			if (node_type === 'string') {
+				output.push(parse_tree[i]);
+			}
+			else if (node_type === 'array') {
+				match = parse_tree[i]; // convenience purposes only
+				if (match[2]) { // keyword argument
+					arg = argv[cursor];
+					for (k = 0; k < match[2].length; k++) {
+						if (!arg.hasOwnProperty(match[2][k])) {
+							throw(sprintf('[sprintf] property "%s" does not exist', match[2][k]));
+						}
+						arg = arg[match[2][k]];
+					}
+				}
+				else if (match[1]) { // positional argument (explicit)
+					arg = argv[match[1]];
+				}
+				else { // positional argument (implicit)
+					arg = argv[cursor++];
+				}
+
+				if (/[^s]/.test(match[8]) && (get_type(arg) != 'number')) {
+					throw(sprintf('[sprintf] expecting number but found %s', get_type(arg)));
+				}
+				switch (match[8]) {
+					case 'b': arg = arg.toString(2); break;
+					case 'c': arg = String.fromCharCode(arg); break;
+					case 'd': arg = parseInt(arg, 10); break;
+					case 'e': arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential(); break;
+					case 'f': arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg); break;
+					case 'o': arg = arg.toString(8); break;
+					case 's': arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg); break;
+					case 'u': arg = Math.abs(arg); break;
+					case 'x': arg = arg.toString(16); break;
+					case 'X': arg = arg.toString(16).toUpperCase(); break;
+				}
+				arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+'+ arg : arg);
+				pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
+				pad_length = match[6] - String(arg).length;
+				pad = match[6] ? str_repeat(pad_character, pad_length) : '';
+				output.push(match[5] ? arg + pad : pad + arg);
+			}
+		}
+		return output.join('');
+	};
+
+	str_format.cache = {};
+
+	str_format.parse = function(fmt) {
+		var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
+		while (_fmt) {
+			if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
+				parse_tree.push(match[0]);
+			}
+			else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
+				parse_tree.push('%');
+			}
+			else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
+				if (match[2]) {
+					arg_names |= 1;
+					var field_list = [], replacement_field = match[2], field_match = [];
+					if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+						field_list.push(field_match[1]);
+						while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+							if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+								field_list.push(field_match[1]);
+							}
+							else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
+								field_list.push(field_match[1]);
+							}
+							else {
+								throw('[sprintf] huh?');
+							}
+						}
+					}
+					else {
+						throw('[sprintf] huh?');
+					}
+					match[2] = field_list;
+				}
+				else {
+					arg_names |= 2;
+				}
+				if (arg_names === 3) {
+					throw('[sprintf] mixing positional and named placeholders is not (yet) supported');
+				}
+				parse_tree.push(match);
+			}
+			else {
+				throw('[sprintf] huh?');
+			}
+			_fmt = _fmt.substring(match[0].length);
+		}
+		return parse_tree;
+	};
+
+	return str_format;
+})();
+
+var vsprintf = function(fmt, argv) {
+	argv.unshift(fmt);
+	return sprintf.apply(null, argv);
+};
+
+exports.sprintf = sprintf;
+exports.vsprintf = vsprintf;
+});
+
+require.define("/node_modules/shred/lib/shred/response.js", function (require, module, exports, __dirname, __filename) {
+    // The `Response object` encapsulates a Node.js HTTP response.
+
+var _ = require("underscore")
+  , Content = require("./content")
+  , HeaderMixins = require("./mixins/headers")
+  , CookieJarLib = require( "cookiejar" )
+  , Cookie = CookieJarLib.Cookie
+;
+
+// Browser doesn't have zlib.
+var zlib = null;
+try {
+  zlib = require('zlib');
+} catch (e) {
+  console.warn("no zlib library");
+}
+
+// Iconv doesn't work in browser
+var Iconv = null;
+try {
+  Iconv = require('iconv-lite');
+} catch (e) {
+  console.warn("no iconv library");
+}
+
+// Construct a `Response` object. You should never have to do this directly. The
+// `Request` object handles this, getting the raw response object and passing it
+// in here, along with the request. The callback allows us to stream the response
+// and then use the callback to let the request know when it's ready.
+var Response = function(raw, request, callback) { 
+  var response = this;
+  this._raw = raw;
+
+  // The `._setHeaders` method is "private"; you can't otherwise set headers on
+  // the response.
+  this._setHeaders.call(this,raw.headers);
+  
+  // store any cookies
+  if (request.cookieJar && this.getHeader('set-cookie')) {
+    var cookieStrings = this.getHeader('set-cookie');
+    var cookieObjs = []
+      , cookie;
+
+    for (var i = 0; i < cookieStrings.length; i++) {
+      var cookieString = cookieStrings[i];
+      if (!cookieString) {
+        continue;
+      }
+
+      if (!cookieString.match(/domain\=/i)) {
+        cookieString += '; domain=' + request.host;
+      }
+
+      if (!cookieString.match(/path\=/i)) {
+        cookieString += '; path=' + request.path;
+      }
+
+      try {
+        cookie = new Cookie(cookieString);
+        if (cookie) {
+          cookieObjs.push(cookie);
+        }
+      } catch (e) {
+        console.warn("Tried to set bad cookie: " + cookieString);
+      }
+    }
+
+    request.cookieJar.setCookies(cookieObjs);
+  }
+
+  this.request = request;
+  this.client = request.client;
+  this.log = this.request.log;
+
+  // Stream the response content entity and fire the callback when we're done.
+  // Store the incoming data in a array of Buffers which we concatinate into one
+  // buffer at the end.  We need to use buffers instead of strings here in order
+  // to preserve binary data.
+  var chunkBuffers = [];
+  var dataLength = 0;
+  raw.on("data", function(chunk) {
+    chunkBuffers.push(chunk);
+    dataLength += chunk.length;
+  });
+  raw.on("end", function() {
+    var body;
+    if (typeof Buffer === 'undefined') {
+      // Just concatinate into a string
+      body = chunkBuffers.join('');
+    } else {
+      // Initialize new buffer and add the chunks one-at-a-time.
+      body = new Buffer(dataLength);
+      for (var i = 0, pos = 0; i < chunkBuffers.length; i++) {
+        chunkBuffers[i].copy(body, pos);
+        pos += chunkBuffers[i].length;
+      }
+    }
+
+    var setBodyAndFinish = function (body) {
+      response._body = new Content({ 
+      	body: body,
+        type: response.getHeader("Content-Type")
+      });
+      callback(response);
+    }
+
+    if (zlib && response.getHeader("Content-Encoding") === 'gzip'){
+      zlib.gunzip(body, function (err, gunzippedBody) {
+        if (Iconv && response.request.encoding){
+          body = Iconv.fromEncoding(gunzippedBody,response.request.encoding);
+        } else {
+          body = gunzippedBody.toString();
+        }
+        setBodyAndFinish(body);
+      })
+    }
+    else{
+       if (response.request.encoding){
+            body = Iconv.fromEncoding(body,response.request.encoding);
+        }        
+      setBodyAndFinish(body);
+    }
+  });
+};
+
+// The `Response` object can be pretty overwhelming to view using the built-in
+// Node.js inspect method. We want to make it a bit more manageable. This
+// probably goes [too far in the other
+// direction](https://github.com/spire-io/shred/issues/2).
+
+Response.prototype = {
+  inspect: function() {
+    var response = this;
+    var headers = _(response.headers).reduce(function(array,value,key){
+      array.push("\t" + key + ": " + value); return array;
+    },[]).join("\n");
+    var summary = ["<Shred Response> ", response.status].join(" ")
+    return [ summary, "- Headers:", headers].join("\n");
+  }
+};
+
+// `Response` object properties, all of which are read-only:
+Object.defineProperties(Response.prototype, {
+  
+// - **status**. The HTTP status code for the response. 
+  status: {
+    get: function() { return this._raw.statusCode; },
+    enumerable: true
+  },
+
+// - **content**. The HTTP content entity, if any. Provided as a [content
+//   object](./content.html), which will attempt to convert the entity based upon
+//   the `content-type` header. The converted value is available as
+//   `content.data`. The original raw content entity is available as
+//   `content.body`.
+  body: {
+    get: function() { return this._body; }
+  },
+  content: {
+    get: function() { return this.body; },
+    enumerable: true
+  },
+
+// - **isRedirect**. Is the response a redirect? These are responses with 3xx
+//   status and a `Location` header.
+  isRedirect: {
+    get: function() {
+      return (this.status>299
+          &&this.status<400
+          &&this.getHeader("Location"));
+    },
+    enumerable: true
+  },
+
+// - **isError**. Is the response an error? These are responses with status of
+//   400 or greater.
+  isError: {
+    get: function() {
+      return (this.status === 0 || this.status > 399)
+    },
+    enumerable: true
+  }
+});
+
+// Add in the [getters for accessing the normalized headers](./headers.js).
+HeaderMixins.getters(Response);
+HeaderMixins.privateSetters(Response);
+
+// Work around Mozilla bug #608735 [https://bugzil.la/608735], which causes
+// getAllResponseHeaders() to return {} if the response is a CORS request.
+// xhr.getHeader still works correctly.
+var getHeader = Response.prototype.getHeader;
+Response.prototype.getHeader = function (name) {
+  return (getHeader.call(this,name) ||
+    (typeof this._raw.getHeader === 'function' && this._raw.getHeader(name)));
+};
+
+module.exports = Response;
+
+});
+
+require.define("/node_modules/shred/lib/shred/content.js", function (require, module, exports, __dirname, __filename) {
+    var _ = require("underscore");
+
+// The purpose of the `Content` object is to abstract away the data conversions
+// to and from raw content entities as strings. For example, you want to be able
+// to pass in a Javascript object and have it be automatically converted into a
+// JSON string if the `content-type` is set to a JSON-based media type.
+// Conversely, you want to be able to transparently get back a Javascript object
+// in the response if the `content-type` is a JSON-based media-type.
+
+// One limitation of the current implementation is that it [assumes the `charset` is UTF-8](https://github.com/spire-io/shred/issues/5).
+
+// The `Content` constructor takes an options object, which *must* have either a
+// `body` or `data` property and *may* have a `type` property indicating the
+// media type. If there is no `type` attribute, a default will be inferred.
+var Content = function(options) {
+  this.body = options.body;
+  this.data = options.data;
+  this.type = options.type;
+};
+
+Content.prototype = {
+  // Treat `toString()` as asking for the `content.body`. That is, the raw content entity.
+  //
+  //     toString: function() { return this.body; }
+  //
+  // Commented out, but I've forgotten why. :/
+};
+
+
+// `Content` objects have the following attributes:
+Object.defineProperties(Content.prototype,{
+  
+// - **type**. Typically accessed as `content.type`, reflects the `content-type`
+//   header associated with the request or response. If not passed as an options
+//   to the constructor or set explicitly, it will infer the type the `data`
+//   attribute, if possible, and, failing that, will default to `text/plain`.
+  type: {
+    get: function() {
+      if (this._type) {
+        return this._type;
+      } else {
+        if (this._data) {
+          switch(typeof this._data) {
+            case "string": return "text/plain";
+            case "object": return "application/json";
+          }
+        }
+      }
+      return "text/plain";
+    },
+    set: function(value) {
+      this._type = value;
+      return this;
+    },
+    enumerable: true
+  },
+
+// - **data**. Typically accessed as `content.data`, reflects the content entity
+//   converted into Javascript data. This can be a string, if the `type` is, say,
+//   `text/plain`, but can also be a Javascript object. The conversion applied is
+//   based on the `processor` attribute. The `data` attribute can also be set
+//   directly, in which case the conversion will be done the other way, to infer
+//   the `body` attribute.
+  data: {
+    get: function() {
+      if (this._body) {
+        return this.processor.parser(this._body);
+      } else {
+        return this._data;
+      }
+    },
+    set: function(data) {
+      if (this._body&&data) Errors.setDataWithBody(this);
+      this._data = data;
+      return this;
+    },
+    enumerable: true
+  },
+
+// - **body**. Typically accessed as `content.body`, reflects the content entity
+//   as a UTF-8 string. It is the mirror of the `data` attribute. If you set the
+//   `data` attribute, the `body` attribute will be inferred and vice-versa. If
+//   you attempt to set both, an exception is raised.
+  body: {
+    get: function() {
+      if (this._data) {
+        return this.processor.stringify(this._data);
+      } else {
+        return this.processor.stringify(this._body);
+      }
+    },
+    set: function(body) {
+      if (this._data&&body) Errors.setBodyWithData(this);
+      this._body = body;
+      return this;
+    },
+    enumerable: true
+  },
+
+// - **processor**. The functions that will be used to convert to/from `data` and
+//   `body` attributes. You can add processors. The two that are built-in are for
+//   `text/plain`, which is basically an identity transformation and
+//   `application/json` and other JSON-based media types (including custom media
+//   types with `+json`). You can add your own processors. See below.
+  processor: {
+    get: function() {
+      var processor = Content.processors[this.type];
+      if (processor) {
+        return processor;
+      } else {
+        // Return the first processor that matches any part of the
+        // content type. ex: application/vnd.foobar.baz+json will match json.
+        processor = _(this.type.split(";")[0]
+          .split(/\+|\//)).detect(function(type) {
+            return Content.processors[type];
+          });
+        return Content.processors[processor]||
+          {parser:identity,stringify:toString};
+      }
+    },
+    enumerable: true
+  },
+
+// - **length**. Typically accessed as `content.length`, returns the length in
+//   bytes of the raw content entity.
+  length: {
+    get: function() {
+      if (typeof Buffer !== 'undefined') {
+        return Buffer.byteLength(this.body);
+      }
+      return this.body.length;
+    }
+  }
+});
+
+Content.processors = {};
+
+// The `registerProcessor` function allows you to add your own processors to
+// convert content entities. Each processor consists of a Javascript object with
+// two properties:
+// - **parser**. The function used to parse a raw content entity and convert it
+//   into a Javascript data type.
+// - **stringify**. The function used to convert a Javascript data type into a
+//   raw content entity.
+Content.registerProcessor = function(types,processor) {
+  
+// You can pass an array of types that will trigger this processor, or just one.
+// We determine the array via duck-typing here.
+  if (types.forEach) {
+    types.forEach(function(type) {
+      Content.processors[type] = processor;
+    });
+  } else {
+    // If you didn't pass an array, we just use what you pass in.
+    Content.processors[types] = processor;
+  }
+};
+
+// Register the identity processor, which is used for text-based media types.
+var identity = function(x) { return x; }
+  , toString = function(x) { return x.toString(); }
+Content.registerProcessor(
+  ["text/html","text/plain","text"],
+  { parser: identity, stringify: toString });
+
+// Register the JSON processor, which is used for JSON-based media types.
+Content.registerProcessor(
+  ["application/json; charset=utf-8","application/json","json"],
+  {
+    parser: function(string) {
+      return JSON.parse(string);
+    },
+    stringify: function(data) {
+      return JSON.stringify(data); }});
+
+// Error functions are defined separately here in an attempt to make the code
+// easier to read.
+var Errors = {
+  setDataWithBody: function(object) {
+    throw new Error("Attempt to set data attribute of a content object " +
+        "when the body attributes was already set.");
+  },
+  setBodyWithData: function(object) {
+    throw new Error("Attempt to set body attribute of a content object " +
+        "when the data attributes was already set.");
+  }
+}
+module.exports = Content;
+
+});
+
+require.define("/node_modules/shred/lib/shred/mixins/headers.js", function (require, module, exports, __dirname, __filename) {
+    // The header mixins allow you to add HTTP header support to any object. This
+// might seem pointless: why not simply use a hash? The main reason is that, per
+// the [HTTP spec](http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2),
+// headers are case-insensitive. So, for example, `content-type` is the same as
+// `CONTENT-TYPE` which is the same as `Content-Type`. Since there is no way to
+// overload the index operator in Javascript, using a hash to represent the
+// headers means it's possible to have two conflicting values for a single
+// header.
+// 
+// The solution to this is to provide explicit methods to set or get headers.
+// This also has the benefit of allowing us to introduce additional variations,
+// including snake case, which we automatically convert to what Matthew King has
+// dubbed "corset case" - the hyphen-separated names with initial caps:
+// `Content-Type`. We use corset-case just in case we're dealing with servers
+// that haven't properly implemented the spec.
+var _ = require("underscore")
+;
+
+// Convert headers to corset-case. **Example:** `CONTENT-TYPE` will be converted
+// to `Content-Type`.
+
+var corsetCase = function(string) {
+  return string.toLowerCase()
+      .replace("_","-")
+      .replace(/(^|-)(\w)/g, 
+          function(s) { return s.toUpperCase(); });
+};
+
+// We suspect that `initializeHeaders` was once more complicated ...
+var initializeHeaders = function(object) {
+  return {};
+};
+
+// Access the `_headers` property using lazy initialization. **Warning:** If you
+// mix this into an object that is using the `_headers` property already, you're
+// going to have trouble.
+var $H = function(object) {
+  return object._headers||(object._headers=initializeHeaders(object));
+};
+
+// Hide the implementations as private functions, separate from how we expose them.
+
+// The "real" `getHeader` function: get the header after normalizing the name.
+var getHeader = function(object,name) {
+  return $H(object)[corsetCase(name)];
+};
+
+// The "real" `getHeader` function: get one or more headers, or all of them
+// if you don't ask for any specifics. 
+var getHeaders = function(object,names) {
+  var keys = (names && names.length>0) ? names : Object.keys($H(object));
+  var hash = keys.reduce(function(hash,key) {
+    hash[key] = getHeader(object,key);
+    return hash;
+  },{});
+  // Freeze the resulting hash so you don't mistakenly think you're modifying
+  // the real headers.
+  Object.freeze(hash);
+  return hash;
+};
+
+// The "real" `setHeader` function: set a header, after normalizing the name.
+var setHeader = function(object,name,value) {
+  $H(object)[corsetCase(name)] = value;
+  return object;
+};
+
+// The "real" `setHeaders` function: set multiple headers based on a hash.
+var setHeaders = function(object,hash) {
+  for( var key in hash ) { setHeader(object,key,hash[key]); };
+  return this;
+};
+
+// Here's where we actually bind the functionality to an object. These mixins work by
+// exposing mixin functions. Each function mixes in a specific batch of features.
+module.exports = {
+  
+  // Add getters.
+  getters: function(constructor) {
+    constructor.prototype.getHeader = function(name) { return getHeader(this,name); };
+    constructor.prototype.getHeaders = function() { return getHeaders(this,_(arguments)); };
+  },
+  // Add setters but as "private" methods.
+  privateSetters: function(constructor) {
+    constructor.prototype._setHeader = function(key,value) { return setHeader(this,key,value); };
+    constructor.prototype._setHeaders = function(hash) { return setHeaders(this,hash); };
+  },
+  // Add setters.
+  setters: function(constructor) {
+    constructor.prototype.setHeader = function(key,value) { return setHeader(this,key,value); };
+    constructor.prototype.setHeaders = function(hash) { return setHeaders(this,hash); };
+  },
+  // Add both getters and setters.
+  gettersAndSetters: function(constructor) {
+    constructor.prototype.getHeader = function(name) { return getHeader(this,name); };
+    constructor.prototype.getHeaders = function() { return getHeaders(this,_(arguments)); };
+    constructor.prototype.setHeader = function(key,value) { return setHeader(this,key,value); };
+    constructor.prototype.setHeaders = function(hash) { return setHeaders(this,hash); };
+  },
+};
+});
+
+require.define("/node_modules/shred/node_modules/iconv-lite/package.json", function (require, module, exports, __dirname, __filename) {
+    module.exports = {}
+});
+
+require.define("/node_modules/shred/node_modules/iconv-lite/index.js", function (require, module, exports, __dirname, __filename) {
+    // Module exports
+var iconv = module.exports = {
+    toEncoding: function(str, encoding) {
+        return iconv.getCodec(encoding).toEncoding(str);
+    },
+    fromEncoding: function(buf, encoding) {
+        return iconv.getCodec(encoding).fromEncoding(buf);
+    },
+    
+    defaultCharUnicode: '�',
+    defaultCharSingleByte: '?',
+    
+    // Get correct codec for given encoding.
+    getCodec: function(encoding) {
+        var enc = encoding || "utf8";
+        var codecOptions = undefined;
+        while (1) {
+            if (getType(enc) === "String")
+                enc = enc.replace(/[- ]/g, "").toLowerCase();
+            var codec = iconv.encodings[enc];
+            var type = getType(codec);
+            if (type === "String") {
+                // Link to other encoding.
+                codecOptions = {originalEncoding: enc};
+                enc = codec;
+            }
+            else if (type === "Object" && codec.type != undefined) {
+                // Options for other encoding.
+                codecOptions = codec;
+                enc = codec.type;
+            } 
+            else if (type === "Function")
+                // Codec itself.
+                return codec(codecOptions);
+            else
+                throw new Error("Encoding not recognized: '" + encoding + "' (searched as: '"+enc+"')");
+        }
+    },
+    
+    // Define basic encodings
+    encodings: {
+        internal: function(options) {
+            return {
+                toEncoding: function(str) {
+                    return new Buffer(ensureString(str), options.originalEncoding);
+                },
+                fromEncoding: function(buf) {
+                    return ensureBuffer(buf).toString(options.originalEncoding);
+                }
+            };
+        },
+        utf8: "internal",
+        ucs2: "internal",
+        binary: "internal",
+        ascii: "internal",
+        base64: "internal",
+        
+        // Codepage single-byte encodings.
+        singlebyte: function(options) {
+            // Prepare chars if needed
+            if (!options.chars || (options.chars.length !== 128 && options.chars.length !== 256))
+                throw new Error("Encoding '"+options.type+"' has incorrect 'chars' (must be of len 128 or 256)");
+            
+            if (options.chars.length === 128)
+                options.chars = asciiString + options.chars;
+            
+            if (!options.charsBuf) {
+                options.charsBuf = new Buffer(256*2);
+                for (var i = 0; i < options.chars.length; i++) {
+                    var code = options.chars.charCodeAt(i);
+                    options.charsBuf[i*2+0] = code & 0xFF;
+                    options.charsBuf[i*2+1] = code >>> 8;
+                }
+            }
+            
+            if (!options.revCharsBuf) {
+                options.revCharsBuf = new Buffer(65536);
+                var defChar = iconv.defaultCharSingleByte.charCodeAt(0);
+                for (var i = 0; i < options.revCharsBuf.length; i++)
+                    options.revCharsBuf[i] = defChar;
+                for (var i = 0; i < options.chars.length; i++)
+                    options.revCharsBuf[options.chars.charCodeAt(i)] = i;
+            }
+            
+            return {
+                toEncoding: function(str) {
+                    str = ensureString(str);
+                    
+                    var buf = new Buffer(str.length);
+                    var revCharsBuf = options.revCharsBuf;
+                    for (var i = 0; i < str.length; i++)
+                        buf[i] = revCharsBuf[str.charCodeAt(i)];
+                    
+                    return buf;
+                },
+                fromEncoding: function(buf) {
+                    buf = ensureBuffer(buf);
+                    
+                    // As string are immutable in JS, we use ucs2 buffer to speed up computations.
+                    var charsBuf = options.charsBuf;
+                    var newBuf = new Buffer(buf.length*2);
+                    var idx1 = 0, idx2 = 0;
+                    for (var i = 0, _len = buf.length; i < _len; i++) {
+                        idx1 = buf[i]*2; idx2 = i*2;
+                        newBuf[idx2] = charsBuf[idx1];
+                        newBuf[idx2+1] = charsBuf[idx1+1];
+                    }
+                    return newBuf.toString('ucs2');
+                }
+            };
+        },
+
+        // Codepage double-byte encodings.
+        table: function(options) {
+            var table = options.table, key, revCharsTable = options.revCharsTable;
+            if (!table) {
+                throw new Error("Encoding '" + options.type +"' has incorect 'table' option");
+            }
+            if(!revCharsTable) {
+                revCharsTable = options.revCharsTable = {};
+                for (key in table) {
+                    revCharsTable[table[key]] = parseInt(key);
+                }
+            }
+            
+            return {
+                toEncoding: function(str) {
+                    str = ensureString(str);
+                    var len = 0, strLen = str.length;
+                    for (var i = 0; i < strLen; i++) {
+                        if (!!(str.charCodeAt(i) >> 8)) {
+                            len += 2;
+                        } else {
+                            len ++;
+                        }
+                    }
+                    var newBuf = new Buffer(len);
+                    for (var i = 0, j = 0; i < strLen; i++) {
+                        var unicode = str.charCodeAt(i);
+                        if (!!(unicode >> 7)) {
+                            var gbkcode = revCharsTable[unicode] || revCharsTable[iconv.defaultCharUnicode.charCodeAt(0)];//not found in table ,replace it
+                            newBuf[j++] = gbkcode >> 8;//high byte;
+                            newBuf[j++] = gbkcode & 0xFF;//low byte
+                        } else {//ascii
+                            newBuf[j++] = unicode;
+                        }
+                    }
+                    return newBuf;
+                },
+                fromEncoding: function(buf) {
+                    buf = ensureBuffer(buf);
+                    var idx = 0, len = 0,
+                        newBuf = new Buffer(len*2),unicode,gbkcode;
+                    for (var i = 0, _len = buf.length; i < _len; i++, len++) {
+                        if (!!(buf[i] & 0x80)) {//the high bit is 1, so this byte is gbkcode's high byte.skip next byte
+                            i++;
+                        }
+                    }
+                    var newBuf = new Buffer(len*2);
+                    for (var i = 0, j = 0, _len = buf.length; i < _len; i++, j++) {
+                        var temp = buf[i], gbkcode, unicode;
+                        if (temp & 0x80) {
+                            gbkcode = (temp << 8) + buf[++i];
+                            unicode = table[gbkcode] || iconv.defaultCharUnicode.charCodeAt(0);//not found in table, replace with defaultCharUnicode
+                        }else {
+                            unicode = temp;
+                        }
+                        newBuf[j*2] = unicode & 0xFF;//low byte
+                        newBuf[j*2+1] = unicode >> 8;//high byte
+                    }
+                    return newBuf.toString('ucs2');
+                }
+            }
+        }
+    }
+};
+
+// Add aliases to convert functions
+iconv.encode = iconv.toEncoding;
+iconv.decode = iconv.fromEncoding;
+
+// Load other encodings from files in /encodings dir.
+var encodingsDir = __dirname+"/encodings/",
+    fs = require('fs');
+fs.readdirSync(encodingsDir).forEach(function(file) {
+    if(fs.statSync(encodingsDir + file).isDirectory()) return;
+    var encodings = require(encodingsDir + file)
+    for (var key in encodings)
+        iconv.encodings[key] = encodings[key]
+});
+
+// Utilities
+var asciiString = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f'+
+              ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f';
+
+var ensureBuffer = function(buf) {
+    buf = buf || new Buffer(0);
+    return (buf instanceof Buffer) ? buf : new Buffer(buf.toString(), "utf8");
+}
+
+var ensureString = function(str) {
+    str = str || "";
+    return (str instanceof String) ? str : str.toString((str instanceof Buffer) ? 'utf8' : undefined);
+}
+
+var getType = function(obj) {
+    return Object.prototype.toString.call(obj).slice(8, -1);
+}
+
+
 });
 
 require.define("/node_modules/http-browserify/package.json", function (require, module, exports, __dirname, __filename) {

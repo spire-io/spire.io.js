@@ -180,12 +180,28 @@ Create a subscription to a channel:
 
 or equivalently:
 
-    spire.session.subscription('mySubscripiton', 'foo', function (err, subscription) {
+    spire.session.createSubscription({
+      name: 'mySubscripiton',
+      channelNames: ['foo']
+    }, function (err, subscription) {
       if (!err) {
         // `subscription` is the new subscription resource
         var mySubscription = subscription;
       }
     });
+
+You can also use the `findOrCreateSubscription` method, which will return an existing subscription if it already exists, otherwise it will create a new one.
+
+    spire.session.findOrCreateSubscription({
+      name: 'mySubscripiton',
+      channelNames: ['foo']
+    }, function (err, subscription) {
+      if (!err) {
+        // `subscription` is the new subscription resource
+        var mySubscription = subscription;
+      }
+    });
+
 
 ### Listening on a subscription
 

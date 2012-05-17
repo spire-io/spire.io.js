@@ -26,17 +26,17 @@ Register a new spire account:
       email: 'you@email.com',
       password: your_password,
       password_confirmation: your_password_confirmation
-    }, function (err) {
+    }, function (err, session) {
       if (!err) {
-        // Your account has been registered, and you now have a spire session at `spire.session`.  Start creating channels and subscripions.
+        // Your account has been registered, and you now have a spire session
       }
     });
 
 Or start spire with an account secret:
 
     spire.start(your_account_secret, function (err, session) {
-      if (!err) {
-        // You now have a Spire session at `spire.session`
+      if (!err, session) {
+        // You now have a Spire session
       }
     });
 
@@ -46,7 +46,7 @@ Once Spire is started, you can start subscribing and publishing to channels.
 
 Subscribe to a channel:
 
-    spire.subcribe('channel name', function (messages) {
+    spire.session.subscribe('channel name', function (messages) {
       for (var i = 0; i < messages.length; i++) {
         console.log("Received message: " + messages[i].content);
       }
@@ -54,20 +54,20 @@ Subscribe to a channel:
 
 Subscribe to multiple channels:
 
-    spire.subcribe(['channel one', 'channel two'], function (messages) {
+    spire.session.subcribe(['channel one', 'channel two'], function (messages) {
       for (var i = 0; i < messages.length; i++) {
         console.log("Received message from channel " +
           messages[i].channel + ": " + messages[i].content);
       }
     });
 
-By default, the `spire.subscribe` method will return all channel events starting with the very first event.
+By default, the `spire.session.subscribe` method will return all channel events starting with the very first event.
 If you only want to listen for events from this point forward, pass `last: 'now'` as an option:
 
 
 Subscribe to a channel, and only listen for new events:
 
-    spire.subcribe('channel name', { last: 'now' }, function (messages) {
+    spire.session.subcribe('channel name', { last: 'now' }, function (messages) {
       for (var i = 0; i < messages.length; i++) {
         console.log("Received message: " + messages[i].content);
       }
@@ -79,7 +79,7 @@ Subscribe to a channel, and only listen for new events:
 Publish to a channel:
 
     // 'message' can be a string or any JSON-serilazable object.
-    spire.publish('channel name', message, function (err) {
+    spire.session.publish('channel name', message, function (err) {
       if (!err) {
         console.log('Message sent!');
       }
@@ -151,7 +151,7 @@ Also be sure to checkout the [reference documentation](http://spire-io.github.co
 
 Create a channel:
 
-    spire.channel('foo', function (err, channel) {
+    spire.session.createChannel('foo', function (err, channel) {
       if (!err) {
         // `channel` is the channel named "foo".
         var fooChannel = channel;
@@ -180,7 +180,7 @@ Create a subscription to a channel:
 
 or equivalently:
 
-    spire.subscription('mySubscripiton', 'foo', function (err, subscription) {
+    spire.session.subscription('mySubscripiton', 'foo', function (err, subscription) {
       if (!err) {
         // `subscription` is the new subscription resource
         var mySubscription = subscription;

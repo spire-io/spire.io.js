@@ -32,7 +32,7 @@ describe('Channels', function () {
 
       runs(function () {
         var that = this;
-        this.spire.publish('a channel', 'my message', function (err, message) {
+        this.spire.session.publish('a channel', 'my message', function (err, message) {
           that.message = message;
           finished = true;
         });
@@ -47,15 +47,15 @@ describe('Channels', function () {
       expect(this.message.content).toBe('my message');
     });
 
-    describe('Listen to a channel using spire.subscribe with no options', function () {
+    describe('Listen to a channel using spire.session.subscribe with no options', function () {
       beforeEach(function () {
         var finished = false;
 
         runs(function () {
           var that = this;
-          this.spire.publish('another channel', 'message one', function () {
-            that.spire.publish('another channel', 'message two', function () {
-              that.spire.subscribe('another channel', function (messages) {
+          this.spire.session.publish('another channel', 'message one', function () {
+            that.spire.session.publish('another channel', 'message two', function () {
+              that.spire.session.subscribe('another channel', function (messages) {
                 that.messages = messages;
                 finished = true;
               }, function (err, subscription) {
@@ -85,7 +85,7 @@ describe('Channels', function () {
 
       runs(function () {
         var that = this;
-        this.spire.channel('foo', function (err, channel) {
+        this.spire.session.createChannel('foo', function (err, channel) {
           finished = true;
           that.channel = channel;
         });
@@ -107,7 +107,7 @@ describe('Channels', function () {
 
         runs(function () {
           var that = this;
-          this.spire.channel('foo', function (err, channel) {
+          this.spire.session.findOrCreateChannel('foo', function (err, channel) {
             finished = true;
             that.channel2 = channel;
           });
@@ -168,7 +168,10 @@ describe('Channels', function () {
         beforeEach(function () {
           var finished = false;
           var that = this;
-          this.spire.subscription('sub_name', 'foo', function (err, sub) {
+          this.spire.session.createSubscription({
+            name: 'sub_name',
+            channelNames: ['foo']
+          }, function (err, sub) {
             that.sub = sub;
             finished = true;
           });
@@ -186,7 +189,10 @@ describe('Channels', function () {
           beforeEach(function () {
             var finished = false;
             var that = this;
-            this.spire.subscription('sub_name', 'foo', function (err, sub) {
+            this.spire.session.findOrCreateSubscription({
+              name: 'sub_name',
+              channelNames: ['foo']
+            }, function (err, sub) {
               that.sub2 = sub;
               finished = true;
             });
@@ -276,7 +282,7 @@ describe('Channels', function () {
         var finished = false;
         runs(function () {
           var that = this;
-          this.spire.channel('event_channel', function (err, channel) {
+          this.spire.session.createChannel('event_channel', function (err, channel) {
             that.channel = channel;
             finished = true;
           });
@@ -289,7 +295,10 @@ describe('Channels', function () {
         var finished2 = false;
         runs(function () {
           var that = this;
-          this.spire.subscription('new_sub', 'event_channel', function (err, sub) {
+          this.spire.session.createSubscription({
+            name: 'new_sub',
+            channelNames: ['event_channel']
+          }, function (err, sub) {
             that.sub = sub;
             finished2 = true;
           });

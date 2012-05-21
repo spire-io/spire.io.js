@@ -4713,7 +4713,7 @@ Session.prototype.applications$ = function (cb) {
  */
 Session.prototype.applicationByName = function (applicationName, cb) {
   var session = this;
-  this.request('application_by_name', function (err, applicationData) {
+  this.request('application_by_name', applicationName, function (err, applicationData) {
     if (err) return cb(err);
     application = new Application(session.spire, applicationData[applicationName]);
     session._memoizeApplication(application);
@@ -5156,6 +5156,26 @@ Resource.defineRequest(Session.prototype, 'create_application', function (name) 
   };
 });
 
+/**
+ * Gets an application by name
+ * @name application_by_name
+ * @ignore
+ */
+Resource.defineRequest(Session.prototype, 'application_by_name', function (name) {
+  var collection = this.data.resources.applications;
+  return {
+    method: 'get',
+    url: collection.url,
+    query: {
+      name: name
+    },
+    headers: {
+      'Authorization': this.authorization('get_by_name', collection),
+      'Accept': this.mediaType('applications')
+    }
+  };
+});
+
 });
 
 require.define("/spire/api/application.js", function (require, module, exports, __dirname, __filename) {
@@ -5184,7 +5204,7 @@ function Application(spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'application';
-  
+
   this._channels = {};
   this._subscriptions = {};
   this._members = {};
@@ -5202,6 +5222,15 @@ module.exports = Application;
  */
 Application.prototype.name = function () {
   return this.data.name;
+};
+
+/**
+ * Returns the application key.
+ *
+ * @returns {string} Application key
+ */
+Application.prototype.key = function () {
+  return this.data.key;
 };
 
 /**
@@ -5738,6 +5767,7 @@ Resource.defineRequest(Application.prototype, 'authenticate_member', function (d
     }
   };
 });
+
 });
 
 require.define("/spire/api/member.js", function (require, module, exports, __dirname, __filename) {

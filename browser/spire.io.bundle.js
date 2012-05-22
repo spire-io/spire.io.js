@@ -5321,6 +5321,42 @@ Application.prototype.authenticateMember = function (login, password, cb) {
 };
 
 /**
+ * Resets a member password.  Empty response unless an error occurs.
+ *
+ * @param {string} email Member email or login
+ * @param {function (err)} cb Callback
+ */
+Application.prototype.requestMemberPasswordReset = function (email, cb) {
+  var application = this;
+  this.request('reset_member_password', email, function (err, data) {
+    if (err) return cb(err);
+    cb(null);
+  });
+};
+
+/**
+ * Resets a member password using a reset key.  Can also update the user password (optional).
+ * Error if authenication fails.
+ *
+ * @param {string} login Member login
+ * @param {string} password Member password
+ * @param {function (err, member)} cb Callback
+ */
+Application.prototype.resetPassword = function (reset_key, new_password, cb) {
+  var application = this;
+  var params = {
+    reset_key: reset_key,
+    password: new_password
+  }
+  this.request('authenticate_member', params, function (err, data) {
+    if (err) return cb(err);
+    var member = new Member(application.spire, data);
+    application._memoizeMember(member);
+    cb(null, member);
+  });
+};
+
+/**
  * Gets a member by login.  Returns a Member resource
  *
  * Always gets a fresh value from the api.
@@ -5768,6 +5804,20 @@ Resource.defineRequest(Application.prototype, 'authenticate_member', function (d
   };
 });
 
+/**
+ * Requests a password reset for a member.  Returns a member object.
+ * @name authenticate_member
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'reset_member_password', function (email) {
+  var collection = this.data.resources.authentication;
+  return {
+    method: 'post',
+    url: collection.url,
+    content: "",
+    query: { email: email }
+  };
+});
 });
 
 require.define("/spire/api/member.js", function (require, module, exports, __dirname, __filename) {
@@ -5842,7 +5892,6 @@ var Shred = function(options) {
   this.defaults = options.defaults||{};
   this.log = options.logger||(new Ax({ level: "info" }));
   this._sharedCookieJar = new CookieJar();
-  this.logCurl = options.logCurl || false;
 };
 
 // Most of the real work is done in the request and reponse classes.
@@ -5856,7 +5905,6 @@ Shred.Response = require("./shred/response");
 Shred.prototype = {
   request: function(options) {
     options.logger = this.log;
-    options.logCurl = options.logCurl || this.logCurl;
     options.cookieJar = ( 'cookieJar' in options ) ? options.cookieJar : this._sharedCookieJar; // let them set cookieJar = null
     options.agent = options.agent || this.agent;
     return new Shred.Request(_.defaults(options,this.defaults));
@@ -6473,7 +6521,6 @@ var Request = function(options) {
   this.log = options.logger;
   this.cookieJar = options.cookieJar;
   this.encoding = options.encoding;
-  this.logCurl = options.logCurl;
   processOptions(this,options||{});
   createRequest(this);
 };
@@ -6775,10 +6822,6 @@ var createRequest = function(request) {
     agent: request.agent
   };
 
-  if (request.logCurl) {
-    logCurl(request);
-  }
-
   var http = request.scheme == "http" ? HTTP : HTTPS;
 
   // Set up the real request using the selected library. The request won't be
@@ -6880,32 +6923,6 @@ var createRequest = function(request) {
   request.log.debug("Sending request ...");
   request._raw.end();
 };
-
-// Logs the curl command for the request.
-var logCurl = function (req) {
-  var headers = req.getHeaders();
-  var headerString = "";
-
-  for (var key in headers) {
-    headerString += '-H "' + key + ": " + headers[key] + '" ';
-  }
-
-  var bodyString = ""
-
-  if (req.content) {
-    bodyString += "-d '" + req.content.body + " ";
-  }
-
-  var query = req.query ? '?' + req.query : "";
-
-  console.log("curl " +
-    "-X " + req.method.toUpperCase() + " " +
-    req.scheme + "://" + req.host + ":" + req.port + req.path + query + " " +
-    headerString +
-    bodyString
-  );
-};
-
 
 module.exports = Request;
 
@@ -7658,7 +7675,7 @@ require.define("/node_modules/shred/node_modules/iconv-lite/package.json", funct
 
 require.define("/node_modules/shred/node_modules/iconv-lite/index.js", function (require, module, exports, __dirname, __filename) {
     // Module exports
-var iconv = module.exports = {
+module.exports = iconv = {
     toEncoding: function(str, encoding) {
         return iconv.getCodec(encoding).toEncoding(str);
     },
@@ -7713,6 +7730,10 @@ var iconv = module.exports = {
         binary: "internal",
         ascii: "internal",
         base64: "internal",
+        latin1: {
+            type: "internal",
+            originalEncoding: "binary"
+        },
         
         // Codepage single-byte encodings.
         singlebyte: function(options) {

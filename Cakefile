@@ -157,6 +157,7 @@ task 'bundle:min', 'create the bundled and minified version of spire.io.js', (o)
       minified = uglify data
 
       fs.writeFile 'browser/spire.io.bundle.min.js', minified, (err)->
+        console.log("Minified bundle created in browser/spire.io.bundle.min.js")
         throw err if err
 
 task 'docs', 'generate the inline documentation', ->
@@ -232,5 +233,6 @@ TaskHelpers =
 
     fs.writeFile 'browser/spire.io.bundle.js', bundle, (err)->
       throw err if err
+      console.log("Bundle created in browser/spire.io.bundle.js")
       callback() if callback
 

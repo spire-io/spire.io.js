@@ -4247,7 +4247,7 @@ Session.prototype.applications$ = function (cb) {
  */
 Session.prototype.applicationByName = function (applicationName, cb) {
   var session = this;
-  this.request('application_by_name', function (err, applicationData) {
+  this.request('application_by_name', applicationName, function (err, applicationData) {
     if (err) return cb(err);
     application = new Application(session.spire, applicationData[applicationName]);
     session._memoizeApplication(application);
@@ -4907,6 +4907,26 @@ Resource.defineRequest(Session.prototype, 'create_application', function (name) 
   };
 });
 
+/**
+ * Gets an application by name
+ * @name application_by_name
+ * @ignore
+ */
+Resource.defineRequest(Session.prototype, 'application_by_name', function (name) {
+  var collection = this.data.resources.applications;
+  return {
+    method: 'get',
+    url: collection.url,
+    query: {
+      name: name
+    },
+    headers: {
+      'Authorization': this.authorization('get_by_name', collection),
+      'Accept': this.mediaType('applications')
+    }
+  };
+});
+
 });
 
 require.define("/spire/api/application.js", function (require, module, exports, __dirname, __filename) {
@@ -4935,7 +4955,7 @@ function Application(spire, data) {
   this.spire = spire;
   this.data = data;
   this.resourceName = 'application';
-  
+
   this._channels = {};
   this._subscriptions = {};
   this._members = {};
@@ -4953,6 +4973,15 @@ module.exports = Application;
  */
 Application.prototype.name = function () {
   return this.data.name;
+};
+
+/**
+ * Returns the application key.
+ *
+ * @returns {string} Application key
+ */
+Application.prototype.key = function () {
+  return this.data.key;
 };
 
 /**
@@ -5033,6 +5062,42 @@ Application.prototype.authenticateMember = function (login, password, cb) {
   var params = {
     login: login,
     password: password
+  }
+  this.request('authenticate_member', params, function (err, data) {
+    if (err) return cb(err);
+    var member = new Member(application.spire, data);
+    application._memoizeMember(member);
+    cb(null, member);
+  });
+};
+
+/**
+ * Resets a member password.  Empty response unless an error occurs.
+ *
+ * @param {string} email Member email or login
+ * @param {function (err)} cb Callback
+ */
+Application.prototype.requestMemberPasswordReset = function (email, cb) {
+  var application = this;
+  this.request('reset_member_password', email, function (err, data) {
+    if (err) return cb(err);
+    cb(null);
+  });
+};
+
+/**
+ * Resets a member password using a reset key.  Can also update the user password (optional).
+ * Error if authenication fails.
+ *
+ * @param {string} login Member login
+ * @param {string} password Member password
+ * @param {function (err, member)} cb Callback
+ */
+Application.prototype.resetPassword = function (reset_key, new_password, cb) {
+  var application = this;
+  var params = {
+    reset_key: reset_key,
+    password: new_password
   }
   this.request('authenticate_member', params, function (err, data) {
     if (err) return cb(err);
@@ -5487,6 +5552,21 @@ Resource.defineRequest(Application.prototype, 'authenticate_member', function (d
     headers: {
       'Accept': this.mediaType('member')
     }
+  };
+});
+
+/**
+ * Requests a password reset for a member.  Returns a member object.
+ * @name authenticate_member
+ * @ignore
+ */
+Resource.defineRequest(Application.prototype, 'reset_member_password', function (email) {
+  var collection = this.data.resources.authentication;
+  return {
+    method: 'post',
+    url: collection.url,
+    content: "",
+    query: { email: email }
   };
 });
 });

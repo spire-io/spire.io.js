@@ -54,7 +54,7 @@ Subscribe to a channel:
 
 Subscribe to multiple channels:
 
-    spire.session.subcribe(['channel one', 'channel two'], function (messages) {
+    spire.session.subscribe(['channel one', 'channel two'], function (messages) {
       for (var i = 0; i < messages.length; i++) {
         console.log("Received message from channel " +
           messages[i].channel + ": " + messages[i].content);
@@ -67,7 +67,7 @@ If you only want to listen for events from this point forward, pass `last: 'now'
 
 Subscribe to a channel, and only listen for new events:
 
-    spire.session.subcribe('channel name', { last: 'now' }, function (messages) {
+    spire.session.subscribe('channel name', { last: 'now' }, function (messages) {
       for (var i = 0; i < messages.length; i++) {
         console.log("Received message: " + messages[i].content);
       }

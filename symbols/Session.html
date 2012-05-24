@@ -384,6 +384,24 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Session.html#findOrCreateChannel">findOrCreateChannel</a></b>(name, limit, cb)
+								</div>
+								<div class="description">Find or creates a channel</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Session.html#findOrCreateSubscription">findOrCreateSubscription</a></b>(Subscription, channelOrChannels, cb)
+								</div>
+								<div class="description">Gets a subscription to the given channels.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Session.html#get">get</a></b>(cb)
 								</div>
 								<div class="description"><p>Gets the Session resource.</div>
@@ -393,9 +411,27 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Session.html#publish">publish</a></b>(channelName, message, cb)
+								</div>
+								<div class="description">Publish to a channel.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Session.html#resetAccount">resetAccount</a></b>(cb)
 								</div>
 								<div class="description">Resets the account resource.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Session.html#subscribe">subscribe</a></b>(channelOrChannels, options, listener, cb)
+								</div>
+								<div class="description">Creates an new subscription to a channel or channels, and adds a listener.</div>
 							</td>
 						</tr>
 					
@@ -527,7 +563,7 @@ Returns a value from the cache, if one if available.
 					
 					
 					
-					<pre class="code">spire.session.account(function (err, account) {
+					<pre class="code">session.account(function (err, account) {
   if (!err) {
     // `account` is account resource.
   }
@@ -574,7 +610,7 @@ Always gets a fresh value from the api.
 					
 					
 					
-					<pre class="code">spire.session.account$(function (err, account) {
+					<pre class="code">session.account$(function (err, account) {
   if (!err) {
     // `account` is account resource.
   }
@@ -620,7 +656,7 @@ Always gets a fresh value from the api.
 					
 					
 					
-					<pre class="code">spire.session.applicationByName('name_of_application', function (err, application) {
+					<pre class="code">session.applicationByName('name_of_application', function (err, application) {
   if (!err) {
     // `application` now contains an application object
   }
@@ -672,7 +708,7 @@ Returns a value from the cache, if one if available.
 					
 					
 					
-					<pre class="code">spire.session.applications(function (err, applications) {
+					<pre class="code">session.applications(function (err, applications) {
   if (!err) {
     // `applications` is a hash of all the account's applications
   }
@@ -718,7 +754,7 @@ Always gets a fresh value from the api.
 					
 					
 					
-					<pre class="code">spire.session.applications$(function (err, applications) {
+					<pre class="code">session.applications$(function (err, applications) {
   if (!err) {
     // `applications` is a hash of all the account's applications
   }
@@ -764,7 +800,7 @@ Always gets a fresh value from the api.
 					
 					
 					
-					<pre class="code">spire.session.channelByName('name_of_channel', function (err, channel) {
+					<pre class="code">session.channelByName('name_of_channel', function (err, channel) {
   if (!err) {
     // `channel` now contains a channel object
   }
@@ -816,7 +852,7 @@ Returns a value from the cache, if one if available.
 					
 					
 					
-					<pre class="code">spire.session.channels(function (err, channels) {
+					<pre class="code">session.channels(function (err, channels) {
   if (!err) {
     // `channels` is a hash of all the account's channels
   }
@@ -862,7 +898,7 @@ Always gets a fresh value from the api.
 					
 					
 					
-					<pre class="code">spire.session.channels$(function (err, channels) {
+					<pre class="code">session.channels$(function (err, channels) {
   if (!err) {
     // `channels` is a hash of all the account's channels
   }
@@ -904,6 +940,14 @@ specified name exists.
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">session.createApplication('name_of_application', function (err, application) {
+  if (!err) {
+    // `application` now contains a application object
+  }
+});</pre>
 					
 					
 					
@@ -950,6 +994,14 @@ specified name exists.
 					
 					
 					
+					<pre class="code">session.createChannel('foo', function (err, channel) {
+  if (!err) {
+    // `channel` is the channel named "foo".
+  }
+});</pre>
+					
+					
+					
 						
 							<dl class="detailList">
 							<dt class="heading">Parameters:</dt>
@@ -962,7 +1014,7 @@ specified name exists.
 							
 								<dt>
 									<span class="light fixedFont">{number}</span> <b>limit</b>
-									
+									<i>Optional</i>
 								</dt>
 								<dd>Number of messages to keep in channel</dd>
 							
@@ -996,6 +1048,18 @@ resource.  Errors if a subscription with the specified name exists.
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">session.findOrCreateSubscription({
+  name: 'my-sub',
+  channelNames: ['foo', 'bar']
+},
+function (err, subscription) {
+  if (!err) {
+    // `subscription` is the new subscription
+  }
+});</pre>
 					
 					
 					
@@ -1050,6 +1114,120 @@ resource.  Errors if a subscription with the specified name exists.
 
 					<hr />
 				
+					<a name="findOrCreateChannel"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>findOrCreateChannel</b>(name, limit, cb)
+					
+					</div>
+					<div class="description">
+						Find or creates a channel
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">session.findOrCreateChannel('foo', function (err, channel) {
+  if (!err) {
+    // `channel` is the channel named "foo".
+  }
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>name</b>
+									
+								</dt>
+								<dd>Channel name to get or create</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>limit</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Number of messages to keep in channel</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function(err|channel)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="findOrCreateSubscription"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>findOrCreateSubscription</b>(Subscription, channelOrChannels, cb)
+					
+					</div>
+					<div class="description">
+						Gets a subscription to the given channels.  Creates the channels and the
+subscription if necessary.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">session.findOrCreateSubscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
+  if (!err) {
+    // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
+  }
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>Subscription</b>
+									
+								</dt>
+								<dd>name</dd>
+							
+								<dt>
+									<span class="light fixedFont">{array or string}</span> <b>channelOrChannels</b>
+									
+								</dt>
+								<dd>Either a single channel name, or an array of
+  channel names to subscribe to</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="get"> </a>
 					<div class="fixedFont">
 					
@@ -1086,6 +1264,64 @@ resource.  Errors if a subscription with the specified name exists.
 
 					<hr />
 				
+					<a name="publish"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>publish</b>(channelName, message, cb)
+					
+					</div>
+					<div class="description">
+						Publish to a channel.
+
+Creates the channel if necessary.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">session.publish('my_channel', 'my message', function (err, message) {
+  if (!err) {
+    //  Message sent successfully
+  }
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>channelName</b>
+									
+								</dt>
+								<dd>Channel name</dd>
+							
+								<dt>
+									<span class="light fixedFont">{object|string}</span> <b>message</b>
+									
+								</dt>
+								<dd>Message</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|message)}</span> <b>cb</b>
+									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="resetAccount"> </a>
 					<div class="fixedFont">
 					
@@ -1103,7 +1339,7 @@ with an email and password.
 					
 					
 					
-					<pre class="code">spire.session.resetAccount(function (err, session) {
+					<pre class="code">session.resetAccount(function (err, session) {
   if (!err) {
     // `session` is session with new account resource.
   }
@@ -1118,6 +1354,78 @@ with an email and password.
 								<dt>
 									<span class="light fixedFont">{function (err|session)}</span> <b>cb</b>
 									
+								</dt>
+								<dd>Callback</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="subscribe"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>subscribe</b>(channelOrChannels, options, listener, cb)
+					
+					</div>
+					<div class="description">
+						Creates an new subscription to a channel or channels, and adds a listener.
+						
+						
+					</div>
+					
+					
+					
+					<pre class="code">session.subscribe('myChannel', options, function (messages) {
+  // `messages` is array of messages sent to the channel
+}, function (err) {
+  // `err` will be non-null if there was a problem creating the subscription.
+});
+
+By default this will get all events from the beginning of time.
+If you only want messages created from this point forward, pass { last: 'now' } in the options:</pre>
+					
+					<pre class="code">session.subscribe('myChannel', options, function (messages) {
+  // `messages` is array of messages sent to the channel
+}, function (err) {
+  // `err` will be non-null if there was a problem creating the subscription.
+});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{array or string}</span> <b>channelOrChannels</b>
+									
+								</dt>
+								<dd>Either a single channel name, or an array of
+  channel names to subscribe to</dd>
+							
+								<dt>
+									<span class="light fixedFont">{object}</span> <b>options</b>
+									<i>Optional</i>
+								</dt>
+								<dd>Options to pass to the listener</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (messages)}</span> <b>listener</b>
+									
+								</dt>
+								<dd>Listener that will get called with each batch of messages</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
+									<i>Optional</i>
 								</dt>
 								<dd>Callback</dd>
 							
@@ -1149,7 +1457,7 @@ Always gets a fresh value from the api.
 					
 					
 					
-					<pre class="code">spire.session.subscriptionByName('name_of_subscription', function (err, subscription) {
+					<pre class="code">session.subscriptionByName('name_of_subscription', function (err, subscription) {
   if (!err) {
     // `subscription` now contains a subscription object
   }
@@ -1201,7 +1509,7 @@ Returns a value from the cache, if one if available.
 					
 					
 					
-					<pre class="code">spire.session.subscriptions(function (err, subscriptions) {
+					<pre class="code">session.subscriptions(function (err, subscriptions) {
   if (!err) {
     // `subscriptions` is a hash of all the account's subscriptions
   }
@@ -1247,7 +1555,7 @@ Always gets a fresh value from the api.
 					
 					
 					
-					<pre class="code">spire.session.subscriptions$(function (err, subscriptions) {
+					<pre class="code">session.subscriptions$(function (err, subscriptions) {
   if (!err) {
     // `subscriptions` is a hash of all the account's subscriptions
   }
@@ -1288,7 +1596,7 @@ Always gets a fresh value from the api.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon May 21 2012 14:55:22 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu May 24 2012 12:52:13 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

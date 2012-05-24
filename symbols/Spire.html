@@ -311,51 +311,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#accountFromUrlAndCapabilities">accountFromUrlAndCapabilities</a></b>(creds, cb)
-								</div>
-								<div class="description">Get Account from url and capability.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#channel">channel</a></b>(name, cb)
-								</div>
-								<div class="description">Gets a channel (creates if necessary).</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#channelFromUrlAndCapabilities">channelFromUrlAndCapabilities</a></b>(creds, cb)
-								</div>
-								<div class="description">Get Channel from url and capability.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#channels">channels</a></b>(cb)
-								</div>
-								<div class="description">Gets a list of all channels.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#channels$">channels$</a></b>(cb)
-								</div>
-								<div class="description">Gets a list of all channels.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Spire.html#getApplication">getApplication</a></b>(application_key, cb)
 								</div>
 								<div class="description">Retrieve an application with a given application key.</div>
@@ -383,15 +338,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#publish">publish</a></b>(channelName, message, cb)
-								</div>
-								<div class="description">Publish to a channel.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Spire.html#register">register</a></b>(user, cb)
 								</div>
 								<div class="description">Registers for a new spire account, and authenticates as the newly created account</div>
@@ -401,72 +347,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#secret">secret</a></b>()
-								</div>
-								<div class="description">Get the account secret.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Spire.html#start">start</a></b>(secret, cb)
 								</div>
 								<div class="description">Start the Spire session with the given account secret.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscribe">subscribe</a></b>(channelOrChannels, options, listener, cb)
-								</div>
-								<div class="description">Creates an new subscription to a channel or channels, and adds a listener.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscription">subscription</a></b>(Subscription, channelOrChannels, cb)
-								</div>
-								<div class="description">Gets a subscription to the given channels.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptionFromUrlAndCapabilities">subscriptionFromUrlAndCapabilities</a></b>(creds, cb)
-								</div>
-								<div class="description">Get Subscription from url and capabilities.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptions">subscriptions</a></b>(cb)
-								</div>
-								<div class="description">Get the subscriptions for an account.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#subscriptions$">subscriptions$</a></b>(cb)
-								</div>
-								<div class="description">Get the subscriptions for an account.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Spire.html#update">update</a></b>(user, cb)
-								</div>
-								<div class="description">Updates your account info.</div>
 							</td>
 						</tr>
 					
@@ -599,295 +482,6 @@ must call one of:
 					Method Detail
 				</div>
 				
-					<a name="accountFromUrlAndCapabilities"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>accountFromUrlAndCapabilities</b>(creds, cb)
-					
-					</div>
-					<div class="description">
-						Get Account from url and capability.
-
-Use this method to get the account without starting a spire session.
-
-If you have a spire session, you should use <code>spire.session.account</code>.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.accountFromUrlAndCapabilities({
-  url: account_url,
-  capabilities: account_capabilities
-}, function (err, account) {
-  if (!err) {
-    // ...
-  }
-})</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{object}</span> <b>creds</b>
-									
-								</dt>
-								<dd>Url and Capability</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.url</b>
-									
-								</dt>
-								<dd>Url</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capability</b>
-									
-								</dt>
-								<dd>Capability</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|account)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="channel"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>channel</b>(name, cb)
-					
-					</div>
-					<div class="description">
-						Gets a channel (creates if necessary).
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.start(your_api_secret, function (err, session) {
-  spire.channel('foo', function (err, channel) {
-    if (!err) {
-      // `channel` is the channel named "foo".
-    }
-  });
-});</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>name</b>
-									
-								</dt>
-								<dd>Channel name to get or create</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function(err|channel)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="channelFromUrlAndCapabilities"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>channelFromUrlAndCapabilities</b>(creds, cb)
-					
-					</div>
-					<div class="description">
-						Get Channel from url and capability.
-
-Use this method to get a channel without starting a spire session.
-
-If you have a spire session, you should use <code>spire.channel</code>.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.channelFromUrlAndCapabilities({
-  url: channel_url,
-  capabilities: channel_capabilities
-}, function (err, channel) {
-  if (!err) {
-    // ...
-  }
-})</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{object}</span> <b>creds</b>
-									
-								</dt>
-								<dd>Url and Capabilities</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.url</b>
-									
-								</dt>
-								<dd>Url</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
-									
-								</dt>
-								<dd>Capabilities</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|channel)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="channels"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>channels</b>(cb)
-					
-					</div>
-					<div class="description">
-						Gets a list of all channels.  Will return cached data if it is available,
-otherwise will make a request.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.start(your_api_secret, function (err, session) {
-  spire.channels(function (err, channels) {
-    if (!err) {
-      // `channels` is a hash of all the account's channels
-    }
-  });
-});</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="channels$"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>channels$</b>(cb)
-					
-					</div>
-					<div class="description">
-						Gets a list of all channels.  Ignores any cached data, and forces the
-request.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.start(your_api_secret, function (err, session) {
-  spire.channels$(function (err, channels) {
-    if (!err) {
-      // `channels` is a hash of all the account's channels
-    }
-  });
-});</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|channels)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="getApplication"> </a>
 					<div class="fixedFont">
 					
@@ -955,9 +549,9 @@ spire.getApplication('key-for-your-app', function (err, application) {
 					
 					
 					<pre class="code">var spire = new Spire();
-spire.login(your_email, your_password, function (err) {
+spire.login(your_email, your_password, function (err, session) {
   if (!err) {
-    // You now have a spire session.
+    // `session` is a spire session.
     // Start creating channels and subscripions.
   }
 });</pre>
@@ -981,7 +575,7 @@ spire.login(your_email, your_password, function (err) {
 								<dd>Password</dd>
 							
 								<dt>
-									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
+									<span class="light fixedFont">{function(err|session)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -1048,65 +642,6 @@ spire.passwordResetRequest(your_email, function (err) {
 
 					<hr />
 				
-					<a name="publish"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>publish</b>(channelName, message, cb)
-					
-					</div>
-					<div class="description">
-						Publish to a channel.
-
-Creates the channel if necessary.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.publish('my_channel', 'my message', function (err, message) {
-  if (!err) {
-    //  Message sent successfully
-  }
-});</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>channelName</b>
-									
-								</dt>
-								<dd>Channel name</dd>
-							
-								<dt>
-									<span class="light fixedFont">{object|string}</span> <b>message</b>
-									
-								</dt>
-								<dd>Message</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|message)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="register"> </a>
 					<div class="fixedFont">
 					
@@ -1129,8 +664,8 @@ spire.register({
   password_confirmation: your_password_confirmation
 }, function (err) {
   if (!err) {
-    // Your account has been registered,
-    // and you now have a spire session.
+    // Your account has been registered.
+    // `session` is a spire session.
     // Start creating channels and subscripions.
   }
 });</pre>
@@ -1166,7 +701,7 @@ spire.register({
 								<dd>Optional password confirmation</dd>
 							
 								<dt>
-									<span class="light fixedFont">{function (err)}</span> <b>cb</b>
+									<span class="light fixedFont">{function (err|session)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -1176,38 +711,6 @@ spire.register({
 						
 						
 						
-						
-						
-						
-
-					<hr />
-				
-					<a name="secret"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{string}</span>
-					<b>secret</b>()
-					
-					</div>
-					<div class="description">
-						Get the account secret.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{string}</span> Account secret</dd>
-							
-							</dl>
 						
 						
 						
@@ -1232,7 +735,7 @@ spire.register({
 					<pre class="code">var spire = new Spire();
 spire.start(your_api_secret, function (err, session) {
   if (!err) {
-    // You now have a spire session.
+    // `session` is a spire session.
     // Start creating channels and subscripions.
   }
 });</pre>
@@ -1250,380 +753,7 @@ spire.start(your_api_secret, function (err, session) {
 								<dd>The acccount secret</dd>
 							
 								<dt>
-									<span class="light fixedFont">{function(err)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="subscribe"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>subscribe</b>(channelOrChannels, options, listener, cb)
-					
-					</div>
-					<div class="description">
-						Creates an new subscription to a channel or channels, and adds a listener.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.start(your_api_secret, function (err, session) {
-  spire.subscribe('myChannel', options, function (messages) {
-    // `messages` is array of messages sent to the channel
-  }, function (err) {
-  // `err` will be non-null if there was a problem creating the subscription.
-});
-
-By default this will get all events from the beginning of time.
-If you only want messages created from this point forward, pass { last: 'now' } in the options:</pre>
-					
-					<pre class="code">var spire = new Spire();
-spire.start(your_api_secret, { last: 'now' }, function (err, session) {
-  spire.subscribe('myChannel', options, function (messages) {
-    // `messages` is array of messages sent to the channel
-  }, function (err) {
-  // `err` will be non-null if there was a problem creating the subscription.
-});</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{array or string}</span> <b>channelOrChannels</b>
-									
-								</dt>
-								<dd>Either a single channel name, or an array of
-  channel names to subscribe to</dd>
-							
-								<dt>
-									<span class="light fixedFont">{object}</span> <b>options</b>
-									<i>Optional</i>
-								</dt>
-								<dd>Options to pass to the listener</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (messages)}</span> <b>listener</b>
-									
-								</dt>
-								<dd>Listener that will get called with each batch of messages</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
-									<i>Optional</i>
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="subscription"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>subscription</b>(Subscription, channelOrChannels, cb)
-					
-					</div>
-					<div class="description">
-						Gets a subscription to the given channels.  Creates the channels and the
-subscription if necessary.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.start(your_api_secret, function (err, session) {
-  spire.subscription('mySubscription', ['foo', 'bar'], function (err, subscription) {
-    if (!err) {
-      // `subscription` is a subscription named 'mySubscription', listening on channels named 'foo' and 'bar'.
-    }
-  });
-});</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>Subscription</b>
-									
-								</dt>
-								<dd>name</dd>
-							
-								<dt>
-									<span class="light fixedFont">{array or string}</span> <b>channelOrChannels</b>
-									
-								</dt>
-								<dd>Either a single channel name, or an array of
-  channel names to subscribe to</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="subscriptionFromUrlAndCapabilities"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>subscriptionFromUrlAndCapabilities</b>(creds, cb)
-					
-					</div>
-					<div class="description">
-						Get Subscription from url and capabilities.
-Use this method to get a subscription without starting a spire session.
-
-If you have a spire session, you should use <code>spire.subscription</code>.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.subscriptionFromUrlAndCapabilities({
-  url: subscription_url,
-  capabilities: subscription_capabilities
-}, function (err, subscription) {
-  if (!err) {
-    // ...
-  }
-})</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{object}</span> <b>creds</b>
-									
-								</dt>
-								<dd>Url and Capabilities</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.url</b>
-									
-								</dt>
-								<dd>Url</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>creds.capabilities</b>
-									
-								</dt>
-								<dd>Capabilities</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|subscription)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="subscriptions"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>subscriptions</b>(cb)
-					
-					</div>
-					<div class="description">
-						Get the subscriptions for an account.  Will return cached data if it is
-available, otherwise makes a request.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.start(your_api_secret, function (err, session) {
-  spire.subscriptions(function (err, subscriptions) {
-    if (!err) {
-      // `subscriptions` is a hash of all the account's subscriptions
-    }
-  });
-});</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|subscriptions)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="subscriptions$"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>subscriptions$</b>(cb)
-					
-					</div>
-					<div class="description">
-						Get the subscriptions for an account.  Ignores any cached data and always
-makes a request.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.start(your_api_secret, function (err, session) {
-  spire.subscriptions$(function (err, subscriptions) {
-    if (!err) {
-      // `subscriptions` is a hash of all the account's subscriptions
-    }
-  });
-});</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{function (err|subscriptions)}</span> <b>cb</b>
-									
-								</dt>
-								<dd>Callback</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="update"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>update</b>(user, cb)
-					
-					</div>
-					<div class="description">
-						Updates your account info.
-						
-						
-					</div>
-					
-					
-					
-					<pre class="code">var spire = new Spire();
-spire.update({
-  email: your_new_email
-}, function (err, account) {
-  if (!err) {
-    // Your account has been updated.
-  }
-});</pre>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{object}</span> <b>user</b>
-									
-								</dt>
-								<dd>User info</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>user.email</b>
-									
-								</dt>
-								<dd>Email</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>user.password</b>
-									
-								</dt>
-								<dd>Password</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>user.password_confirmation</b>
-									<i>Optional</i>
-								</dt>
-								<dd>Optional password confirmation</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function (err)}</span> <b>cb</b>
+									<span class="light fixedFont">{function(err|session)}</span> <b>cb</b>
 									
 								</dt>
 								<dd>Callback</dd>
@@ -1651,7 +781,7 @@ spire.update({
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon May 21 2012 14:55:22 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu May 24 2012 12:52:14 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

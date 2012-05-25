@@ -386,13 +386,27 @@ var API = require('./spire/api')
  *   before you can start creating channels.
  * @param {string} [opts.url] Spire url do use (defaults to 'https://api.spire.io')
  * @param {string} opts.version Version of Spire api to use (defaults to '1.0')
- * @param {number} opts.timeout Timeout for requests (defaults to 30 seconds)
  * @param {boolean} opts.logCurl Log all requests as curl commands (defaults to false)
  */
 function Spire(opts) {
   opts = opts || {};
+
+  /**
+   * Spire API resource.
+   * Contains low-level methods for interfacing with the Spire.io API.
+   */
   this.api = new API(this, opts);
+
+  /**
+   * Spire session.
+   * Contains methods for creating channels, subscriptions, and applications.
+   */
   this.session = null;
+
+  /**
+   * Shred.
+   * The HTTP client used by the spire.io.js library.
+   */
   this.shred = new Shred({
     logCurl: opts.logCurl
   });
@@ -557,17 +571,30 @@ var Resource = require('./api/resource')
  * @param {object} [opts] Options
  * @param {string} [opts.url] Spire api url
  * @param {string} [opts.version] Version of the Spire api to use
- * @param {string} [opts.timeout] Timeout for requests
  */
 function API(spire, opts) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
 
   opts = opts || {};
-  this.url = opts.url || 'https://api.spire.io';
-  this.version = opts.version || '1.0';
-  this.timeout = opts.timeout || 30 * 1000;
 
-  this.description = null;
+  /**
+   * URL or spire.io API.
+   * Defaults to 'https://api.spire.io'
+   */
+  this.url = opts.url || 'https://api.spire.io';
+
+  /**
+   * Version of spire.io API to use.
+   * Defaults to '1.0'
+   */
+  this.version = opts.version || '1.0';
+
+  /**
+   * Schema definition for spire API.
+   */
   this.schema = null;
 }
 
@@ -1066,7 +1093,14 @@ var _ = require('underscore')
  * @param {object} data Resource data from the spire api
  */
 function Resource(spire, data) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
+
+  /**
+   * Actual data from the spire.io api.
+   */
   this.data = data;
 }
 
@@ -2382,9 +2416,24 @@ require.define("/spire/api/response_error.js", function (require, module, export
  * @param {object} request Request description
  */
 var ResponseError = function (response, request) {
+  /**
+   * The error message.
+   */
   this.message = 'ResponseError: ' + response.status;
+
+  /**
+   * Actual response from the server.
+   */
   this.response = response;
+
+  /**
+   * Status of the response.
+   */
   this.status = response.status;
+
+  /**
+   * The request.
+   */
   this.request = request;
 };
 
@@ -2588,8 +2637,16 @@ var Resource = require('./resource')
  * @param data {object} Account data from the spire api
  */
 function Account(spire, data) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
+
+  /**
+   * Actual data from the spire.io api.
+   */
   this.data = data;
+
   this.resourceName = 'account';
 }
 
@@ -2731,8 +2788,16 @@ var Resource = require('./resource');
  * @param data {object} Billing data from the spire api
  */
 function Billing(spire, data) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
+
+  /**
+   * Actual data from the spire.io api.
+   */
   this.data = data;
+
   this.resourceName = 'billing';
 }
 
@@ -2762,8 +2827,16 @@ var Resource = require('./resource')
  * @param {object} data  Channel data from the spire api
  */
 function Channel(spire, data) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
+
+  /**
+   * Actual data from the spire.io api.
+   */
   this.data = data;
+
   this.resourceName = 'channel';
 }
 
@@ -2953,11 +3026,31 @@ var Resource = require('./resource');
  * @param {object} data Message data from the spire api
  */
 function Message(spire, data) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
+
+  /**
+   * Actual data from the spire.io api.
+   */
   this.data = data;
+
+  /**
+   * Message content.
+   */
   this.content = data.content;
+
+  /**
+   * Event type.  Will be "message".
+   */
   this.type = data.type;
+
+  /**
+   * Timestamp (in microseconds) of the event.
+   */
   this.timestamp = data.timestamp
+
   this.resourceName = 'message';
 }
 
@@ -3049,12 +3142,31 @@ var Resource = require('./resource')
  * @param {object} data Subscription data from the spire api
  */
 function Subscription(spire, data) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
-  this.data = data;
-  this.resourceName = 'subscription';
 
+  /**
+   * Actual data from the spire.io api.
+   */
+  this.data = data;
+
+
+  /**
+   * Timestamp of last event received.
+   */
   this.last = null;
+
+  /**
+   * Whether the subscription is currently polling for events.
+   * You should not change this value yourself.  Use
+   * `subscription.startListening()` and
+   * `subscription.stopListening()` instead.
+   */
   this.listening = false;
+
+  this.resourceName = 'subscription';
 }
 
 Subscription.prototype = new Resource();
@@ -4091,8 +4203,16 @@ var Resource = require('./resource')
  * @param {object} data Session data from the spire api
  */
 function Session(spire, data) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
+
+  /**
+   * Actual data from the spire.io api.
+   */
   this.data = data;
+
   this.resourceName = 'session';
 
   this._channels = {};
@@ -4952,8 +5072,16 @@ var Resource = require('./resource')
  * @param {object} data  Application data from the spire api
  */
 function Application(spire, data) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
+
+  /**
+   * Actual data from the spire.io api.
+   */
   this.data = data;
+
   this.resourceName = 'application';
 
   this._channels = {};
@@ -5569,6 +5697,7 @@ Resource.defineRequest(Application.prototype, 'reset_member_password', function 
     query: { email: email }
   };
 });
+
 });
 
 require.define("/spire/api/member.js", function (require, module, exports, __dirname, __filename) {
@@ -5588,8 +5717,16 @@ var Resource = require('./resource');
  * @param {object} data  Member data from the spire api
  */
 function Member(spire, data) {
+  /**
+   * Reference to spire object.
+   */
   this.spire = spire;
+
+  /**
+   * Actual data from the spire.io api.
+   */
   this.data = data;
+
   this.resourceName = 'member';
 }
 
@@ -5614,6 +5751,7 @@ Member.prototype.login = function () {
 Member.prototype.profile = function () {
   return this.data.profile;
 };
+
 });
 
 require.define("/node_modules/shred/package.json", function (require, module, exports, __dirname, __filename) {

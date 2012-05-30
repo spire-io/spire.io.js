@@ -5087,6 +5087,7 @@ function Application(spire, data) {
   this._channels = {};
   this._subscriptions = {};
   this._members = {};
+  this._membersCache = {};
   this._storeResources();
 }
 
@@ -5118,17 +5119,23 @@ Application.prototype.key = function () {
  * Returns a value from the cache, if one if available.
  *
  * @example
- * application.members(function (err, members) {
+ * application.members({limit: 10},function (err, members) {
  *   if (!err) {
  *     // `members` is a hash of all the applications's members
  *   }
  * });
  *
+ * @param Object options Options for retrieving members (limit and after)
  * @param {function (err, members)} cb Callback
  */
-Application.prototype.members = function (cb) {
-  if (!_.isEmpty(this._members)) return cb(null, this._members);
-  this.members$(cb);
+Application.prototype.members = function (options, cb) {
+  if(typeof cb == 'undefined'){
+    cb = options;
+    options = {};
+  }
+  var optString = this._optionsToString(options);
+  if (this._membersCache[optString]) return cb(null, this._membersCache[optString]);
+  this.members$(options, cb);
 };
 
 /**
@@ -5137,20 +5144,26 @@ Application.prototype.members = function (cb) {
  * Always gets a fresh value from the api.
  *
  * @example
- * application.members$(function (err, members) {
+ * application.members$({limit: 10}, function (err, members) {
  *   if (!err) {
  *     // `members` is a hash of all the applications's members
  *   }
  * });
  *
+ * @param Object options Options for retrieving members (limit and after)
  * @param {function (err, members)} cb Callback
  */
-Application.prototype.members$ = function (cb) {
-  var application = this;
-  this.request('members', function (err, membersData) {
+Application.prototype.members$ = function (options, cb) {
+  if(typeof cb == 'undefined'){
+    cb = options;
+    options = {};
+  }
+  var application = this,
+    optString = this._optionsToString(options);
+  this.request('members', options, function (err, membersData) {
     if (err) return cb(err);
     _.each(membersData, function (member, name) {
-      application._memoizeMember(new Member(application.spire, member));
+      application._memoizeMember(new Member(application.spire, member), optString);
     });
     cb(null, application._members);
   });
@@ -5160,8 +5173,7 @@ Application.prototype.members$ = function (cb) {
  * Creates a member.  Returns a Member resource.  Errors if a member with the
  * specified login exists.
  *
- * @param {string} login Member login
- * @param {string} password Member password
+ * @param {object} parameters including login, password, and an optional email
  * @param {function (err, member)} cb Callback
  */
 Application.prototype.createMember = function (data, cb) {
@@ -5448,8 +5460,14 @@ Application.prototype.createSubscription = function (options, cb) {
  *
  * @param channel {object} Member to store
  */
-Application.prototype._memoizeMember = function (member) {
+Application.prototype._memoizeMember = function (member, cacheString) {
   this._members[member.login] = member;
+  if(cacheString){
+    if(!this._membersCache[cacheString]){
+      this._membersCache[cacheString] = {};
+    }
+    this._membersCache[cacheString][member.login] = member;
+  }
 };
 
  /**
@@ -5488,6 +5506,9 @@ Application.prototype._storeResources = function () {
   this.resources = resources;
 };
 
+Application.prototype._optionsToString = function (options){
+  return "l_" + options.limit + "_a_" + options.after;
+};
 
 /**
  * Requests
@@ -5613,11 +5634,12 @@ Resource.defineRequest(Application.prototype, 'subscription_by_name', function (
  * @name members
  * @ignore
  */
-Resource.defineRequest(Application.prototype, 'members', function () {
+Resource.defineRequest(Application.prototype, 'members', function (options) {
   var collection = this.data.resources.members;
   return {
     method: 'get',
     url: collection.url,
+    query: options,
     headers: {
       'Authorization': this.authorization('all', collection),
       'Accept': this.mediaType('members')
@@ -5777,6 +5799,7 @@ var Shred = function(options) {
   this.defaults = options.defaults||{};
   this.log = options.logger||(new Ax({ level: "info" }));
   this._sharedCookieJar = new CookieJar();
+  this.logCurl = options.logCurl || false;
 };
 
 // Most of the real work is done in the request and reponse classes.
@@ -5790,6 +5813,7 @@ Shred.Response = require("./shred/response");
 Shred.prototype = {
   request: function(options) {
     options.logger = this.log;
+    options.logCurl = options.logCurl || this.logCurl;
     options.cookieJar = ( 'cookieJar' in options ) ? options.cookieJar : this._sharedCookieJar; // let them set cookieJar = null
     options.agent = options.agent || this.agent;
     return new Shred.Request(_.defaults(options,this.defaults));
@@ -6406,6 +6430,7 @@ var Request = function(options) {
   this.log = options.logger;
   this.cookieJar = options.cookieJar;
   this.encoding = options.encoding;
+  this.logCurl = options.logCurl;
   processOptions(this,options||{});
   createRequest(this);
 };
@@ -6707,6 +6732,10 @@ var createRequest = function(request) {
     agent: request.agent
   };
 
+  if (request.logCurl) {
+    logCurl(request);
+  }
+
   var http = request.scheme == "http" ? HTTP : HTTPS;
 
   // Set up the real request using the selected library. The request won't be
@@ -6808,6 +6837,32 @@ var createRequest = function(request) {
   request.log.debug("Sending request ...");
   request._raw.end();
 };
+
+// Logs the curl command for the request.
+var logCurl = function (req) {
+  var headers = req.getHeaders();
+  var headerString = "";
+
+  for (var key in headers) {
+    headerString += '-H "' + key + ": " + headers[key] + '" ';
+  }
+
+  var bodyString = ""
+
+  if (req.content) {
+    bodyString += "-d '" + req.content.body + " ";
+  }
+
+  var query = req.query ? '?' + req.query : "";
+
+  console.log("curl " +
+    "-X " + req.method.toUpperCase() + " " +
+    req.scheme + "://" + req.host + ":" + req.port + req.path + query + " " +
+    headerString +
+    bodyString
+  );
+};
+
 
 module.exports = Request;
 
@@ -7560,7 +7615,7 @@ require.define("/node_modules/shred/node_modules/iconv-lite/package.json", funct
 
 require.define("/node_modules/shred/node_modules/iconv-lite/index.js", function (require, module, exports, __dirname, __filename) {
     // Module exports
-module.exports = iconv = {
+var iconv = module.exports = {
     toEncoding: function(str, encoding) {
         return iconv.getCodec(encoding).toEncoding(str);
     },
@@ -7615,10 +7670,6 @@ module.exports = iconv = {
         binary: "internal",
         ascii: "internal",
         base64: "internal",
-        latin1: {
-            type: "internal",
-            originalEncoding: "binary"
-        },
         
         // Codepage single-byte encodings.
         singlebyte: function(options) {

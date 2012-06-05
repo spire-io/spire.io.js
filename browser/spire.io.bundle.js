@@ -4401,6 +4401,10 @@ Session.prototype.channels = function (cb) {
  */
 Session.prototype.channels$ = function (cb) {
   var session = this;
+  if (!this.data.resources.channels) {
+    return cb(new Error("No channel resource in session"));
+  }
+
   this.request('channels', function (err, channelsData) {
     if (err) return cb(err);
     _.each(channelsData, function (channel, name) {

@@ -202,7 +202,7 @@ task 'docs:pages', 'Update gh-pages branch', ->
               throw err if err
               process.chdir cwd
               console.log('gh-pages updated successfully')
-  path.exists 'docs/.git', (exists)->
+  fs.exists 'docs/.git', (exists)->
     if exists
       commitDocs()
     else
